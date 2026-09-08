@@ -39,6 +39,35 @@
             font-weight: 700;
         }
         
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-info {
+            font-size: 14px;
+            opacity: 0.9;
+            background: rgba(255,255,255,0.15);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+        
+        .btn-logout {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 5px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        
+        .btn-logout:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
         .nav {
             background: white;
             padding: 0 20px;
@@ -72,6 +101,10 @@
         .nav-btn.active {
             color: #0d47a1;
             border-bottom-color: #0d47a1;
+        }
+        
+        .nav-btn.hidden {
+            display: none;
         }
         
         .container {
@@ -219,6 +252,26 @@
         
         .btn-secondary:hover {
             background: #616161;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #0d47a1;
+            border: 2px solid #0d47a1;
+        }
+        
+        .btn-outline:hover {
+            background: #0d47a1;
+            color: white;
+        }
+        
+        .btn-guest {
+            background: #f57c00;
+            color: white;
+        }
+        
+        .btn-guest:hover {
+            background: #e65100;
         }
         
         .score-card {
@@ -385,6 +438,7 @@
             .form-row { grid-template-columns: 1fr; }
             .grid-2 { grid-template-columns: 1fr; }
             .score-card .header-info { flex-direction: column; align-items: flex-start; }
+            .header-right { flex-wrap: wrap; }
         }
         
         .problem-text {
@@ -616,9 +670,311 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Login Page */
+        .login-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+        }
+        
+        .login-box {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+        
+        .login-box h2 {
+            text-align: center;
+            color: #1a237e;
+            margin-bottom: 10px;
+        }
+        
+        .login-box .subtitle {
+            text-align: center;
+            color: #757575;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+        
+        .login-box .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .login-box .form-group label {
+            font-size: 13px;
+            color: #555;
+        }
+        
+        .login-box .btn {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+        
+        .login-divider {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+            color: #999;
+        }
+        
+        .login-divider::before,
+        .login-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #ddd;
+        }
+        
+        .login-error {
+            background: #ffcdd2;
+            color: #b71c1c;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+            font-size: 14px;
+        }
+        
+        .login-error.show {
+            display: block;
+        }
     </style>
 </head>
 <body>
+    <!-- LOGIN PAGE -->
+    <div id="loginPage" class="login-page">
+        <div class="login-box">
+            <h2>📊 PCT Monitoring</h2>
+            <p class="subtitle">Production Cycle Time System</p>
+            
+            <div id="loginError" class="login-error"></div>
+            
+            <div class="form-group">
+                <label>Masukkan Nama atau Admin</label>
+                <input type="text" id="loginInput" placeholder="Nama Anda atau ketik 'admin123'" onkeydown="if(event.key==='Enter') login()">
+            </div>
+            
+            <button class="btn btn-primary" onclick="login()">🔐 Login</button>
+            
+            <div class="login-divider">atau</div>
+            
+            <button class="btn btn-guest" onclick="loginGuest()">👤 Masuk sebagai Guest</button>
+            
+            <div style="margin-top:15px;padding:10px;background:#f5f5f5;border-radius:6px;font-size:12px;color:#757575;">
+                <strong>💡 Info:</strong><br>
+                • <strong>Admin:</strong> ketik "admin123"<br>
+                • <strong>User:</strong> masukkan nama yang terdaftar di Management<br>
+                • <strong>Guest:</strong> hanya bisa melihat Dashboard
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="mainApp" style="display:none;">
+        <header class="header">
+            <h1>📊 <span>PCT</span> Monitoring System</h1>
+            <div class="header-right">
+                <span class="user-info" id="userInfo">👤 Guest</span>
+                <button class="btn-logout" onclick="logout()">🚪 Logout</button>
+            </div>
+        </header>
+        
+        <nav class="nav" id="mainNav">
+            <button class="nav-btn active" data-page="dashboard">📊 Dashboard</button>
+            <button class="nav-btn hidden" data-page="ppic">📋 PPIC</button>
+            <button class="nav-btn hidden" data-page="produksi">🏭 Produksi</button>
+            <button class="nav-btn hidden" data-page="logistic">🚚 Logistic</button>
+            <button class="nav-btn hidden" data-page="qc">🔬 QC</button>
+            <button class="nav-btn hidden" data-page="qa">✅ QA</button>
+            <button class="nav-btn hidden" data-page="management">⚙️ Management</button>
+        </nav>
+        
+        <div class="container">
+            <div id="notification" class="notification"></div>
+            
+            <!-- DASHBOARD -->
+            <div id="page-dashboard" class="page active">
+                <div class="card">
+                    <h2>📊 Dashboard</h2>
+                    <div class="grid-3" id="dashboardStats">
+                        <div class="card" style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);border:none;">
+                            <h3 style="color:#0d47a1;">Total Batch</h3>
+                            <p style="font-size:32px;font-weight:700;" id="totalBatch">0</p>
+                        </div>
+                        <div class="card" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border:none;">
+                            <h3 style="color:#2e7d32;">Selesai</h3>
+                            <p style="font-size:32px;font-weight:700;" id="doneBatch">0</p>
+                        </div>
+                        <div class="card" style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);border:none;">
+                            <h3 style="color:#e65100;">In Progress</h3>
+                            <p style="font-size:32px;font-weight:700;" id="progressBatch">0</p>
+                        </div>
+                    </div>
+                    <div style="margin-top:20px;">
+                        <h3>Status Overview</h3>
+                        <div id="statusChart" style="display:flex;gap:15px;flex-wrap:wrap;margin-top:10px;"></div>
+                    </div>
+                    <div style="margin-top:20px;padding:20px;background:#f5f5f5;border-radius:8px;">
+                        <p style="color:#757575;font-style:italic;">📌 Dashboard lengkap menyusul dengan grafik dan analisis mendalam.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PPIC -->
+            <div id="page-ppic" class="page">
+                <div class="card">
+                    <h2>📋 Input Nomor Batch</h2>
+                    <div style="background:#fff3e0;padding:10px 15px;border-radius:6px;border-left:4px solid #f57c00;margin-bottom:15px;color:#e65100;">
+                        ⚠️ Data disimpan di memory (akan hilang jika refresh)
+                    </div>
+                    <div class="form-group">
+                        <label>Nomor Batch (5 Huruf + 5 Angka, tanpa spasi)</label>
+                        <input type="text" id="batchInput" placeholder="Contoh: VABCD12345 atau TABCD12345" maxlength="10">
+                        <small style="color:#757575;">Awalan V = Injeksi, T = Oral</small>
+                    </div>
+                    <button class="btn btn-primary" onclick="addBatch()">➕ Tambah Batch</button>
+                </div>
+                
+                <div class="card">
+                    <h2>📋 Daftar Score Card</h2>
+                    <div id="ppicScoreCards"></div>
+                </div>
+            </div>
+            
+            <!-- PRODUKSI -->
+            <div id="page-produksi" class="page">
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="kanban-produksi">📋 Kanban Produksi</button>
+                    <button class="tab-btn" data-tab="input-produksi">✏️ Input Produksi</button>
+                </div>
+                
+                <div id="tab-kanban-produksi" class="tab-content active">
+                    <div class="card">
+                        <h2>📋 Kanban Produksi</h2>
+                        <div id="kanbanProduksi"></div>
+                    </div>
+                </div>
+                
+                <div id="tab-input-produksi" class="tab-content">
+                    <div class="card">
+                        <h2>✏️ Input Produksi</h2>
+                        <div id="inputProduksi"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- LOGISTIC -->
+            <div id="page-logistic" class="page">
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="respon-kanban">📦 Respon Kanban</button>
+                    <button class="tab-btn" data-tab="input-logistic">✏️ Input Logistic</button>
+                </div>
+                
+                <div id="tab-respon-kanban" class="tab-content active">
+                    <div class="card">
+                        <h2>📦 Respon Kanban</h2>
+                        <div id="responKanban"></div>
+                    </div>
+                </div>
+                
+                <div id="tab-input-logistic" class="tab-content">
+                    <div class="card">
+                        <h2>✏️ Input Logistic</h2>
+                        <div id="inputLogistic"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- QC -->
+            <div id="page-qc" class="page">
+                <div class="card">
+                    <h2>🔬 Quality Control</h2>
+                    <div id="qcList"></div>
+                </div>
+            </div>
+            
+            <!-- QA -->
+            <div id="page-qa" class="page">
+                <div class="card">
+                    <h2>✅ Quality Assurance</h2>
+                    <div id="qaList"></div>
+                </div>
+            </div>
+            
+            <!-- MANAGEMENT -->
+            <div id="page-management" class="page">
+                <div class="grid-2">
+                    <div>
+                        <div class="card">
+                            <h2>👤 Manage Personil</h2>
+                            <div class="form-group">
+                                <label>Nama</label>
+                                <input type="text" id="personilName" placeholder="Masukkan nama">
+                            </div>
+                            <div class="form-group">
+                                <label>Departemen</label>
+                                <select id="personilDept">
+                                    <option value="PPIC">PPIC</option>
+                                    <option value="Produksi">Produksi</option>
+                                    <option value="Logistic">Logistic</option>
+                                    <option value="QC">QC</option>
+                                    <option value="QA">QA</option>
+                                    <option value="Management">Management</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary" onclick="addPersonil()">➕ Tambah Personil</button>
+                            <div style="margin-top:15px;">
+                                <h3>Daftar Personil</h3>
+                                <div id="personilList"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="card">
+                            <h2>📦 Manage Kode Produk</h2>
+                            <div class="form-group">
+                                <label>Kode Produk</label>
+                                <input type="text" id="productCode" placeholder="Masukkan kode produk">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Target Timbang (Jam)</label>
+                                    <input type="number" id="targetTimbang" placeholder="0" step="0.5">
+                                </div>
+                                <div class="form-group">
+                                    <label>Target Produksi (Jam)</label>
+                                    <input type="number" id="targetProduksi" placeholder="0" step="0.5">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Target Analisa Sample (Jam)</label>
+                                    <input type="number" id="targetAnalisa" placeholder="0" step="0.5">
+                                </div>
+                                <div class="form-group">
+                                    <label>Target Perilisan (Jam)</label>
+                                    <input type="number" id="targetPerilisan" placeholder="0" step="0.5">
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" onclick="addProduct()">➕ Tambah Produk</button>
+                            <div style="margin-top:15px;">
+                                <h3>Daftar Produk</h3>
+                                <div id="productList"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-box">
@@ -634,199 +990,6 @@
         </div>
     </div>
 
-    <header class="header">
-        <h1>📊 <span>PCT</span> Monitoring System</h1>
-        <div style="font-size:14px;opacity:0.8;">Production Cycle Time</div>
-    </header>
-    
-    <nav class="nav" id="mainNav">
-        <button class="nav-btn active" data-page="dashboard">📊 Dashboard</button>
-        <button class="nav-btn" data-page="ppic">📋 PPIC</button>
-        <button class="nav-btn" data-page="produksi">🏭 Produksi</button>
-        <button class="nav-btn" data-page="logistic">🚚 Logistic</button>
-        <button class="nav-btn" data-page="qc">🔬 QC</button>
-        <button class="nav-btn" data-page="qa">✅ QA</button>
-        <button class="nav-btn" data-page="management">⚙️ Management</button>
-    </nav>
-    
-    <div class="container">
-        <div id="notification" class="notification"></div>
-        
-        <!-- DASHBOARD -->
-        <div id="page-dashboard" class="page active">
-            <div class="card">
-                <h2>📊 Dashboard</h2>
-                <div class="grid-3" id="dashboardStats">
-                    <div class="card" style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);border:none;">
-                        <h3 style="color:#0d47a1;">Total Batch</h3>
-                        <p style="font-size:32px;font-weight:700;" id="totalBatch">0</p>
-                    </div>
-                    <div class="card" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border:none;">
-                        <h3 style="color:#2e7d32;">Selesai</h3>
-                        <p style="font-size:32px;font-weight:700;" id="doneBatch">0</p>
-                    </div>
-                    <div class="card" style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);border:none;">
-                        <h3 style="color:#e65100;">In Progress</h3>
-                        <p style="font-size:32px;font-weight:700;" id="progressBatch">0</p>
-                    </div>
-                </div>
-                <div style="margin-top:20px;">
-                    <h3>Status Overview</h3>
-                    <div id="statusChart" style="display:flex;gap:15px;flex-wrap:wrap;margin-top:10px;"></div>
-                </div>
-                <div style="margin-top:20px;padding:20px;background:#f5f5f5;border-radius:8px;">
-                    <p style="color:#757575;font-style:italic;">📌 Dashboard lengkap menyusul dengan grafik dan analisis mendalam.</p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- PPIC -->
-        <div id="page-ppic" class="page">
-            <div class="card">
-                <h2>📋 Input Nomor Batch</h2>
-                <div style="background:#fff3e0;padding:10px 15px;border-radius:6px;border-left:4px solid #f57c00;margin-bottom:15px;color:#e65100;">
-                    ⚠️ Data disimpan di memory (akan hilang jika refresh)
-                </div>
-                <div class="form-group">
-                    <label>Nomor Batch (5 Huruf + 5 Angka, tanpa spasi)</label>
-                    <input type="text" id="batchInput" placeholder="Contoh: VABCD12345 atau TABCD12345" maxlength="10">
-                    <small style="color:#757575;">Awalan V = Injeksi, T = Oral</small>
-                </div>
-                <button class="btn btn-primary" onclick="addBatch()">➕ Tambah Batch</button>
-            </div>
-            
-            <div class="card">
-                <h2>📋 Daftar Score Card</h2>
-                <div id="ppicScoreCards"></div>
-            </div>
-        </div>
-        
-        <!-- PRODUKSI -->
-        <div id="page-produksi" class="page">
-            <div class="tabs">
-                <button class="tab-btn active" data-tab="kanban-produksi">📋 Kanban Produksi</button>
-                <button class="tab-btn" data-tab="input-produksi">✏️ Input Produksi</button>
-            </div>
-            
-            <div id="tab-kanban-produksi" class="tab-content active">
-                <div class="card">
-                    <h2>📋 Kanban Produksi</h2>
-                    <div id="kanbanProduksi"></div>
-                </div>
-            </div>
-            
-            <div id="tab-input-produksi" class="tab-content">
-                <div class="card">
-                    <h2>✏️ Input Produksi</h2>
-                    <div id="inputProduksi"></div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- LOGISTIC -->
-        <div id="page-logistic" class="page">
-            <div class="tabs">
-                <button class="tab-btn active" data-tab="respon-kanban">📦 Respon Kanban</button>
-                <button class="tab-btn" data-tab="input-logistic">✏️ Input Logistic</button>
-            </div>
-            
-            <div id="tab-respon-kanban" class="tab-content active">
-                <div class="card">
-                    <h2>📦 Respon Kanban</h2>
-                    <div id="responKanban"></div>
-                </div>
-            </div>
-            
-            <div id="tab-input-logistic" class="tab-content">
-                <div class="card">
-                    <h2>✏️ Input Logistic</h2>
-                    <div id="inputLogistic"></div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- QC -->
-        <div id="page-qc" class="page">
-            <div class="card">
-                <h2>🔬 Quality Control</h2>
-                <div id="qcList"></div>
-            </div>
-        </div>
-        
-        <!-- QA -->
-        <div id="page-qa" class="page">
-            <div class="card">
-                <h2>✅ Quality Assurance</h2>
-                <div id="qaList"></div>
-            </div>
-        </div>
-        
-        <!-- MANAGEMENT -->
-        <div id="page-management" class="page">
-            <div class="grid-2">
-                <div>
-                    <div class="card">
-                        <h2>👤 Manage Personil</h2>
-                        <div class="form-group">
-                            <label>Nama</label>
-                            <input type="text" id="personilName" placeholder="Masukkan nama">
-                        </div>
-                        <div class="form-group">
-                            <label>Departemen</label>
-                            <select id="personilDept">
-                                <option value="PPIC">PPIC</option>
-                                <option value="Produksi">Produksi</option>
-                                <option value="Logistic">Logistic</option>
-                                <option value="QC">QC</option>
-                                <option value="QA">QA</option>
-                                <option value="Management">Management</option>
-                            </select>
-                        </div>
-                        <button class="btn btn-primary" onclick="addPersonil()">➕ Tambah Personil</button>
-                        <div style="margin-top:15px;">
-                            <h3>Daftar Personil</h3>
-                            <div id="personilList"></div>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="card">
-                        <h2>📦 Manage Kode Produk</h2>
-                        <div class="form-group">
-                            <label>Kode Produk</label>
-                            <input type="text" id="productCode" placeholder="Masukkan kode produk">
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Target Timbang (Jam)</label>
-                                <input type="number" id="targetTimbang" placeholder="0" step="0.5">
-                            </div>
-                            <div class="form-group">
-                                <label>Target Produksi (Jam)</label>
-                                <input type="number" id="targetProduksi" placeholder="0" step="0.5">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Target Analisa Sample (Jam)</label>
-                                <input type="number" id="targetAnalisa" placeholder="0" step="0.5">
-                            </div>
-                            <div class="form-group">
-                                <label>Target Perilisan (Jam)</label>
-                                <input type="number" id="targetPerilisan" placeholder="0" step="0.5">
-                            </div>
-                        </div>
-                        <button class="btn btn-primary" onclick="addProduct()">➕ Tambah Produk</button>
-                        <div style="margin-top:15px;">
-                            <h3>Daftar Produk</h3>
-                            <div id="productList"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
         // ==================== DATA STORE (IN-MEMORY) ====================
         let data = {
@@ -836,6 +999,142 @@
         };
         
         let modalCallback = null;
+        let currentUser = null;
+        
+        // ==================== AUTH ====================
+        const DEPARTMENTS = ['PPIC', 'Produksi', 'Logistic', 'QC', 'QA', 'Management'];
+        const DEPT_PAGES = {
+            'PPIC': ['ppic'],
+            'Produksi': ['produksi'],
+            'Logistic': ['logistic'],
+            'QC': ['qc'],
+            'QA': ['qa'],
+            'Management': ['management']
+        };
+        
+        function login() {
+            const input = document.getElementById('loginInput').value.trim();
+            const errorEl = document.getElementById('loginError');
+            
+            if (!input) {
+                errorEl.textContent = '⚠️ Masukkan nama atau admin!';
+                errorEl.classList.add('show');
+                return;
+            }
+            
+            // Cek admin
+            if (input === 'admin123') {
+                currentUser = { role: 'admin', name: 'Admin', department: null };
+                showMainApp();
+                return;
+            }
+            
+            // Cek user terdaftar
+            const personil = data.personil.find(p => p.name.toLowerCase() === input.toLowerCase());
+            if (personil) {
+                currentUser = { 
+                    role: 'user', 
+                    name: personil.name, 
+                    department: personil.department 
+                };
+                showMainApp();
+                return;
+            }
+            
+            errorEl.textContent = '⚠️ Nama tidak ditemukan! Pastikan nama sudah terdaftar di Management.';
+            errorEl.classList.add('show');
+        }
+        
+        function loginGuest() {
+            currentUser = { role: 'guest', name: 'Guest', department: null };
+            showMainApp();
+        }
+        
+        function logout() {
+            currentUser = null;
+            document.getElementById('mainApp').style.display = 'none';
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('loginInput').value = '';
+            document.getElementById('loginError').classList.remove('show');
+        }
+        
+        function showMainApp() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            
+            // Update user info
+            const userInfo = document.getElementById('userInfo');
+            if (currentUser.role === 'admin') {
+                userInfo.textContent = '👑 Admin';
+            } else if (currentUser.role === 'user') {
+                userInfo.textContent = `👤 ${currentUser.name} - ${currentUser.department}`;
+            } else {
+                userInfo.textContent = '👤 Guest';
+            }
+            
+            // Show/hide navigation
+            updateNavigation();
+            
+            // Load data and render
+            loadData();
+            renderAll();
+            
+            // Set default page
+            showPage('dashboard');
+        }
+        
+        function updateNavigation() {
+            const navBtns = document.querySelectorAll('.nav-btn');
+            const visiblePages = ['dashboard'];
+            
+            if (currentUser.role === 'admin') {
+                // Admin: semua navigasi tampil
+                navBtns.forEach(btn => btn.classList.remove('hidden'));
+                return;
+            }
+            
+            if (currentUser.role === 'user' && currentUser.department) {
+                const deptPages = DEPT_PAGES[currentUser.department] || [];
+                visiblePages.push(...deptPages);
+            }
+            // Guest: hanya dashboard
+            
+            navBtns.forEach(btn => {
+                const page = btn.dataset.page;
+                if (visiblePages.includes(page)) {
+                    btn.classList.remove('hidden');
+                } else {
+                    btn.classList.add('hidden');
+                }
+            });
+        }
+        
+        function showPage(page) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            
+            // Show target page
+            const target = document.getElementById('page-' + page);
+            if (target) target.classList.add('active');
+            
+            // Update nav active
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            const navBtn = document.querySelector(`.nav-btn[data-page="${page}"]`);
+            if (navBtn) navBtn.classList.add('active');
+        }
+        
+        // Override navigation click
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const page = this.dataset.page;
+                    if (!this.classList.contains('hidden')) {
+                        showPage(page);
+                        renderAll();
+                    }
+                });
+            });
+        });
         
         // ==================== UTILITY ====================
         function generateId() {
@@ -942,19 +1241,7 @@
             }
         });
         
-        // ==================== NAVIGATION ====================
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                const page = this.dataset.page;
-                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-                const targetPage = document.getElementById('page-' + page);
-                if (targetPage) targetPage.classList.add('active');
-                renderAll();
-            });
-        });
-        
+        // ==================== TABS ====================
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const parent = this.closest('.page');
@@ -1803,12 +2090,123 @@
             renderProductList();
         }
         
-        // ==================== INIT ====================
-        renderAll();
+        // ==================== LOAD DATA ====================
+        function loadData() {
+            try {
+                const stored = localStorage.getItem('pctData');
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    data.personil = parsed.personil || [];
+                    data.products = parsed.products || [];
+                    data.batches = parsed.batches || [];
+                }
+            } catch(e) {
+                console.warn('Gagal load data:', e);
+            }
+        }
         
-        console.log('📊 PCT Monitoring System Loaded (In-Memory Mode)');
-        console.log('📦 Total Batches:', data.batches.length);
-        console.log('⚠️ Data akan hilang jika di-refresh');
+        function saveData() {
+            try {
+                localStorage.setItem('pctData', JSON.stringify(data));
+            } catch(e) {
+                console.warn('Gagal save data:', e);
+            }
+        }
+        
+        // Override save functions to persist data
+        const originalAddPersonil = addPersonil;
+        addPersonil = function() {
+            originalAddPersonil();
+            saveData();
+        };
+        
+        const originalDeletePersonil = deletePersonil;
+        deletePersonil = function(id) {
+            originalDeletePersonil(id);
+            saveData();
+        };
+        
+        const originalAddProduct = addProduct;
+        addProduct = function() {
+            originalAddProduct();
+            saveData();
+        };
+        
+        const originalDeleteProduct = deleteProduct;
+        deleteProduct = function(id) {
+            originalDeleteProduct(id);
+            saveData();
+        };
+        
+        const originalAddBatch = addBatch;
+        addBatch = function() {
+            originalAddBatch();
+            saveData();
+        };
+        
+        const originalSaveJadwal = saveJadwal;
+        saveJadwal = function(id) {
+            originalSaveJadwal(id);
+            saveData();
+        };
+        
+        const originalEditJadwal = editJadwal;
+        editJadwal = function(id) {
+            originalEditJadwal(id);
+            saveData();
+        };
+        
+        const originalLogisticReady = logisticReady;
+        logisticReady = function(id) {
+            originalLogisticReady(id);
+            saveData();
+        };
+        
+        const originalUndoLogisticReady = undoLogisticReady;
+        undoLogisticReady = function(id) {
+            originalUndoLogisticReady(id);
+            saveData();
+        };
+        
+        const originalResolveProblem = resolveProblem;
+        resolveProblem = function(id) {
+            originalResolveProblem(id);
+            saveData();
+        };
+        
+        const originalDeleteBatch = deleteBatch;
+        deleteBatch = function(id) {
+            originalDeleteBatch(id);
+            saveData();
+        };
+        
+        const originalSaveLogisticInput = saveLogisticInput;
+        saveLogisticInput = function(id) {
+            originalSaveLogisticInput(id);
+            saveData();
+        };
+        
+        const originalSaveProduksiInput = saveProduksiInput;
+        saveProduksiInput = function(id) {
+            originalSaveProduksiInput(id);
+            saveData();
+        };
+        
+        const originalSaveQC = saveQC;
+        saveQC = function(id) {
+            originalSaveQC(id);
+            saveData();
+        };
+        
+        const originalSaveQA = saveQA;
+        saveQA = function(id) {
+            originalSaveQA(id);
+            saveData();
+        };
+        
+        // ==================== INIT ====================
+        console.log('📊 PCT Monitoring System Loaded');
+        console.log('💡 Login untuk mulai menggunakan sistem');
     </script>
 </body>
 </html>
