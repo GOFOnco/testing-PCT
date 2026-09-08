@@ -5,17 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Monitoring PCT</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f2f5;
-            color: #333;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; color: #333; }
         
         .header {
             background: linear-gradient(135deg, #1a237e, #0d47a1);
@@ -29,44 +20,12 @@
             top: 0;
             z-index: 1000;
         }
-        
-        .header h1 {
-            font-size: 24px;
-            font-weight: 300;
-        }
-        
-        .header h1 span {
-            font-weight: 700;
-        }
-        
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .user-info {
-            font-size: 14px;
-            opacity: 0.9;
-            background: rgba(255,255,255,0.15);
-            padding: 5px 15px;
-            border-radius: 20px;
-        }
-        
-        .btn-logout {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.3);
-            padding: 5px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 13px;
-            transition: all 0.3s;
-        }
-        
-        .btn-logout:hover {
-            background: rgba(255,255,255,0.3);
-        }
+        .header h1 { font-size: 24px; font-weight: 300; }
+        .header h1 span { font-weight: 700; }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .user-info { font-size: 14px; opacity: 0.9; background: rgba(255,255,255,0.15); padding: 5px 15px; border-radius: 20px; }
+        .btn-logout { background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 5px 15px; border-radius: 20px; cursor: pointer; font-size: 13px; transition: all 0.3s; }
+        .btn-logout:hover { background: rgba(255,255,255,0.3); }
         
         .nav {
             background: white;
@@ -79,238 +38,51 @@
             z-index: 999;
             flex-wrap: wrap;
         }
+        .nav-btn { padding: 12px 20px; border: none; background: transparent; color: #555; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; border-bottom: 3px solid transparent; }
+        .nav-btn:hover { color: #0d47a1; background: #f5f5f5; }
+        .nav-btn.active { color: #0d47a1; border-bottom-color: #0d47a1; }
+        .nav-btn.hidden { display: none; }
         
-        .nav-btn {
-            padding: 12px 20px;
-            border: none;
-            background: transparent;
-            color: #555;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            border-bottom: 3px solid transparent;
-        }
+        .container { max-width: 1600px; margin: 20px auto; padding: 0 20px; }
+        .page { display: none; animation: fadeIn 0.3s; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .nav-btn:hover {
-            color: #0d47a1;
-            background: #f5f5f5;
-        }
+        .card { background: white; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .card h2 { color: #1a237e; margin-bottom: 15px; font-size: 20px; border-bottom: 2px solid #e8eaf6; padding-bottom: 10px; }
+        .card h3 { color: #0d47a1; margin: 15px 0 10px 0; font-size: 16px; }
         
-        .nav-btn.active {
-            color: #0d47a1;
-            border-bottom-color: #0d47a1;
-        }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #555; font-size: 13px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; transition: border-color 0.3s; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #0d47a1; box-shadow: 0 0 0 3px rgba(13,71,161,0.1); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         
-        .nav-btn.hidden {
-            display: none;
-        }
+        .btn { padding: 10px 25px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-primary { background: #0d47a1; color: white; }
+        .btn-primary:hover { background: #1a237e; transform: translateY(-1px); box-shadow: 0 4px 10px rgba(13,71,161,0.3); }
+        .btn-success { background: #2e7d32; color: white; }
+        .btn-success:hover { background: #1b5e20; transform: translateY(-1px); box-shadow: 0 4px 10px rgba(46,125,50,0.3); }
+        .btn-danger { background: #c62828; color: white; }
+        .btn-danger:hover { background: #b71c1c; transform: translateY(-1px); box-shadow: 0 4px 10px rgba(198,40,40,0.3); }
+        .btn-warning { background: #f57c00; color: white; }
+        .btn-warning:hover { background: #e65100; transform: translateY(-1px); box-shadow: 0 4px 10px rgba(245,124,0,0.3); }
+        .btn-sm { padding: 5px 15px; font-size: 12px; }
+        .btn-secondary { background: #757575; color: white; }
+        .btn-secondary:hover { background: #616161; }
+        .btn-guest { background: #f57c00; color: white; }
+        .btn-guest:hover { background: #e65100; }
         
-        .container {
-            max-width: 1600px;
-            margin: 20px auto;
-            padding: 0 20px;
-        }
+        .grid-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
         
-        .page {
-            display: none;
-            animation: fadeIn 0.3s;
-        }
-        
-        .page.active {
-            display: block;
-        }
-        
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        }
-        
-        .card h2 {
-            color: #1a237e;
-            margin-bottom: 15px;
-            font-size: 20px;
-            border-bottom: 2px solid #e8eaf6;
-            padding-bottom: 10px;
-        }
-        
-        .card h3 {
-            color: #0d47a1;
-            margin: 15px 0 10px 0;
-            font-size: 16px;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: #555;
-            font-size: 13px;
-        }
-        
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-        
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #0d47a1;
-            box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.1);
-        }
-        
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        
-        .btn {
-            padding: 10px 25px;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .btn-primary {
-            background: #0d47a1;
-            color: white;
-        }
-        .btn-primary:hover {
-            background: #1a237e;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 10px rgba(13,71,161,0.3);
-        }
-        
-        .btn-success {
-            background: #2e7d32;
-            color: white;
-        }
-        .btn-success:hover {
-            background: #1b5e20;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 10px rgba(46,125,50,0.3);
-        }
-        
-        .btn-danger {
-            background: #c62828;
-            color: white;
-        }
-        .btn-danger:hover {
-            background: #b71c1c;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 10px rgba(198,40,40,0.3);
-        }
-        
-        .btn-warning {
-            background: #f57c00;
-            color: white;
-        }
-        .btn-warning:hover {
-            background: #e65100;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 10px rgba(245,124,0,0.3);
-        }
-        
-        .btn-sm {
-            padding: 5px 15px;
-            font-size: 12px;
-        }
-        
-        .btn-secondary {
-            background: #757575;
-            color: white;
-        }
-        .btn-secondary:hover {
-            background: #616161;
-        }
-        
-        .btn-guest {
-            background: #f57c00;
-            color: white;
-        }
-        .btn-guest:hover {
-            background: #e65100;
-        }
-        
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 20px;
-        }
-        
-        .grid-3 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-        
-        .grid-4 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-        
-        .tabs {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #e8eaf6;
-        }
-        
-        .tab-btn {
-            padding: 10px 20px;
-            border: none;
-            background: transparent;
-            font-weight: 600;
-            color: #757575;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-        }
-        
-        .tab-btn.active {
-            color: #0d47a1;
-            border-bottom-color: #0d47a1;
-        }
-        .tab-btn:hover {
-            color: #0d47a1;
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
+        .tabs { display: flex; gap: 5px; margin-bottom: 20px; border-bottom: 2px solid #e8eaf6; }
+        .tab-btn { padding: 10px 20px; border: none; background: transparent; font-weight: 600; color: #757575; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.3s; }
+        .tab-btn.active { color: #0d47a1; border-bottom-color: #0d47a1; }
+        .tab-btn:hover { color: #0d47a1; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
         
         .score-card {
             background: #f8f9fa;
@@ -320,764 +92,158 @@
             margin-bottom: 15px;
             transition: all 0.3s;
         }
+        .score-card:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.1); transform: translateX(5px); }
+        .score-card .header-info { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .score-card .batch-info { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .score-card .batch-number { font-size: 18px; font-weight: 700; color: #1a237e; }
+        .score-card .product-code { font-size: 13px; color: #757575; background: #f5f5f5; padding: 2px 10px; border-radius: 12px; }
+        .score-card .batch-type { padding: 3px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .batch-type.injeksi { background: #e3f2fd; color: #0d47a1; }
+        .batch-type.oral { background: #f3e5f5; color: #6a1b9a; }
+        .score-card .status { padding: 3px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status.draft { background: #e0e0e0; color: #616161; }
+        .status.produksi { background: #fff3e0; color: #e65100; }
+        .status.logistic { background: #e3f2fd; color: #0d47a1; }
+        .status.logistic_input { background: #e8f5e9; color: #2e7d32; }
+        .status.produksi_input { background: #f3e5f5; color: #6a1b9a; }
+        .status.qc { background: #fce4ec; color: #c62828; }
+        .status.qa { background: #f3e5f5; color: #6a1b9a; }
+        .status.done { background: #c8e6c9; color: #1b5e20; }
+        .status.problem { background: #ffcdd2; color: #b71c1c; }
         
-        .score-card:hover {
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transform: translateX(5px);
-        }
+        .score-card .details { margin-top: 10px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; font-size: 13px; }
+        .score-card .details .field { color: #757575; }
+        .score-card .details .value { font-weight: 600; color: #333; }
+        .score-card .details .target { font-size: 11px; color: #999; }
+        .score-card .actions { margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
         
-        .score-card .header-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        
-        .score-card .batch-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .score-card .batch-number {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1a237e;
-        }
-        
-        .score-card .product-code {
-            font-size: 13px;
-            color: #757575;
-            background: #f5f5f5;
-            padding: 2px 10px;
-            border-radius: 12px;
-        }
-        
-        .score-card .batch-type {
-            padding: 3px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
-        .batch-type.injeksi {
-            background: #e3f2fd;
-            color: #0d47a1;
-        }
-        .batch-type.oral {
-            background: #f3e5f5;
-            color: #6a1b9a;
-        }
-        
-        .score-card .status {
-            padding: 3px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
-        .status.draft {
-            background: #e0e0e0;
-            color: #616161;
-        }
-        .status.produksi {
-            background: #fff3e0;
-            color: #e65100;
-        }
-        .status.logistic {
-            background: #e3f2fd;
-            color: #0d47a1;
-        }
-        .status.logistic_input {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-        .status.produksi_input {
-            background: #f3e5f5;
-            color: #6a1b9a;
-        }
-        .status.qc {
-            background: #fce4ec;
-            color: #c62828;
-        }
-        .status.qa {
-            background: #f3e5f5;
-            color: #6a1b9a;
-        }
-        .status.done {
-            background: #c8e6c9;
-            color: #1b5e20;
-        }
-        .status.problem {
-            background: #ffcdd2;
-            color: #b71c1c;
-        }
-        
-        .score-card .details {
-            margin-top: 10px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 10px;
-            font-size: 13px;
-        }
-        
-        .score-card .details .field {
-            color: #757575;
-        }
-        .score-card .details .value {
-            font-weight: 600;
-            color: #333;
-        }
-        .score-card .details .target {
-            font-size: 11px;
-            color: #999;
-        }
-        .score-card .actions {
-            margin-top: 10px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        
-        .personil-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 15px;
-            background: #f5f5f5;
-            border-radius: 6px;
-            margin-bottom: 8px;
-        }
-        
-        .personil-item .delete-btn {
-            color: #c62828;
-            cursor: pointer;
-            font-weight: 700;
-            padding: 0 10px;
-        }
+        .personil-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: #f5f5f5; border-radius: 6px; margin-bottom: 8px; }
+        .personil-item .delete-btn { color: #c62828; cursor: pointer; font-weight: 700; padding: 0 10px; }
         
         @media (max-width: 768px) {
-            .header h1 {
-                font-size: 18px;
-            }
-            .nav-btn {
-                padding: 10px 12px;
-                font-size: 12px;
-            }
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            .grid-2 {
-                grid-template-columns: 1fr;
-            }
-            .score-card .header-info {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .header-right {
-                flex-wrap: wrap;
-            }
+            .header h1 { font-size: 18px; }
+            .nav-btn { padding: 10px 12px; font-size: 12px; }
+            .form-row { grid-template-columns: 1fr; }
+            .grid-2 { grid-template-columns: 1fr; }
+            .score-card .header-info { flex-direction: column; align-items: flex-start; }
+            .header-right { flex-wrap: wrap; }
         }
         
-        .problem-text {
-            color: #c62828;
-            font-weight: 600;
-            padding: 5px 10px;
-            background: #ffcdd2;
-            border-radius: 4px;
-            margin-top: 5px;
-            font-size: 13px;
-        }
+        .problem-text { color: #c62828; font-weight: 600; padding: 5px 10px; background: #ffcdd2; border-radius: 4px; margin-top: 5px; font-size: 13px; }
+        .empty-state { text-align: center; padding: 40px 20px; color: #999; }
+        .empty-state p { font-size: 16px; }
         
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #999;
-        }
-        .empty-state p {
-            font-size: 16px;
-        }
+        .notification { padding: 15px 20px; border-radius: 6px; margin-bottom: 15px; display: none; }
+        .notification.success { display: block; background: #c8e6c9; color: #1b5e20; border-left: 4px solid #2e7d32; }
+        .notification.error { display: block; background: #ffcdd2; color: #b71c1c; border-left: 4px solid #c62828; }
+        .notification.info { display: block; background: #e3f2fd; color: #0d47a1; border-left: 4px solid #0d47a1; }
         
-        .notification {
-            padding: 15px 20px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            display: none;
-        }
+        .jadwal-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
+        .jadwal-item { display: flex; flex-direction: column; gap: 5px; }
+        .jadwal-item label { font-size: 12px; font-weight: 600; color: #555; }
+        .jadwal-item input { padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; }
+        .jadwal-item input[type="datetime-local"] { padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; width: 100%; }
+        .jadwal-item .jadwal-value { padding: 6px 10px; background: #e8f5e9; border-radius: 4px; border-left: 3px solid #2e7d32; font-weight: 500; font-size: 13px; }
         
-        .notification.success {
-            display: block;
-            background: #c8e6c9;
-            color: #1b5e20;
-            border-left: 4px solid #2e7d32;
-        }
-        .notification.error {
-            display: block;
-            background: #ffcdd2;
-            color: #b71c1c;
-            border-left: 4px solid #c62828;
-        }
-        .notification.info {
-            display: block;
-            background: #e3f2fd;
-            color: #0d47a1;
-            border-left: 4px solid #0d47a1;
-        }
+        .step-indicator { display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f5f5f5; border-radius: 6px; margin-bottom: 15px; flex-wrap: wrap; }
+        .step-indicator .step { padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+        .step-indicator .step.active { background: #0d47a1; color: white; }
+        .step-indicator .step.done { background: #c8e6c9; color: #1b5e20; }
+        .step-indicator .step.pending { background: #e0e0e0; color: #757575; }
+        .step-indicator .arrow { color: #999; }
         
-        .jadwal-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 5px;
-        }
+        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+        .status-badge.ready { background: #c8e6c9; color: #1b5e20; }
+        .status-badge.problem { background: #ffcdd2; color: #b71c1c; }
+        .status-badge.waiting { background: #fff3e0; color: #e65100; }
         
-        .jadwal-item {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        
-        .jadwal-item label {
-            font-size: 12px;
-            font-weight: 600;
-            color: #555;
-        }
-        
-        .jadwal-item input {
-            padding: 6px 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 13px;
-        }
-        
-        .jadwal-item input[type="datetime-local"] {
-            padding: 6px 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 13px;
-            width: 100%;
-        }
-        
-        .jadwal-item .jadwal-value {
-            padding: 6px 10px;
-            background: #e8f5e9;
-            border-radius: 4px;
-            border-left: 3px solid #2e7d32;
-            font-weight: 500;
-            font-size: 13px;
-        }
-        
-        .step-indicator {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 15px;
-            background: #f5f5f5;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .step-indicator .step {
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        .step-indicator .step.active {
-            background: #0d47a1;
-            color: white;
-        }
-        .step-indicator .step.done {
-            background: #c8e6c9;
-            color: #1b5e20;
-        }
-        .step-indicator .step.pending {
-            background: #e0e0e0;
-            color: #757575;
-        }
-        .step-indicator .arrow {
-            color: #999;
-        }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        .status-badge.ready {
-            background: #c8e6c9;
-            color: #1b5e20;
-        }
-        .status-badge.problem {
-            background: #ffcdd2;
-            color: #b71c1c;
-        }
-        .status-badge.waiting {
-            background: #fff3e0;
-            color: #e65100;
-        }
-        
-        .date-time-label {
-            font-size: 11px;
-            color: #757575;
-            margin-top: 2px;
-        }
-        .datetime-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
+        .date-time-label { font-size: 11px; color: #757575; margin-top: 2px; }
+        .datetime-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         
         @media (max-width: 600px) {
-            .datetime-grid {
-                grid-template-columns: 1fr;
-            }
-            .jadwal-container {
-                grid-template-columns: 1fr;
-            }
+            .datetime-grid { grid-template-columns: 1fr; }
+            .jadwal-container { grid-template-columns: 1fr; }
         }
         
-        .login-page {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #e8eaf6, #c5cae9);
-        }
+        .login-page { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #e8eaf6, #c5cae9); }
+        .login-box { background: white; border-radius: 16px; padding: 40px; max-width: 420px; width: 100%; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
+        .login-box h2 { text-align: center; color: #1a237e; margin-bottom: 10px; }
+        .login-box .subtitle { text-align: center; color: #757575; margin-bottom: 25px; font-size: 14px; }
+        .login-box .btn { width: 100%; padding: 12px; margin-bottom: 10px; }
+        .login-divider { display: flex; align-items: center; gap: 15px; margin: 20px 0; color: #999; }
+        .login-divider::before, .login-divider::after { content: ''; flex: 1; height: 1px; background: #ddd; }
+        .login-error { background: #ffcdd2; color: #b71c1c; padding: 10px 15px; border-radius: 6px; margin-bottom: 15px; display: none; font-size: 14px; }
+        .login-error.show { display: block; }
         
-        .login-box {
-            background: white;
-            border-radius: 16px;
-            padding: 40px;
-            max-width: 420px;
-            width: 100%;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-        }
+        .kpi-card { padding: 15px 20px; border-radius: 8px; text-align: center; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .kpi-card .kpi-value { font-size: 28px; font-weight: 700; color: #1a237e; }
+        .kpi-card .kpi-label { font-size: 13px; color: #757575; margin-top: 3px; }
+        .kpi-card .kpi-sub { font-size: 12px; color: #999; margin-top: 2px; }
+        .kpi-card.oral { border-left: 4px solid #6a1b9a; }
+        .kpi-card.injeksi { border-left: 4px solid #0d47a1; }
+        .kpi-card.total { border-left: 4px solid #e65100; }
         
-        .login-box h2 {
-            text-align: center;
-            color: #1a237e;
-            margin-bottom: 10px;
-        }
-        .login-box .subtitle {
-            text-align: center;
-            color: #757575;
-            margin-bottom: 25px;
-            font-size: 14px;
-        }
-        .login-box .btn {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 10px;
-        }
+        .chart-card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 20px; }
+        .chart-card h3 { font-size: 15px; color: #1a237e; margin-bottom: 15px; border-bottom: 2px solid #e8eaf6; padding-bottom: 10px; }
+        .chart-card .chart-legend { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 10px; font-size: 12px; }
+        .chart-card .chart-legend .dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 5px; }
         
-        .login-divider {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin: 20px 0;
-            color: #999;
-        }
+        .line-chart { height: 200px; position: relative; padding: 10px 0; }
+        .line-chart .line-area { display: flex; align-items: flex-end; height: 160px; gap: 8px; position: relative; }
+        .line-chart .line-point { display: flex; flex-direction: column; align-items: center; flex: 1; }
+        .line-chart .line-point .dot-point { width: 10px; height: 10px; border-radius: 50%; margin-bottom: 5px; position: relative; }
+        .line-chart .line-point .dot-point::after { content: ''; position: absolute; top: 5px; left: 5px; width: 2px; height: 60px; opacity: 0.3; }
+        .line-chart .line-point .label { font-size: 9px; color: #999; transform: rotate(-45deg); white-space: nowrap; }
+        .line-chart .line-point .value { font-size: 10px; font-weight: 600; color: #333; }
         
-        .login-divider::before,
-        .login-divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: #ddd;
-        }
+        .bar-chart { height: 200px; display: flex; align-items: flex-end; gap: 12px; padding: 10px 0; position: relative; }
+        .bar-item { display: flex; flex-direction: column; align-items: center; flex: 1; }
+        .bar-item .bar { width: 30px; border-radius: 4px 4px 0 0; transition: height 0.5s; min-height: 5px; position: relative; }
+        .bar-item .bar .target-line { position: absolute; top: 0; left: -10px; right: -10px; border-top: 2px dashed #c62828; height: 0; }
+        .bar-item .bar-label { font-size: 9px; color: #757575; margin-top: 5px; text-align: center; }
+        .bar-item .bar-value { font-size: 10px; font-weight: 600; margin-bottom: 3px; }
         
-        .login-error {
-            background: #ffcdd2;
-            color: #b71c1c;
-            padding: 10px 15px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            display: none;
-            font-size: 14px;
-        }
-        .login-error.show {
-            display: block;
-        }
+        .table-container { overflow-x: auto; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        table thead { background: #f5f5f5; border-bottom: 2px solid #e0e0e0; }
+        table th { padding: 10px 12px; text-align: left; font-weight: 600; color: #555; font-size: 12px; white-space: nowrap; }
+        table td { padding: 8px 12px; border-bottom: 1px solid #f0f0f0; white-space: nowrap; }
+        table tr:hover { background: #fafafa; }
         
-        /* Dashboard */
-        .kpi-card {
-            padding: 15px 20px;
-            border-radius: 8px;
-            text-align: center;
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
+        .badge-oral { background: #f3e5f5; color: #6a1b9a; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+        .badge-injeksi { background: #e3f2fd; color: #0d47a1; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
         
-        .kpi-card .kpi-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: #1a237e;
-        }
-        .kpi-card .kpi-label {
-            font-size: 13px;
-            color: #757575;
-            margin-top: 3px;
-        }
-        .kpi-card .kpi-sub {
-            font-size: 12px;
-            color: #999;
-            margin-top: 2px;
-        }
-        .kpi-card.oral {
-            border-left: 4px solid #6a1b9a;
-        }
-        .kpi-card.injeksi {
-            border-left: 4px solid #0d47a1;
-        }
-        .kpi-card.total {
-            border-left: 4px solid #e65100;
-        }
+        .filter-bar { background: white; padding: 15px 20px; border-radius: 10px; margin-bottom: 20px; display: flex; gap: 20px; flex-wrap: wrap; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .filter-bar select, .filter-bar input { padding: 8px 14px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; background: white; }
+        .filter-bar label { font-weight: 600; font-size: 13px; color: #555; }
+        .text-muted { color: #999; font-size: 12px; }
         
-        .chart-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            margin-bottom: 20px;
-        }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; }
+        .modal-overlay.active { display: flex; }
+        .modal-box { background: white; border-radius: 12px; padding: 30px; max-width: 500px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.3); animation: modalIn 0.3s; }
+        @keyframes modalIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-box h3 { margin-bottom: 15px; color: #1a237e; }
+        .modal-box .form-group { margin-bottom: 15px; }
+        .modal-box .form-group textarea { resize: vertical; min-height: 80px; }
+        .modal-box .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px; }
+        .modal-box .modal-actions .btn { padding: 8px 20px; }
         
-        .chart-card h3 {
-            font-size: 15px;
-            color: #1a237e;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #e8eaf6;
-            padding-bottom: 10px;
-        }
-        .chart-card .chart-legend {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin-bottom: 10px;
-            font-size: 12px;
-        }
-        .chart-card .chart-legend .dot {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 5px;
-        }
+        .turn-info { padding: 8px 15px; border-radius: 6px; margin-bottom: 10px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        .turn-info.active { background: #e3f2fd; color: #0d47a1; border-left: 4px solid #0d47a1; }
+        .turn-info.waiting { background: #f5f5f5; color: #757575; border-left: 4px solid #999; }
+        .turn-info.done { background: #e8f5e9; color: #1b5e20; border-left: 4px solid #2e7d32; }
+        .turn-info.problem { background: #ffcdd2; color: #b71c1c; border-left: 4px solid #c62828; }
         
-        .line-chart {
-            height: 200px;
-            position: relative;
-            padding: 10px 0;
-        }
-        .line-chart .line-area {
-            display: flex;
-            align-items: flex-end;
-            height: 160px;
-            gap: 8px;
-            position: relative;
-        }
-        .line-chart .line-point {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex: 1;
-        }
-        .line-chart .line-point .dot-point {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-bottom: 5px;
-            position: relative;
-        }
-        .line-chart .line-point .dot-point::after {
-            content: '';
-            position: absolute;
-            top: 5px;
-            left: 5px;
-            width: 2px;
-            height: 60px;
-            opacity: 0.3;
-        }
-        .line-chart .line-point .label {
-            font-size: 9px;
-            color: #999;
-            transform: rotate(-45deg);
-            white-space: nowrap;
-        }
-        .line-chart .line-point .value {
-            font-size: 10px;
-            font-weight: 600;
-            color: #333;
-        }
+        .stage-badge { display: inline-block; padding: 2px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+        .stage-badge.waiting { background: #e0e0e0; color: #757575; }
+        .stage-badge.active { background: #fff3e0; color: #e65100; animation: pulse 1.5s infinite; }
+        .stage-badge.done { background: #c8e6c9; color: #1b5e20; }
+        .stage-badge.problem { background: #ffcdd2; color: #b71c1c; }
         
-        .bar-chart {
-            height: 200px;
-            display: flex;
-            align-items: flex-end;
-            gap: 12px;
-            padding: 10px 0;
-            position: relative;
-        }
-        .bar-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex: 1;
-        }
-        .bar-item .bar {
-            width: 30px;
-            border-radius: 4px 4px 0 0;
-            transition: height 0.5s;
-            min-height: 5px;
-            position: relative;
-        }
-        .bar-item .bar .target-line {
-            position: absolute;
-            top: 0;
-            left: -10px;
-            right: -10px;
-            border-top: 2px dashed #c62828;
-            height: 0;
-        }
-        .bar-item .bar-label {
-            font-size: 9px;
-            color: #757575;
-            margin-top: 5px;
-            text-align: center;
-        }
-        .bar-item .bar-value {
-            font-size: 10px;
-            font-weight: 600;
-            margin-bottom: 3px;
-        }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
         
-        .table-container {
-            overflow-x: auto;
-            margin-top: 10px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-        table thead {
-            background: #f5f5f5;
-            border-bottom: 2px solid #e0e0e0;
-        }
-        table th {
-            padding: 10px 12px;
-            text-align: left;
-            font-weight: 600;
-            color: #555;
-            font-size: 12px;
-            white-space: nowrap;
-        }
-        table td {
-            padding: 8px 12px;
-            border-bottom: 1px solid #f0f0f0;
-            white-space: nowrap;
-        }
-        table tr:hover {
-            background: #fafafa;
-        }
-        
-        .badge-oral {
-            background: #f3e5f5;
-            color: #6a1b9a;
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        .badge-injeksi {
-            background: #e3f2fd;
-            color: #0d47a1;
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        
-        .filter-bar {
-            background: white;
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            align-items: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
-        
-        .filter-bar select,
-        .filter-bar input {
-            padding: 8px 14px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 13px;
-            background: white;
-        }
-        
-        .filter-bar label {
-            font-weight: 600;
-            font-size: 13px;
-            color: #555;
-        }
-        
-        .text-muted {
-            color: #999;
-            font-size: 12px;
-        }
-        
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .modal-overlay.active {
-            display: flex;
-        }
-        
-        .modal-box {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            animation: modalIn 0.3s;
-        }
-        
-        @keyframes modalIn {
-            from {
-                transform: scale(0.9);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-        
-        .modal-box h3 {
-            margin-bottom: 15px;
-            color: #1a237e;
-        }
-        .modal-box .form-group {
-            margin-bottom: 15px;
-        }
-        .modal-box .form-group textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-        .modal-box .modal-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 15px;
-        }
-        .modal-box .modal-actions .btn {
-            padding: 8px 20px;
-        }
-        
-        /* Turn Info */
-        .turn-info {
-            padding: 8px 15px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            font-size: 13px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .turn-info.active {
-            background: #e3f2fd;
-            color: #0d47a1;
-            border-left: 4px solid #0d47a1;
-        }
-        .turn-info.waiting {
-            background: #f5f5f5;
-            color: #757575;
-            border-left: 4px solid #999;
-        }
-        .turn-info.done {
-            background: #e8f5e9;
-            color: #1b5e20;
-            border-left: 4px solid #2e7d32;
-        }
-        .turn-info.problem {
-            background: #ffcdd2;
-            color: #b71c1c;
-            border-left: 4px solid #c62828;
-        }
-        
-        .stage-badge {
-            display: inline-block;
-            padding: 2px 12px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        
-        .stage-badge.waiting {
-            background: #e0e0e0;
-            color: #757575;
-        }
-        .stage-badge.active {
-            background: #fff3e0;
-            color: #e65100;
-            animation: pulse 1.5s infinite;
-        }
-        .stage-badge.done {
-            background: #c8e6c9;
-            color: #1b5e20;
-        }
-        .stage-badge.problem {
-            background: #ffcdd2;
-            color: #b71c1c;
-        }
-        
-        @keyframes pulse {
-            0% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.6;
-            }
-            100% {
-                opacity: 1;
-            }
-        }
-        
-        .locked-field {
-            background: #f5f5f5;
-            padding: 8px 12px;
-            border-radius: 4px;
-            border-left: 3px solid #2e7d32;
-            color: #333;
-            font-weight: 500;
-            display: inline-block;
-        }
-        .locked-field .lock-icon {
-            margin-right: 5px;
-        }
+        .locked-field { background: #f5f5f5; padding: 8px 12px; border-radius: 4px; border-left: 3px solid #2e7d32; color: #333; font-weight: 500; display: inline-block; }
+        .locked-field .lock-icon { margin-right: 5px; }
     </style>
 </head>
 <body>
@@ -1126,138 +292,24 @@
             <!-- DASHBOARD -->
             <div id="page-dashboard" class="page active">
                 <div class="filter-bar">
-                    <div>
-                        <label>📅 Periode</label>
-                        <select id="filterPeriode" onchange="renderDashboard()">
-                            <option value="all">Semua</option>
-                            <option value="7">7 Hari</option>
-                            <option value="30">30 Hari</option>
-                            <option value="90">90 Hari</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label>🏷️ Tipe</label>
-                        <select id="filterType" onchange="renderDashboard()">
-                            <option value="all">Semua</option>
-                            <option value="oral">Oral</option>
-                            <option value="injeksi">Injeksi</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label>🔍 Cari</label>
-                        <input type="text" id="filterSearch" placeholder="Nomor batch..." oninput="renderDashboard()">
-                    </div>
+                    <div><label>📅 Periode</label><select id="filterPeriode" onchange="renderDashboard()"><option value="all">Semua</option><option value="7">7 Hari</option><option value="30">30 Hari</option><option value="90">90 Hari</option></select></div>
+                    <div><label>🏷️ Tipe</label><select id="filterType" onchange="renderDashboard()"><option value="all">Semua</option><option value="oral">Oral</option><option value="injeksi">Injeksi</option></select></div>
+                    <div><label>🔍 Cari</label><input type="text" id="filterSearch" placeholder="Nomor batch..." oninput="renderDashboard()"></div>
                     <button class="btn btn-primary btn-sm" onclick="resetFilter()" style="padding:8px 20px;">Reset</button>
                 </div>
-
                 <div class="grid-4" id="kpiGrid">
-                    <div class="kpi-card oral">
-                        <div class="kpi-value" id="kpiOralAvg">-</div>
-                        <div class="kpi-label">📊 Rata-rata PCT Oral (hari)</div>
-                        <div class="kpi-sub" id="kpiOralCount">0 Batch</div>
-                    </div>
-                    <div class="kpi-card injeksi">
-                        <div class="kpi-value" id="kpiInjeksiAvg">-</div>
-                        <div class="kpi-label">📊 Rata-rata PCT Injeksi (hari)</div>
-                        <div class="kpi-sub" id="kpiInjeksiCount">0 Batch</div>
-                    </div>
-                    <div class="kpi-card total">
-                        <div class="kpi-value" id="kpiTotal">0</div>
-                        <div class="kpi-label">📦 Total Batch</div>
-                        <div class="kpi-sub" id="kpiOnGoing">On Going: 0</div>
-                    </div>
-                    <div class="kpi-card" style="border-left-color:#f57c00;">
-                        <div class="kpi-value" id="kpiTarget">-</div>
-                        <div class="kpi-label">🎯 On Target Rate</div>
-                        <div class="kpi-sub" id="kpiTargetDetail">0 / 0 batch</div>
-                    </div>
+                    <div class="kpi-card oral"><div class="kpi-value" id="kpiOralAvg">-</div><div class="kpi-label">📊 Rata-rata PCT Oral (hari)</div><div class="kpi-sub" id="kpiOralCount">0 Batch</div></div>
+                    <div class="kpi-card injeksi"><div class="kpi-value" id="kpiInjeksiAvg">-</div><div class="kpi-label">📊 Rata-rata PCT Injeksi (hari)</div><div class="kpi-sub" id="kpiInjeksiCount">0 Batch</div></div>
+                    <div class="kpi-card total"><div class="kpi-value" id="kpiTotal">0</div><div class="kpi-label">📦 Total Batch</div><div class="kpi-sub" id="kpiOnGoing">On Going: 0</div></div>
+                    <div class="kpi-card" style="border-left-color:#f57c00;"><div class="kpi-value" id="kpiTarget">-</div><div class="kpi-label">🎯 On Target Rate</div><div class="kpi-sub" id="kpiTargetDetail">0 / 0 batch</div></div>
                 </div>
-
                 <div class="grid-2" style="gap:20px;margin-bottom:20px;">
-                    <div class="chart-card">
-                        <h3>📈 Line PCT - Oral</h3>
-                        <div class="chart-legend">
-                            <span><span class="dot" style="background:#6a1b9a;"></span> PCT Include</span>
-                            <span><span class="dot" style="background:#ce93d8;"></span> PCT Exclude</span>
-                            <span><span class="dot" style="background:#c62828;border:2px dashed #c62828;"></span> Target</span>
-                        </div>
-                        <div class="line-chart" id="lineOral">
-                            <div class="empty-state" style="text-align:center;padding:40px;color:#999;">Belum ada data Oral</div>
-                        </div>
-                    </div>
-                    <div class="chart-card">
-                        <h3>📈 Line PCT - Injeksi</h3>
-                        <div class="chart-legend">
-                            <span><span class="dot" style="background:#0d47a1;"></span> PCT Include</span>
-                            <span><span class="dot" style="background:#64b5f6;"></span> PCT Exclude</span>
-                            <span><span class="dot" style="background:#c62828;border:2px dashed #c62828;"></span> Target</span>
-                        </div>
-                        <div class="line-chart" id="lineInjeksi">
-                            <div class="empty-state" style="text-align:center;padding:40px;color:#999;">Belum ada data Injeksi</div>
-                        </div>
-                    </div>
+                    <div class="chart-card"><h3>📈 Line PCT - Oral</h3><div class="chart-legend"><span><span class="dot" style="background:#6a1b9a;"></span> PCT Include</span><span><span class="dot" style="background:#ce93d8;"></span> PCT Exclude</span><span><span class="dot" style="background:#c62828;border:2px dashed #c62828;"></span> Target</span></div><div class="line-chart" id="lineOral"><div class="empty-state" style="text-align:center;padding:40px;color:#999;">Belum ada data Oral</div></div></div>
+                    <div class="chart-card"><h3>📈 Line PCT - Injeksi</h3><div class="chart-legend"><span><span class="dot" style="background:#0d47a1;"></span> PCT Include</span><span><span class="dot" style="background:#64b5f6;"></span> PCT Exclude</span><span><span class="dot" style="background:#c62828;border:2px dashed #c62828;"></span> Target</span></div><div class="line-chart" id="lineInjeksi"><div class="empty-state" style="text-align:center;padding:40px;color:#999;">Belum ada data Injeksi</div></div></div>
                 </div>
-
-                <div class="chart-card">
-                    <h3>📊 PCT per Batch Number (Include Mikro) vs Target</h3>
-                    <div class="chart-legend">
-                        <span><span class="dot" style="background:#1a237e;"></span> Actual PCT</span>
-                        <span><span class="dot" style="background:#c62828;border:2px dashed #c62828;"></span> Target per Kode Produk</span>
-                    </div>
-                    <div class="bar-chart" id="barChart">
-                        <div class="empty-state" style="text-align:center;padding:40px;color:#999;width:100%;">Belum ada data batch</div>
-                    </div>
-                </div>
-
-                <div class="chart-card">
-                    <h3>📋 Detail PCT per Batch</h3>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>BATCH</th>
-                                    <th>Kode</th>
-                                    <th>Tipe</th>
-                                    <th>Tanggal Rilis</th>
-                                    <th>PCT inc</th>
-                                    <th>PCT exc</th>
-                                    <th>Logistik (&lt;0.29)</th>
-                                    <th>Produksi (&lt;5)</th>
-                                    <th>QC (&lt;5.5)</th>
-                                    <th>QA (&lt;0.125)</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="detailTableBody">
-                                <tr>
-                                    <td colspan="11" style="text-align:center;color:#999;padding:30px;">Belum ada data</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="chart-card">
-                    <h3>⏳ On Going - Oral</h3>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>BATCH</th>
-                                    <th>PCT On Going</th>
-                                    <th>Status</th>
-                                    <th>Estimasi LWS</th>
-                                    <th>Target Rilis</th>
-                                </tr>
-                            </thead>
-                            <tbody id="onGoingTableBody">
-                                <tr>
-                                    <td colspan="5" style="text-align:center;color:#999;padding:30px;">Tidak ada batch On Going</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <div class="chart-card"><h3>📊 PCT per Batch Number (Include Mikro) vs Target</h3><div class="chart-legend"><span><span class="dot" style="background:#1a237e;"></span> Actual PCT</span><span><span class="dot" style="background:#c62828;border:2px dashed #c62828;"></span> Target per Kode Produk</span></div><div class="bar-chart" id="barChart"><div class="empty-state" style="text-align:center;padding:40px;color:#999;width:100%;">Belum ada data batch</div></div></div>
+                <div class="chart-card"><h3>📋 Detail PCT per Batch</h3><div class="table-container"><table><thead><tr><th>BATCH</th><th>Kode</th><th>Tipe</th><th>Tanggal Rilis</th><th>PCT inc</th><th>PCT exc</th><th>Logistik (&lt;0.29)</th><th>Produksi (&lt;5)</th><th>QC (&lt;5.5)</th><th>QA (&lt;0.125)</th><th>Status</th></tr></thead><tbody id="detailTableBody"><tr><td colspan="11" style="text-align:center;color:#999;padding:30px;">Belum ada data</td></tr></tbody></table></div></div>
+                <div class="chart-card"><h3>⏳ On Going - Oral</h3><div class="table-container"><table><thead><tr><th>BATCH</th><th>PCT On Going</th><th>Status</th><th>Estimasi LWS</th><th>Target Rilis</th></tr></thead><tbody id="onGoingTableBody"><tr><td colspan="5" style="text-align:center;color:#999;padding:30px;">Tidak ada batch On Going</td></tr></tbody></table></div></div>
             </div>
 
             <!-- PPIC -->
@@ -1287,16 +339,10 @@
                     <button class="tab-btn" data-tab="input-produksi">✏️ Input Produksi</button>
                 </div>
                 <div id="tab-kanban-produksi" class="tab-content active">
-                    <div class="card">
-                        <h2>📋 Kanban Produksi</h2>
-                        <div id="kanbanProduksi"></div>
-                    </div>
+                    <div class="card"><h2>📋 Kanban Produksi</h2><div id="kanbanProduksi"></div></div>
                 </div>
                 <div id="tab-input-produksi" class="tab-content">
-                    <div class="card">
-                        <h2>✏️ Input Produksi</h2>
-                        <div id="inputProduksi"></div>
-                    </div>
+                    <div class="card"><h2>✏️ Input Produksi</h2><div id="inputProduksi"></div></div>
                 </div>
             </div>
 
@@ -1307,33 +353,21 @@
                     <button class="tab-btn" data-tab="input-logistic">✏️ Input Logistic</button>
                 </div>
                 <div id="tab-respon-kanban" class="tab-content active">
-                    <div class="card">
-                        <h2>📦 Respon Kanban</h2>
-                        <div id="responKanban"></div>
-                    </div>
+                    <div class="card"><h2>📦 Respon Kanban</h2><div id="responKanban"></div></div>
                 </div>
                 <div id="tab-input-logistic" class="tab-content">
-                    <div class="card">
-                        <h2>✏️ Input Logistic</h2>
-                        <div id="inputLogistic"></div>
-                    </div>
+                    <div class="card"><h2>✏️ Input Logistic</h2><div id="inputLogistic"></div></div>
                 </div>
             </div>
 
             <!-- QC -->
             <div id="page-qc" class="page">
-                <div class="card">
-                    <h2>🔬 Quality Control</h2>
-                    <div id="qcList"></div>
-                </div>
+                <div class="card"><h2>🔬 Quality Control</h2><div id="qcList"></div></div>
             </div>
 
             <!-- QA -->
             <div id="page-qa" class="page">
-                <div class="card">
-                    <h2>✅ Quality Assurance</h2>
-                    <div id="qaList"></div>
-                </div>
+                <div class="card"><h2>✅ Quality Assurance</h2><div id="qaList"></div></div>
             </div>
 
             <!-- MANAGEMENT -->
@@ -1342,63 +376,27 @@
                     <div>
                         <div class="card">
                             <h2>👤 Manage Personil</h2>
-                            <div class="form-group">
-                                <label>Nama</label>
-                                <input type="text" id="personilName" placeholder="Masukkan nama">
-                            </div>
-                            <div class="form-group">
-                                <label>Departemen</label>
-                                <select id="personilDept">
-                                    <option value="PPIC">PPIC</option>
-                                    <option value="Produksi">Produksi</option>
-                                    <option value="Logistic">Logistic</option>
-                                    <option value="QC">QC</option>
-                                    <option value="QA">QA</option>
-                                    <option value="Management">Management</option>
-                                </select>
-                            </div>
+                            <div class="form-group"><label>Nama</label><input type="text" id="personilName" placeholder="Masukkan nama"></div>
+                            <div class="form-group"><label>Departemen</label><select id="personilDept"><option value="PPIC">PPIC</option><option value="Produksi">Produksi</option><option value="Logistic">Logistic</option><option value="QC">QC</option><option value="QA">QA</option><option value="Management">Management</option></select></div>
                             <button class="btn btn-primary" onclick="addPersonil()">➕ Tambah Personil</button>
-                            <div style="margin-top:15px;">
-                                <h3>Daftar Personil</h3>
-                                <div id="personilList"></div>
-                            </div>
+                            <div style="margin-top:15px;"><h3>Daftar Personil</h3><div id="personilList"></div></div>
                         </div>
                     </div>
                     <div>
                         <div class="card">
                             <h2>📦 Manage Kode Produk</h2>
-                            <div style="background:#fff3e0;padding:10px 15px;border-radius:6px;border-left:4px solid #f57c00;margin-bottom:15px;color:#e65100;font-size:13px;">
-                                ⚠️ Kode produk untuk mapping target ke nomor batch
-                            </div>
-                            <div class="form-group">
-                                <label>Kode Produk (5 Huruf)</label>
-                                <input type="text" id="productCode" placeholder="Contoh: TABCD" maxlength="5">
+                            <div style="background:#fff3e0;padding:10px 15px;border-radius:6px;border-left:4px solid #f57c00;margin-bottom:15px;color:#e65100;font-size:13px;">⚠️ Kode produk untuk mapping target ke nomor batch</div>
+                            <div class="form-group"><label>Kode Produk (5 Huruf)</label><input type="text" id="productCode" placeholder="Contoh: TABCD" maxlength="5"></div>
+                            <div class="form-row">
+                                <div class="form-group"><label>Target Timbang (Jam)</label><input type="number" id="targetTimbang" placeholder="0" step="0.5"></div>
+                                <div class="form-group"><label>Target Produksi (Jam)</label><input type="number" id="targetProduksi" placeholder="0" step="0.5"></div>
                             </div>
                             <div class="form-row">
-                                <div class="form-group">
-                                    <label>Target Timbang (Jam)</label>
-                                    <input type="number" id="targetTimbang" placeholder="0" step="0.5">
-                                </div>
-                                <div class="form-group">
-                                    <label>Target Produksi (Jam)</label>
-                                    <input type="number" id="targetProduksi" placeholder="0" step="0.5">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Target Analisa (Jam)</label>
-                                    <input type="number" id="targetAnalisa" placeholder="0" step="0.5">
-                                </div>
-                                <div class="form-group">
-                                    <label>Target Perilisan (Jam)</label>
-                                    <input type="number" id="targetPerilisan" placeholder="0" step="0.5">
-                                </div>
+                                <div class="form-group"><label>Target Analisa (Jam)</label><input type="number" id="targetAnalisa" placeholder="0" step="0.5"></div>
+                                <div class="form-group"><label>Target Perilisan (Jam)</label><input type="number" id="targetPerilisan" placeholder="0" step="0.5"></div>
                             </div>
                             <button class="btn btn-primary" onclick="addProduct()">➕ Tambah Produk</button>
-                            <div style="margin-top:15px;">
-                                <h3>Daftar Produk</h3>
-                                <div id="productList"></div>
-                            </div>
+                            <div style="margin-top:15px;"><h3>Daftar Produk</h3><div id="productList"></div></div>
                         </div>
                     </div>
                 </div>
@@ -1410,24 +408,14 @@
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-box">
             <h3 id="modalTitle">Input Alasan Problem</h3>
-            <div class="form-group">
-                <label id="modalLabel">Masukkan alasan problem:</label>
-                <textarea id="modalInput" placeholder="Contoh: Material belum tersedia, Kerusakan mesin, dll"></textarea>
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-secondary btn-sm" onclick="closeModal()">Batal</button>
-                <button class="btn btn-success btn-sm" onclick="confirmModal()">OK</button>
-            </div>
+            <div class="form-group"><label id="modalLabel">Masukkan alasan problem:</label><textarea id="modalInput" placeholder="Contoh: Material belum tersedia, Kerusakan mesin, dll"></textarea></div>
+            <div class="modal-actions"><button class="btn btn-secondary btn-sm" onclick="closeModal()">Batal</button><button class="btn btn-success btn-sm" onclick="confirmModal()">OK</button></div>
         </div>
     </div>
 
     <script>
         // ==================== DATA STORE ====================
-        let data = {
-            personil: [],
-            products: [],
-            batches: []
-        };
+        let data = { personil: [], products: [], batches: [] };
         let modalCallback = null;
         let currentUser = null;
 
@@ -1444,30 +432,18 @@
         function login() {
             const input = document.getElementById('loginInput').value.trim();
             const errorEl = document.getElementById('loginError');
-            if (!input) {
-                errorEl.textContent = '⚠️ Masukkan nama atau admin!';
-                errorEl.classList.add('show');
-                return;
-            }
-            if (input === 'admin123') {
-                currentUser = { role: 'admin', name: 'Admin', department: null };
-                showMainApp();
-                return;
-            }
+            if (!input) { errorEl.textContent = '⚠️ Masukkan nama atau admin!'; errorEl.classList.add('show'); return; }
+            if (input === 'admin123') { currentUser = { role: 'admin', name: 'Admin', department: null };
+                showMainApp(); return; }
             const personil = data.personil.find(p => p.name.toLowerCase() === input.toLowerCase());
-            if (personil) {
-                currentUser = { role: 'user', name: personil.name, department: personil.department };
-                showMainApp();
-                return;
-            }
+            if (personil) { currentUser = { role: 'user', name: personil.name, department: personil.department };
+                showMainApp(); return; }
             errorEl.textContent = '⚠️ Nama tidak ditemukan! Pastikan nama sudah terdaftar di Management.';
             errorEl.classList.add('show');
         }
 
-        function loginGuest() {
-            currentUser = { role: 'guest', name: 'Guest', department: null };
-            showMainApp();
-        }
+        function loginGuest() { currentUser = { role: 'guest', name: 'Guest', department: null };
+            showMainApp(); }
 
         function logout() {
             currentUser = null;
@@ -1493,10 +469,7 @@
         function updateNavigation() {
             const navBtns = document.querySelectorAll('.nav-btn');
             const visiblePages = ['dashboard'];
-            if (currentUser.role === 'admin') {
-                navBtns.forEach(btn => btn.classList.remove('hidden'));
-                return;
-            }
+            if (currentUser.role === 'admin') { navBtns.forEach(btn => btn.classList.remove('hidden')); return; }
             if (currentUser.role === 'user' && currentUser.department) {
                 const deptPages = DEPT_PAGES[currentUser.department] || [];
                 visiblePages.push(...deptPages);
@@ -1520,10 +493,8 @@
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const page = this.dataset.page;
-                if (!this.classList.contains('hidden')) {
-                    showPage(page);
-                    renderAll();
-                }
+                if (!this.classList.contains('hidden')) { showPage(page);
+                    renderAll(); }
             });
         });
 
@@ -1542,48 +513,24 @@
         });
 
         // ==================== UTILITY ====================
-        function generateId() {
-            return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-        }
+        function generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 5); }
 
-        function getBatchType(bn) {
-            if (!bn) return 'unknown';
-            const fc = bn.charAt(0).toUpperCase();
-            return fc === 'V' ? 'injeksi' : (fc === 'T' ? 'oral' : 'unknown');
-        }
+        function getBatchType(bn) { if (!bn) return 'unknown'; const fc = bn.charAt(0).toUpperCase(); return fc === 'V' ?
+                'injeksi' : (fc === 'T' ? 'oral' : 'unknown'); }
 
-        function getProductCode(bn) {
-            if (!bn || bn.length < 5) return null;
-            return bn.substring(0, 5).toUpperCase();
-        }
+        function getProductCode(bn) { if (!bn || bn.length < 5) return null; return bn.substring(0, 5).toUpperCase(); }
 
         function getStatusLabel(s) {
-            const labels = {
-                'draft': 'Draft',
-                'produksi': 'Produksi',
-                'logistic': 'Logistic - Respon',
-                'logistic_input': 'Logistic - Input',
-                'produksi_input': 'Produksi - Input',
-                'qc': 'QC',
-                'qa': 'QA',
-                'done': 'Selesai',
-                'problem': 'Problem'
-            };
+            const labels = { 'draft': 'Draft', 'produksi': 'Produksi', 'logistic': 'Logistic - Respon',
+                'logistic_input': 'Logistic - Input', 'produksi_input': 'Produksi - Input', 'qc': 'QC', 'qa': 'QA',
+                'done': 'Selesai', 'problem': 'Problem' };
             return labels[s] || s;
         }
 
         function getStatusColor(s) {
-            const colors = {
-                'draft': '#757575',
-                'produksi': '#e65100',
-                'logistic': '#0d47a1',
-                'logistic_input': '#2e7d32',
-                'produksi_input': '#6a1b9a',
-                'qc': '#c62828',
-                'qa': '#6a1b9a',
-                'done': '#1b5e20',
-                'problem': '#b71c1c'
-            };
+            const colors = { 'draft': '#757575', 'produksi': '#e65100', 'logistic': '#0d47a1',
+            'logistic_input': '#2e7d32',
+                'produksi_input': '#6a1b9a', 'qc': '#c62828', 'qa': '#6a1b9a', 'done': '#1b5e20', 'problem': '#b71c1c' };
             return colors[s] || '#757575';
         }
 
@@ -1592,9 +539,7 @@
             if (!notif) return;
             notif.className = 'notification ' + type;
             notif.textContent = msg;
-            setTimeout(() => {
-                notif.className = 'notification';
-            }, 4000);
+            setTimeout(() => { notif.className = 'notification'; }, 4000);
         }
 
         function formatDateTime(v) {
@@ -1603,49 +548,26 @@
                 const d = new Date(v);
                 return d.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }) +
                     ' ' + d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-            } catch (e) {
-                return v;
-            }
+            } catch (e) { return v; }
         }
 
-        function parseDate(str) {
-            if (!str) return null;
-            const d = new Date(str);
-            return isNaN(d.getTime()) ? null : d;
-        }
+        function parseDate(str) { if (!str) return null; const d = new Date(str); return isNaN(d.getTime()) ? null : d; }
 
-        function diffHours(d1, d2) {
-            if (!d1 || !d2) return null;
-            const diff = (d2 - d1) / (1000 * 60 * 60);
-            return Math.round(diff * 100) / 100;
-        }
+        function diffHours(d1, d2) { if (!d1 || !d2) return null; const diff = (d2 - d1) / (1000 * 60 * 60); return Math
+                .round(diff * 100) / 100; }
 
-        function jamKeHari(jam) {
-            if (jam === null || jam === undefined) return null;
-            return Math.round((jam / 24) * 100) / 100;
-        }
+        function jamKeHari(jam) { if (jam === null || jam === undefined) return null; return Math.round((jam / 24) * 100) /
+                100; }
 
-        function getStatusClass(actual, target) {
-            if (actual === null || target === null || target === 0) return 'progress';
-            const ratio = actual / target;
-            if (ratio <= 1) return 'on-target';
-            if (ratio <= 1.2) return 'warning';
-            return 'over';
-        }
+        function getStatusClass(actual, target) { if (actual === null || target === null || target === 0) return 'progress';
+            const ratio = actual / target; if (ratio <= 1) return 'on-target'; if (ratio <= 1.2) return 'warning'; return 'over'; }
 
-        function getStatusText(actual, target) {
-            if (actual === null || target === null || target === 0) return '⏳ Menunggu';
-            const ratio = actual / target;
-            if (ratio <= 1) return '✅ On Target';
-            if (ratio <= 1.2) return '⚠️ Warning';
-            return '❌ Over';
-        }
+        function getStatusText(actual, target) { if (actual === null || target === null || target === 0) return '⏳ Menunggu';
+            const ratio = actual / target; if (ratio <= 1) return '✅ On Target'; if (ratio <= 1.2) return '⚠️ Warning';
+            return '❌ Over'; }
 
-        function getStatusBadge(actual, target) {
-            const cls = getStatusClass(actual, target);
-            const text = getStatusText(actual, target);
-            return `<span class="status-badge ${cls}">${text}</span>`;
-        }
+        function getStatusBadge(actual, target) { const cls = getStatusClass(actual, target); const text = getStatusText(
+                actual, target); return `<span class="status-badge ${cls}">${text}</span>`; }
 
         // ==================== MODAL ====================
         function openModal(title, label, callback) {
@@ -1654,43 +576,26 @@
             document.getElementById('modalInput').value = '';
             document.getElementById('modalOverlay').classList.add('active');
             modalCallback = callback;
-            setTimeout(() => {
-                document.getElementById('modalInput').focus();
-            }, 100);
+            setTimeout(() => { document.getElementById('modalInput').focus(); }, 100);
         }
 
-        function closeModal() {
-            document.getElementById('modalOverlay').classList.remove('active');
-            modalCallback = null;
-        }
+        function closeModal() { document.getElementById('modalOverlay').classList.remove('active');
+            modalCallback = null; }
 
-        function confirmModal() {
-            const value = document.getElementById('modalInput').value.trim();
-            if (modalCallback) {
-                modalCallback(value);
-            }
-            closeModal();
-        }
+        function confirmModal() { const value = document.getElementById('modalInput').value.trim(); if (modalCallback) {
+                modalCallback(value); } closeModal(); }
 
-        document.getElementById('modalOverlay').addEventListener('click', function(e) {
-            if (e.target === this) closeModal();
-        });
-        document.getElementById('modalInput').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') confirmModal();
-        });
+        document.getElementById('modalOverlay').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+        document.getElementById('modalInput').addEventListener('keydown', function(e) { if (e.key === 'Enter')
+            confirmModal(); });
 
         // ==================== MANAGEMENT ====================
         function addPersonil() {
             const name = document.getElementById('personilName').value.trim();
             const dept = document.getElementById('personilDept').value;
-            if (!name) {
-                showNotification('Masukkan nama personil!', 'error');
-                return;
-            }
-            if (data.personil.some(p => p.name.toLowerCase() === name.toLowerCase())) {
-                showNotification('Nama sudah terdaftar!', 'error');
-                return;
-            }
+            if (!name) { showNotification('Masukkan nama personil!', 'error'); return; }
+            if (data.personil.some(p => p.name.toLowerCase() === name.toLowerCase())) { showNotification(
+                    'Nama sudah terdaftar!', 'error'); return; }
             data.personil.push({ id: generateId(), name: name, department: dept });
             document.getElementById('personilName').value = '';
             showNotification('Personil berhasil ditambahkan!', 'success');
@@ -1698,21 +603,17 @@
             renderPersonilList();
         }
 
-        function deletePersonil(id) {
-            if (!confirm('Hapus personil ini?')) return;
-            data.personil = data.personil.filter(p => p.id !== id);
+        function deletePersonil(id) { if (!confirm('Hapus personil ini?')) return; data.personil = data.personil.filter(p =>
+                p.id !== id);
             saveData();
             renderPersonilList();
-            showNotification('Personil dihapus!', 'info');
-        }
+            showNotification('Personil dihapus!', 'info'); }
 
         function renderPersonilList() {
             const container = document.getElementById('personilList');
             if (!container) return;
-            if (data.personil.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>Belum ada personil</p></div>';
-                return;
-            }
+            if (data.personil.length === 0) { container.innerHTML =
+                '<div class="empty-state"><p>Belum ada personil</p></div>'; return; }
             container.innerHTML = data.personil.map(p =>
                 `<div class="personil-item"><span><strong>${p.name}</strong> - ${p.department}</span><span class="delete-btn" onclick="deletePersonil('${p.id}')">✕</span></div>`
             ).join('');
@@ -1724,26 +625,12 @@
             const targetProduksi = parseFloat(document.getElementById('targetProduksi').value);
             const targetAnalisa = parseFloat(document.getElementById('targetAnalisa').value);
             const targetPerilisan = parseFloat(document.getElementById('targetPerilisan').value);
-            if (!code || code.length !== 5) {
-                showNotification('Kode produk harus 5 huruf!', 'error');
-                return;
-            }
-            if (data.products.some(p => p.code === code)) {
-                showNotification('Kode produk sudah ada!', 'error');
-                return;
-            }
+            if (!code || code.length !== 5) { showNotification('Kode produk harus 5 huruf!', 'error'); return; }
+            if (data.products.some(p => p.code === code)) { showNotification('Kode produk sudah ada!', 'error'); return; }
             if (isNaN(targetTimbang) || isNaN(targetProduksi) || isNaN(targetAnalisa) || isNaN(targetPerilisan)) {
-                showNotification('Isi semua target durasi dengan angka!', 'error');
-                return;
-            }
-            data.products.push({
-                id: generateId(),
-                code: code,
-                targetTimbang: targetTimbang,
-                targetProduksi: targetProduksi,
-                targetAnalisa: targetAnalisa,
-                targetPerilisan: targetPerilisan
-            });
+                showNotification('Isi semua target durasi dengan angka!', 'error'); return; }
+            data.products.push({ id: generateId(), code: code, targetTimbang, targetProduksi, targetAnalisa,
+                targetPerilisan });
             document.getElementById('productCode').value = '';
             document.getElementById('targetTimbang').value = '';
             document.getElementById('targetProduksi').value = '';
@@ -1754,21 +641,17 @@
             renderProductList();
         }
 
-        function deleteProduct(id) {
-            if (!confirm('Hapus produk ini?')) return;
-            data.products = data.products.filter(p => p.id !== id);
+        function deleteProduct(id) { if (!confirm('Hapus produk ini?')) return; data.products = data.products.filter(p =>
+                p.id !== id);
             saveData();
             renderProductList();
-            showNotification('Produk dihapus!', 'info');
-        }
+            showNotification('Produk dihapus!', 'info'); }
 
         function renderProductList() {
             const container = document.getElementById('productList');
             if (!container) return;
-            if (data.products.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>Belum ada produk</p></div>';
-                return;
-            }
+            if (data.products.length === 0) { container.innerHTML =
+                '<div class="empty-state"><p>Belum ada produk</p></div>'; return; }
             container.innerHTML = data.products.map(p =>
                 `<div class="personil-item"><div><strong>${p.code}</strong><br><small style="font-size:11px;">Timbang: ${p.targetTimbang} jam | Produksi: ${p.targetProduksi} jam | Analisa: ${p.targetAnalisa} jam | Perilisan: ${p.targetPerilisan} jam</small></div><span class="delete-btn" onclick="deleteProduct('${p.id}')">✕</span></div>`
             ).join('');
@@ -1777,29 +660,15 @@
         // ==================== PPIC ====================
         function addBatch() {
             const input = document.getElementById('batchInput').value.trim().toUpperCase();
-            if (!input) {
-                showNotification('Masukkan nomor batch!', 'error');
-                return;
-            }
-            if (input.length !== 10) {
-                showNotification('Nomor batch harus 10 karakter!', 'error');
-                return;
-            }
+            if (!input) { showNotification('Masukkan nomor batch!', 'error'); return; }
+            if (input.length !== 10) { showNotification('Nomor batch harus 10 karakter!', 'error'); return; }
             const type = getBatchType(input);
-            if (type === 'unknown') {
-                showNotification('Nomor batch harus diawali V atau T!', 'error');
-                return;
-            }
+            if (type === 'unknown') { showNotification('Nomor batch harus diawali V atau T!', 'error'); return; }
             const productCode = getProductCode(input);
             const product = data.products.find(p => p.code === productCode);
-            if (!product) {
-                showNotification(`Kode produk "${productCode}" tidak ditemukan!`, 'error');
-                return;
-            }
-            if (data.batches.some(b => b.batchNumber === input)) {
-                showNotification('Nomor batch sudah ada!', 'error');
-                return;
-            }
+            if (!product) { showNotification(`Kode produk "${productCode}" tidak ditemukan!`, 'error'); return; }
+            if (data.batches.some(b => b.batchNumber === input)) { showNotification('Nomor batch sudah ada!', 'error');
+                return; }
 
             data.batches.push({
                 id: generateId(),
@@ -1883,21 +752,8 @@
                 targetRilis.setHours(targetRilis.getHours() + totalTargetJam);
             }
 
-            return {
-                pctInclude,
-                pctExclude,
-                logistik,
-                produksi,
-                qc,
-                qa,
-                onGoing,
-                targetRilis,
-                totalTargetJam,
-                logistikTarget: 0.29,
-                produksiTarget: 5,
-                qcTarget: 5.5,
-                qaTarget: 0.125
-            };
+            return { pctInclude, pctExclude, logistik, produksi, qc, qa, onGoing, targetRilis, totalTargetJam,
+                logistikTarget: 0.29, produksiTarget: 5, qcTarget: 5.5, qaTarget: 0.125 };
         }
 
         // ==================== RENDER SCORE CARD (DENGAN SISTEM GILIRAN) ====================
@@ -1932,14 +788,18 @@
                 { key: 'jadwalWadah', label: 'Jadwal Wadah', value: batch.jadwalWadah },
                 { key: 'jadwalKemas', label: 'Jadwal Kemas', value: batch.jadwalKemas },
                 { key: 'tanggalTimbang', label: 'Tanggal Timbang', value: formatDateTime(batch.tanggalTimbang) },
-                { key: 'tanggalSerahTerima', label: 'Tanggal Serah Terima', value: formatDateTime(batch.tanggalSerahTerima) },
+                { key: 'tanggalSerahTerima', label: 'Tanggal Serah Terima', value: formatDateTime(batch
+                        .tanggalSerahTerima) },
                 { key: 'tanggalBPP', label: 'Tanggal BPP', value: formatDateTime(batch.tanggalBPP) },
-                { key: 'tanggalKirimDokumen', label: 'Tanggal Kirim Dokumen', value: formatDateTime(batch.tanggalKirimDokumen) },
-                { key: 'tanggalTerimaSample', label: 'Tanggal Terima Sample', value: formatDateTime(batch.tanggalTerimaSample) },
+                { key: 'tanggalKirimDokumen', label: 'Tanggal Kirim Dokumen', value: formatDateTime(batch
+                        .tanggalKirimDokumen) },
+                { key: 'tanggalTerimaSample', label: 'Tanggal Terima Sample', value: formatDateTime(batch
+                        .tanggalTerimaSample) },
                 { key: 'estimasiLWS', label: 'Estimasi LWS', value: formatDateTime(batch.estimasiLWS) },
-                { key: 'tanggalSelesaiKimia', label: 'Selesai Analisa Kimia', value: formatDateTime(batch.tanggalSelesaiKimia),
-                    hide: batch.type === 'injeksi' },
-                { key: 'tanggalSelesaiMikro', label: 'Selesai Analisa Mikro', value: formatDateTime(batch.tanggalSelesaiMikro) },
+                { key: 'tanggalSelesaiKimia', label: 'Selesai Analisa Kimia', value: formatDateTime(batch
+                        .tanggalSelesaiKimia), hide: batch.type === 'injeksi' },
+                { key: 'tanggalSelesaiMikro', label: 'Selesai Analisa Mikro', value: formatDateTime(batch
+                        .tanggalSelesaiMikro) },
                 { key: 'tanggalRilis', label: 'Tanggal Rilis', value: formatDateTime(batch.tanggalRilis) }
             ];
 
@@ -1975,14 +835,24 @@
             const isDone = batch.status === 'done';
             const isProblem = batch.status === 'problem';
 
+            // CEK HALAMAN AKTIF
+            const isPageActive = (pageId) => {
+                const page = document.getElementById(pageId);
+                return page ? page.classList.contains('active') : false;
+            };
+
             // CEK APAKAH BATCH INI SEDANG DALAM GILIRAN DI HALAMAN INI
             const isMyTurn = (
-                (batch.status === 'produksi' && document.querySelector('#tab-kanban-produksi')?.classList.contains('active')) ||
-                (batch.status === 'logistic' && document.querySelector('#tab-respon-kanban')?.classList.contains('active')) ||
-                (batch.status === 'logistic_input' && document.querySelector('#tab-input-logistic')?.classList.contains('active')) ||
-                (batch.status === 'produksi_input' && document.querySelector('#tab-input-produksi')?.classList.contains('active')) ||
-                (batch.status === 'qc' && document.getElementById('page-qc')?.classList.contains('active')) ||
-                (batch.status === 'qa' && document.getElementById('page-qa')?.classList.contains('active'))
+                (batch.status === 'produksi' && isPageActive('page-produksi') && document.querySelector(
+                    '#tab-kanban-produksi')?.classList.contains('active')) ||
+                (batch.status === 'logistic' && isPageActive('page-logistic') && document.querySelector(
+                    '#tab-respon-kanban')?.classList.contains('active')) ||
+                (batch.status === 'logistic_input' && isPageActive('page-logistic') && document.querySelector(
+                    '#tab-input-logistic')?.classList.contains('active')) ||
+                (batch.status === 'produksi_input' && isPageActive('page-produksi') && document.querySelector(
+                    '#tab-input-produksi')?.classList.contains('active')) ||
+                (batch.status === 'qc' && isPageActive('page-qc')) ||
+                (batch.status === 'qa' && isPageActive('page-qa'))
             );
 
             // Tentukan status giliran
@@ -2310,7 +1180,6 @@
                 container.innerHTML = '<div class="empty-state"><p>Belum ada batch yang diinput</p></div>';
                 return;
             }
-            // showActions = false -> TIDAK ADA ACTION DI PPIC
             container.innerHTML = allBatches.map(b => renderScoreCard(b, false)).join('');
         }
 
