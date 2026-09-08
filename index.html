@@ -5,17 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Monitoring PCT</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f2f5;
-            color: #333;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; color: #333; }
         
         .header {
             background: linear-gradient(135deg, #1a237e, #0d47a1);
@@ -29,44 +20,12 @@
             top: 0;
             z-index: 1000;
         }
-        
-        .header h1 {
-            font-size: 24px;
-            font-weight: 300;
-        }
-        
-        .header h1 span {
-            font-weight: 700;
-        }
-        
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .user-info {
-            font-size: 14px;
-            opacity: 0.9;
-            background: rgba(255,255,255,0.15);
-            padding: 5px 15px;
-            border-radius: 20px;
-        }
-        
-        .btn-logout {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.3);
-            padding: 5px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 13px;
-            transition: all 0.3s;
-        }
-        
-        .btn-logout:hover {
-            background: rgba(255,255,255,0.3);
-        }
+        .header h1 { font-size: 24px; font-weight: 300; }
+        .header h1 span { font-weight: 700; }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .user-info { font-size: 14px; opacity: 0.9; background: rgba(255,255,255,0.15); padding: 5px 15px; border-radius: 20px; }
+        .btn-logout { background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 5px 15px; border-radius: 20px; cursor: pointer; font-size: 13px; transition: all 0.3s; }
+        .btn-logout:hover { background: rgba(255,255,255,0.3); }
         
         .nav {
             background: white;
@@ -79,7 +38,6 @@
             z-index: 999;
             flex-wrap: wrap;
         }
-        
         .nav-btn {
             padding: 12px 20px;
             border: none;
@@ -91,99 +49,24 @@
             transition: all 0.3s;
             border-bottom: 3px solid transparent;
         }
+        .nav-btn:hover { color: #0d47a1; background: #f5f5f5; }
+        .nav-btn.active { color: #0d47a1; border-bottom-color: #0d47a1; }
+        .nav-btn.hidden { display: none; }
         
-        .nav-btn:hover {
-            color: #0d47a1;
-            background: #f5f5f5;
-        }
+        .container { max-width: 1600px; margin: 20px auto; padding: 0 20px; }
+        .page { display: none; animation: fadeIn 0.3s; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .nav-btn.active {
-            color: #0d47a1;
-            border-bottom-color: #0d47a1;
-        }
+        .card { background: white; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .card h2 { color: #1a237e; margin-bottom: 15px; font-size: 20px; border-bottom: 2px solid #e8eaf6; padding-bottom: 10px; }
+        .card h3 { color: #0d47a1; margin: 15px 0 10px 0; font-size: 16px; }
         
-        .nav-btn.hidden {
-            display: none;
-        }
-        
-        .container {
-            max-width: 1600px;
-            margin: 20px auto;
-            padding: 0 20px;
-        }
-        
-        .page {
-            display: none;
-            animation: fadeIn 0.3s;
-        }
-        
-        .page.active {
-            display: block;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        }
-        
-        .card h2 {
-            color: #1a237e;
-            margin-bottom: 15px;
-            font-size: 20px;
-            border-bottom: 2px solid #e8eaf6;
-            padding-bottom: 10px;
-        }
-        
-        .card h3 {
-            color: #0d47a1;
-            margin: 15px 0 10px 0;
-            font-size: 16px;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: #555;
-            font-size: 13px;
-        }
-        
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-        
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #0d47a1;
-            box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.1);
-        }
-        
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #555; font-size: 13px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; transition: border-color 0.3s; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #0d47a1; box-shadow: 0 0 0 3px rgba(13,71,161,0.1); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         
         .btn {
             padding: 10px 25px;
@@ -194,52 +77,34 @@
             cursor: pointer;
             transition: all 0.3s;
         }
-        
         .btn-primary { background: #0d47a1; color: white; }
         .btn-primary:hover { background: #1a237e; transform: translateY(-1px); box-shadow: 0 4px 10px rgba(13,71,161,0.3); }
-        
         .btn-success { background: #2e7d32; color: white; }
         .btn-success:hover { background: #1b5e20; transform: translateY(-1px); box-shadow: 0 4px 10px rgba(46,125,50,0.3); }
-        
         .btn-danger { background: #c62828; color: white; }
         .btn-danger:hover { background: #b71c1c; transform: translateY(-1px); box-shadow: 0 4px 10px rgba(198,40,40,0.3); }
-        
         .btn-warning { background: #f57c00; color: white; }
         .btn-warning:hover { background: #e65100; transform: translateY(-1px); box-shadow: 0 4px 10px rgba(245,124,0,0.3); }
-        
         .btn-sm { padding: 5px 15px; font-size: 12px; }
         .btn-secondary { background: #757575; color: white; }
         .btn-secondary:hover { background: #616161; }
         .btn-guest { background: #f57c00; color: white; }
         .btn-guest:hover { background: #e65100; }
+        .btn-disabled { background: #e0e0e0; color: #999; cursor: not-allowed; }
+        .btn-disabled:hover { transform: none; box-shadow: none; }
         
         .grid-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
         .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
         .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
         
-        .tabs {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #e8eaf6;
-        }
-        
-        .tab-btn {
-            padding: 10px 20px;
-            border: none;
-            background: transparent;
-            font-weight: 600;
-            color: #757575;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-        }
-        
+        .tabs { display: flex; gap: 5px; margin-bottom: 20px; border-bottom: 2px solid #e8eaf6; }
+        .tab-btn { padding: 10px 20px; border: none; background: transparent; font-weight: 600; color: #757575; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.3s; }
         .tab-btn.active { color: #0d47a1; border-bottom-color: #0d47a1; }
         .tab-btn:hover { color: #0d47a1; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         
+        /* ==================== SCORE CARD ==================== */
         .score-card {
             background: #f8f9fa;
             border-left: 4px solid #0d47a1;
@@ -247,59 +112,19 @@
             padding: 15px 20px;
             margin-bottom: 15px;
             transition: all 0.3s;
+            position: relative;
         }
+        .score-card:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.1); transform: translateX(5px); }
         
-        .score-card:hover {
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transform: translateX(5px);
-        }
-        
-        .score-card .header-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        
-        .score-card .batch-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .score-card .batch-number {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1a237e;
-        }
-        
-        .score-card .product-code {
-            font-size: 13px;
-            color: #757575;
-            background: #f5f5f5;
-            padding: 2px 10px;
-            border-radius: 12px;
-        }
-        
-        .score-card .batch-type {
-            padding: 3px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
+        .score-card .header-info { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .score-card .batch-info { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .score-card .batch-number { font-size: 18px; font-weight: 700; color: #1a237e; }
+        .score-card .product-code { font-size: 13px; color: #757575; background: #f5f5f5; padding: 2px 10px; border-radius: 12px; }
+        .score-card .batch-type { padding: 3px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
         .batch-type.injeksi { background: #e3f2fd; color: #0d47a1; }
         .batch-type.oral { background: #f3e5f5; color: #6a1b9a; }
         
-        .score-card .status {
-            padding: 3px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
+        .score-card .status { padding: 3px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
         .status.draft { background: #e0e0e0; color: #616161; }
         .status.produksi { background: #fff3e0; color: #e65100; }
         .status.logistic { background: #e3f2fd; color: #0d47a1; }
@@ -310,70 +135,44 @@
         .status.done { background: #c8e6c9; color: #1b5e20; }
         .status.problem { background: #ffcdd2; color: #b71c1c; }
         
-        .score-card .details {
-            margin-top: 10px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 10px;
-            font-size: 13px;
-        }
-        
+        .score-card .details { margin-top: 10px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; font-size: 13px; }
         .score-card .details .field { color: #757575; }
         .score-card .details .value { font-weight: 600; color: #333; }
         .score-card .details .target { font-size: 11px; color: #999; }
         .score-card .actions { margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
         
-        .personil-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 15px;
-            background: #f5f5f5;
-            border-radius: 6px;
-            margin-bottom: 8px;
-        }
-        
-        .personil-item .delete-btn { color: #c62828; cursor: pointer; font-weight: 700; padding: 0 10px; }
-        
-        @media (max-width: 768px) {
-            .header h1 { font-size: 18px; }
-            .nav-btn { padding: 10px 12px; font-size: 12px; }
-            .form-row { grid-template-columns: 1fr; }
-            .grid-2 { grid-template-columns: 1fr; }
-            .score-card .header-info { flex-direction: column; align-items: flex-start; }
-            .header-right { flex-wrap: wrap; }
-        }
-        
-        .problem-text {
-            color: #c62828;
+        /* Status Badge di Score Card */
+        .stage-badge {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 11px;
             font-weight: 600;
-            padding: 5px 10px;
-            background: #ffcdd2;
+        }
+        .stage-badge.waiting { background: #e0e0e0; color: #757575; }
+        .stage-badge.active { background: #fff3e0; color: #e65100; animation: pulse 1.5s infinite; }
+        .stage-badge.done { background: #c8e6c9; color: #1b5e20; }
+        .stage-badge.locked { background: #ffcdd2; color: #b71c1c; }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+        
+        /* Locked field */
+        .field-locked {
+            background: #f5f5f5;
+            padding: 6px 12px;
             border-radius: 4px;
-            margin-top: 5px;
-            font-size: 13px;
+            border-left: 3px solid #2e7d32;
+            font-weight: 500;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        
-        .empty-state { text-align: center; padding: 40px 20px; color: #999; }
-        .empty-state p { font-size: 16px; }
-        
-        .notification {
-            padding: 15px 20px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            display: none;
-        }
-        
-        .notification.success { display: block; background: #c8e6c9; color: #1b5e20; border-left: 4px solid #2e7d32; }
-        .notification.error { display: block; background: #ffcdd2; color: #b71c1c; border-left: 4px solid #c62828; }
-        .notification.info { display: block; background: #e3f2fd; color: #0d47a1; border-left: 4px solid #0d47a1; }
-        
-        .jadwal-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
-        .jadwal-item { display: flex; flex-direction: column; gap: 5px; }
-        .jadwal-item label { font-size: 12px; font-weight: 600; color: #555; }
-        .jadwal-item input { padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; }
-        .jadwal-item input[type="datetime-local"] { padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; width: 100%; }
-        .jadwal-item .jadwal-value { padding: 6px 10px; background: #e8f5e9; border-radius: 4px; border-left: 3px solid #2e7d32; font-weight: 500; font-size: 13px; }
+        .field-locked .lock-icon { color: #2e7d32; font-size: 14px; }
         
         .step-indicator {
             display: flex;
@@ -385,7 +184,6 @@
             margin-bottom: 15px;
             flex-wrap: wrap;
         }
-        
         .step-indicator .step { padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
         .step-indicator .step.active { background: #0d47a1; color: white; }
         .step-indicator .step.done { background: #c8e6c9; color: #1b5e20; }
@@ -397,88 +195,59 @@
         .status-badge.problem { background: #ffcdd2; color: #b71c1c; }
         .status-badge.waiting { background: #fff3e0; color: #e65100; }
         
+        .personil-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: #f5f5f5; border-radius: 6px; margin-bottom: 8px; }
+        .personil-item .delete-btn { color: #c62828; cursor: pointer; font-weight: 700; padding: 0 10px; }
+        
+        .problem-text { color: #c62828; font-weight: 600; padding: 5px 10px; background: #ffcdd2; border-radius: 4px; margin-top: 5px; font-size: 13px; }
+        .empty-state { text-align: center; padding: 40px 20px; color: #999; }
+        .empty-state p { font-size: 16px; }
+        
+        .notification { padding: 15px 20px; border-radius: 6px; margin-bottom: 15px; display: none; }
+        .notification.success { display: block; background: #c8e6c9; color: #1b5e20; border-left: 4px solid #2e7d32; }
+        .notification.error { display: block; background: #ffcdd2; color: #b71c1c; border-left: 4px solid #c62828; }
+        .notification.info { display: block; background: #e3f2fd; color: #0d47a1; border-left: 4px solid #0d47a1; }
+        
+        .jadwal-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
+        .jadwal-item { display: flex; flex-direction: column; gap: 5px; }
+        .jadwal-item label { font-size: 12px; font-weight: 600; color: #555; }
+        .jadwal-item input { padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; }
+        .jadwal-item input[type="datetime-local"] { padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; width: 100%; }
+        .jadwal-item .jadwal-value { padding: 6px 10px; background: #e8f5e9; border-radius: 4px; border-left: 3px solid #2e7d32; font-weight: 500; font-size: 13px; }
+        
         .date-time-label { font-size: 11px; color: #757575; margin-top: 2px; }
         .datetime-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
+            .header h1 { font-size: 18px; }
+            .nav-btn { padding: 10px 12px; font-size: 12px; }
+            .form-row { grid-template-columns: 1fr; }
+            .grid-2 { grid-template-columns: 1fr; }
+            .score-card .header-info { flex-direction: column; align-items: flex-start; }
+            .header-right { flex-wrap: wrap; }
             .datetime-grid { grid-template-columns: 1fr; }
             .jadwal-container { grid-template-columns: 1fr; }
         }
         
-        .login-page {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #e8eaf6, #c5cae9);
-        }
-        
-        .login-box {
-            background: white;
-            border-radius: 16px;
-            padding: 40px;
-            max-width: 420px;
-            width: 100%;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-        }
-        
+        .login-page { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #e8eaf6, #c5cae9); }
+        .login-box { background: white; border-radius: 16px; padding: 40px; max-width: 420px; width: 100%; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
         .login-box h2 { text-align: center; color: #1a237e; margin-bottom: 10px; }
         .login-box .subtitle { text-align: center; color: #757575; margin-bottom: 25px; font-size: 14px; }
         .login-box .btn { width: 100%; padding: 12px; margin-bottom: 10px; }
-        
-        .login-divider {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin: 20px 0;
-            color: #999;
-        }
-        
-        .login-divider::before,
-        .login-divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: #ddd;
-        }
-        
-        .login-error {
-            background: #ffcdd2;
-            color: #b71c1c;
-            padding: 10px 15px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            display: none;
-            font-size: 14px;
-        }
-        
+        .login-divider { display: flex; align-items: center; gap: 15px; margin: 20px 0; color: #999; }
+        .login-divider::before, .login-divider::after { content: ''; flex: 1; height: 1px; background: #ddd; }
+        .login-error { background: #ffcdd2; color: #b71c1c; padding: 10px 15px; border-radius: 6px; margin-bottom: 15px; display: none; font-size: 14px; }
         .login-error.show { display: block; }
         
-        /* DASHBOARD STYLES */
-        .kpi-card {
-            padding: 15px 20px;
-            border-radius: 8px;
-            text-align: center;
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
-        
+        /* Dashboard */
+        .kpi-card { padding: 15px 20px; border-radius: 8px; text-align: center; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
         .kpi-card .kpi-value { font-size: 28px; font-weight: 700; color: #1a237e; }
         .kpi-card .kpi-label { font-size: 13px; color: #757575; margin-top: 3px; }
         .kpi-card .kpi-sub { font-size: 12px; color: #999; margin-top: 2px; }
-        
         .kpi-card.oral { border-left: 4px solid #6a1b9a; }
         .kpi-card.injeksi { border-left: 4px solid #0d47a1; }
         .kpi-card.total { border-left: 4px solid #e65100; }
         
-        .chart-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            margin-bottom: 20px;
-        }
-        
+        .chart-card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 20px; }
         .chart-card h3 { font-size: 15px; color: #1a237e; margin-bottom: 15px; border-bottom: 2px solid #e8eaf6; padding-bottom: 10px; }
         .chart-card .chart-legend { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 10px; font-size: 12px; }
         .chart-card .chart-legend .dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 5px; }
@@ -508,66 +277,47 @@
         .badge-oral { background: #f3e5f5; color: #6a1b9a; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
         .badge-injeksi { background: #e3f2fd; color: #0d47a1; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
         
-        .filter-bar {
-            background: white;
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            align-items: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
-        
-        .filter-bar select,
-        .filter-bar input {
-            padding: 8px 14px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 13px;
-            background: white;
-        }
-        
+        .filter-bar { background: white; padding: 15px 20px; border-radius: 10px; margin-bottom: 20px; display: flex; gap: 20px; flex-wrap: wrap; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .filter-bar select, .filter-bar input { padding: 8px 14px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; background: white; }
         .filter-bar label { font-weight: 600; font-size: 13px; color: #555; }
-        
         .text-muted { color: #999; font-size: 12px; }
         
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-        }
-        
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; }
         .modal-overlay.active { display: flex; }
-        
-        .modal-box {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            animation: modalIn 0.3s;
-        }
-        
-        @keyframes modalIn {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-        
+        .modal-box { background: white; border-radius: 12px; padding: 30px; max-width: 500px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.3); animation: modalIn 0.3s; }
+        @keyframes modalIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .modal-box h3 { margin-bottom: 15px; color: #1a237e; }
         .modal-box .form-group { margin-bottom: 15px; }
         .modal-box .form-group textarea { resize: vertical; min-height: 80px; }
         .modal-box .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px; }
         .modal-box .modal-actions .btn { padding: 8px 20px; }
+        
+        /* Info box untuk status giliran */
+        .turn-info {
+            padding: 8px 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .turn-info.your-turn { background: #e3f2fd; color: #0d47a1; border-left: 4px solid #0d47a1; }
+        .turn-info.waiting { background: #f5f5f5; color: #757575; border-left: 4px solid #999; }
+        .turn-info.done { background: #e8f5e9; color: #1b5e20; border-left: 4px solid #2e7d32; }
+        .turn-info.problem { background: #ffcdd2; color: #b71c1c; border-left: 4px solid #c62828; }
+        
+        .locked-field {
+            background: #f5f5f5;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border-left: 3px solid #2e7d32;
+            color: #333;
+            font-weight: 500;
+            display: inline-block;
+        }
+        .locked-field .lock-icon { margin-right: 5px; }
     </style>
 </head>
 <body>
@@ -576,20 +326,14 @@
         <div class="login-box">
             <h2>📊 PCT Monitoring</h2>
             <p class="subtitle">Production Cycle Time System</p>
-            
             <div id="loginError" class="login-error"></div>
-            
             <div class="form-group">
                 <label>Masukkan Nama atau Admin</label>
                 <input type="text" id="loginInput" placeholder="Nama Anda atau ketik 'admin123'" onkeydown="if(event.key==='Enter') login()">
             </div>
-            
             <button class="btn btn-primary" onclick="login()">🔐 Login</button>
-            
             <div class="login-divider">atau</div>
-            
             <button class="btn btn-guest" onclick="loginGuest()">👤 Masuk sebagai Guest</button>
-            
             <div style="margin-top:15px;padding:10px;background:#f5f5f5;border-radius:6px;font-size:12px;color:#757575;">
                 <strong>💡 Info:</strong><br>
                 • <strong>Admin:</strong> ketik "admin123"<br>
@@ -625,134 +369,24 @@
             <!-- DASHBOARD -->
             <div id="page-dashboard" class="page active">
                 <div class="filter-bar">
-                    <div>
-                        <label>📅 Periode</label>
-                        <select id="filterPeriode" onchange="renderDashboard()">
-                            <option value="all">Semua</option>
-                            <option value="7">7 Hari Terakhir</option>
-                            <option value="30">30 Hari Terakhir</option>
-                            <option value="90">90 Hari Terakhir</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label>🏷️ Tipe</label>
-                        <select id="filterType" onchange="renderDashboard()">
-                            <option value="all">Semua</option>
-                            <option value="oral">Oral</option>
-                            <option value="injeksi">Injeksi</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label>🔍 Cari Batch</label>
-                        <input type="text" id="filterSearch" placeholder="Nomor batch..." oninput="renderDashboard()">
-                    </div>
+                    <div><label>📅 Periode</label><select id="filterPeriode" onchange="renderDashboard()"><option value="all">Semua</option><option value="7">7 Hari</option><option value="30">30 Hari</option><option value="90">90 Hari</option></select></div>
+                    <div><label>🏷️ Tipe</label><select id="filterType" onchange="renderDashboard()"><option value="all">Semua</option><option value="oral">Oral</option><option value="injeksi">Injeksi</option></select></div>
+                    <div><label>🔍 Cari</label><input type="text" id="filterSearch" placeholder="Nomor batch..." oninput="renderDashboard()"></div>
                     <button class="btn btn-primary btn-sm" onclick="resetFilter()" style="padding:8px 20px;">Reset</button>
                 </div>
-                
                 <div class="grid-4" id="kpiGrid">
-                    <div class="kpi-card oral">
-                        <div class="kpi-value" id="kpiOralAvg">-</div>
-                        <div class="kpi-label">📊 Rata-rata PCT Oral (hari)</div>
-                        <div class="kpi-sub" id="kpiOralCount">0 Batch</div>
-                    </div>
-                    <div class="kpi-card injeksi">
-                        <div class="kpi-value" id="kpiInjeksiAvg">-</div>
-                        <div class="kpi-label">📊 Rata-rata PCT Injeksi (hari)</div>
-                        <div class="kpi-sub" id="kpiInjeksiCount">0 Batch</div>
-                    </div>
-                    <div class="kpi-card total">
-                        <div class="kpi-value" id="kpiTotal">0</div>
-                        <div class="kpi-label">📦 Total Batch</div>
-                        <div class="kpi-sub" id="kpiOnGoing">On Going: 0</div>
-                    </div>
-                    <div class="kpi-card" style="border-left-color:#f57c00;">
-                        <div class="kpi-value" id="kpiTarget">-</div>
-                        <div class="kpi-label">🎯 On Target Rate</div>
-                        <div class="kpi-sub" id="kpiTargetDetail">0 / 0 batch</div>
-                    </div>
+                    <div class="kpi-card oral"><div class="kpi-value" id="kpiOralAvg">-</div><div class="kpi-label">📊 Rata-rata PCT Oral (hari)</div><div class="kpi-sub" id="kpiOralCount">0 Batch</div></div>
+                    <div class="kpi-card injeksi"><div class="kpi-value" id="kpiInjeksiAvg">-</div><div class="kpi-label">📊 Rata-rata PCT Injeksi (hari)</div><div class="kpi-sub" id="kpiInjeksiCount">0 Batch</div></div>
+                    <div class="kpi-card total"><div class="kpi-value" id="kpiTotal">0</div><div class="kpi-label">📦 Total Batch</div><div class="kpi-sub" id="kpiOnGoing">On Going: 0</div></div>
+                    <div class="kpi-card" style="border-left-color:#f57c00;"><div class="kpi-value" id="kpiTarget">-</div><div class="kpi-label">🎯 On Target Rate</div><div class="kpi-sub" id="kpiTargetDetail">0 / 0 batch</div></div>
                 </div>
-                
                 <div class="grid-2" style="gap:20px;margin-bottom:20px;">
-                    <div class="chart-card">
-                        <h3>📈 Line PCT - Oral</h3>
-                        <div class="chart-legend">
-                            <span><span class="dot" style="background:#6a1b9a;"></span> PCT Include Mikro</span>
-                            <span><span class="dot" style="background:#ce93d8;"></span> PCT Exclude Mikro</span>
-                            <span><span class="dot" style="background:#c62828;border:2px dashed #c62828;"></span> Target</span>
-                        </div>
-                        <div class="line-chart" id="lineOral">
-                            <div class="empty-state" style="text-align:center;padding:40px;color:#999;">Belum ada data Oral</div>
-                        </div>
-                    </div>
-                    <div class="chart-card">
-                        <h3>📈 Line PCT - Injeksi</h3>
-                        <div class="chart-legend">
-                            <span><span class="dot" style="background:#0d47a1;"></span> PCT Include Mikro</span>
-                            <span><span class="dot" style="background:#64b5f6;"></span> PCT Exclude Mikro</span>
-                            <span><span class="dot" style="background:#c62828;border:2px dashed #c62828;"></span> Target</span>
-                        </div>
-                        <div class="line-chart" id="lineInjeksi">
-                            <div class="empty-state" style="text-align:center;padding:40px;color:#999;">Belum ada data Injeksi</div>
-                        </div>
-                    </div>
+                    <div class="chart-card"><h3>📈 Line PCT - Oral</h3><div class="chart-legend"><span><span class="dot" style="background:#6a1b9a;"></span> PCT Include</span><span><span class="dot" style="background:#ce93d8;"></span> PCT Exclude</span><span><span class="dot" style="background:#c62828;border:2px dashed #c62828;"></span> Target</span></div><div class="line-chart" id="lineOral"><div class="empty-state" style="text-align:center;padding:40px;color:#999;">Belum ada data Oral</div></div></div>
+                    <div class="chart-card"><h3>📈 Line PCT - Injeksi</h3><div class="chart-legend"><span><span class="dot" style="background:#0d47a1;"></span> PCT Include</span><span><span class="dot" style="background:#64b5f6;"></span> PCT Exclude</span><span><span class="dot" style="background:#c62828;border:2px dashed #c62828;"></span> Target</span></div><div class="line-chart" id="lineInjeksi"><div class="empty-state" style="text-align:center;padding:40px;color:#999;">Belum ada data Injeksi</div></div></div>
                 </div>
-                
-                <div class="chart-card">
-                    <h3>📊 PCT per Batch Number (Include Mikro) vs Target</h3>
-                    <div class="chart-legend">
-                        <span><span class="dot" style="background:#1a237e;"></span> Actual PCT</span>
-                        <span><span class="dot" style="background:#c62828;border:2px dashed #c62828;"></span> Target per Kode Produk</span>
-                    </div>
-                    <div class="bar-chart" id="barChart">
-                        <div class="empty-state" style="text-align:center;padding:40px;color:#999;width:100%;">Belum ada data batch</div>
-                    </div>
-                </div>
-                
-                <div class="chart-card">
-                    <h3>📋 Detail PCT per Batch</h3>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>BATCH NUMBER</th>
-                                    <th>Kode Produk</th>
-                                    <th>Tipe</th>
-                                    <th>Tanggal Rilis</th>
-                                    <th>PCT inc Mikro</th>
-                                    <th>PCT exc Mikro</th>
-                                    <th>Logistik (&lt;0.29)</th>
-                                    <th>Produksi (&lt;5)</th>
-                                    <th>QC (&lt;5.5)</th>
-                                    <th>QA (&lt;0.125)</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="detailTableBody">
-                                <tr><td colspan="11" style="text-align:center;color:#999;padding:30px;">Belum ada data</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                
-                <div class="chart-card">
-                    <h3>⏳ On Going - Oral</h3>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>BATCH NUMBER</th>
-                                    <th>PCT On Going</th>
-                                    <th>Status</th>
-                                    <th>Estimasi LWS</th>
-                                    <th>Target Rilis</th>
-                                </tr>
-                            </thead>
-                            <tbody id="onGoingTableBody">
-                                <tr><td colspan="5" style="text-align:center;color:#999;padding:30px;">Tidak ada batch On Going</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <div class="chart-card"><h3>📊 PCT per Batch Number (Include Mikro) vs Target</h3><div class="chart-legend"><span><span class="dot" style="background:#1a237e;"></span> Actual PCT</span><span><span class="dot" style="background:#c62828;border:2px dashed #c62828;"></span> Target per Kode Produk</span></div><div class="bar-chart" id="barChart"><div class="empty-state" style="text-align:center;padding:40px;color:#999;width:100%;">Belum ada data batch</div></div></div>
+                <div class="chart-card"><h3>📋 Detail PCT per Batch</h3><div class="table-container"><table><thead><tr><th>BATCH</th><th>Kode</th><th>Tipe</th><th>Tanggal Rilis</th><th>PCT inc</th><th>PCT exc</th><th>Logistik (&lt;0.29)</th><th>Produksi (&lt;5)</th><th>QC (&lt;5.5)</th><th>QA (&lt;0.125)</th><th>Status</th></tr></thead><tbody id="detailTableBody"><tr><td colspan="11" style="text-align:center;color:#999;padding:30px;">Belum ada data</td></tr></tbody></table></div></div>
+                <div class="chart-card"><h3>⏳ On Going - Oral</h3><div class="table-container"><table><thead><tr><th>BATCH</th><th>PCT On Going</th><th>Status</th><th>Estimasi LWS</th><th>Target Rilis</th></tr></thead><tbody id="onGoingTableBody"><tr><td colspan="5" style="text-align:center;color:#999;padding:30px;">Tidak ada batch On Going</td></tr></tbody></table></div></div>
             </div>
             
             <!-- PPIC -->
@@ -760,7 +394,7 @@
                 <div class="card">
                     <h2>📋 Input Nomor Batch</h2>
                     <div style="background:#fff3e0;padding:10px 15px;border-radius:6px;border-left:4px solid #f57c00;margin-bottom:15px;color:#e65100;font-size:13px;">
-                        ⚠️ Data disimpan di memory (akan hilang jika refresh) <br>
+                        ⚠️ Data disimpan di memory (akan hilang jika refresh)<br>
                         💡 5 huruf pertama = Kode Produk (harus terdaftar di Management)
                     </div>
                     <div class="form-group">
@@ -770,7 +404,6 @@
                     </div>
                     <button class="btn btn-primary" onclick="addBatch()">➕ Tambah Batch</button>
                 </div>
-                
                 <div class="card">
                     <h2>📋 Daftar Score Card</h2>
                     <div id="ppicScoreCards"></div>
@@ -783,19 +416,11 @@
                     <button class="tab-btn active" data-tab="kanban-produksi">📋 Kanban Produksi</button>
                     <button class="tab-btn" data-tab="input-produksi">✏️ Input Produksi</button>
                 </div>
-                
                 <div id="tab-kanban-produksi" class="tab-content active">
-                    <div class="card">
-                        <h2>📋 Kanban Produksi</h2>
-                        <div id="kanbanProduksi"></div>
-                    </div>
+                    <div class="card"><h2>📋 Kanban Produksi</h2><div id="kanbanProduksi"></div></div>
                 </div>
-                
                 <div id="tab-input-produksi" class="tab-content">
-                    <div class="card">
-                        <h2>✏️ Input Produksi</h2>
-                        <div id="inputProduksi"></div>
-                    </div>
+                    <div class="card"><h2>✏️ Input Produksi</h2><div id="inputProduksi"></div></div>
                 </div>
             </div>
             
@@ -805,36 +430,22 @@
                     <button class="tab-btn active" data-tab="respon-kanban">📦 Respon Kanban</button>
                     <button class="tab-btn" data-tab="input-logistic">✏️ Input Logistic</button>
                 </div>
-                
                 <div id="tab-respon-kanban" class="tab-content active">
-                    <div class="card">
-                        <h2>📦 Respon Kanban</h2>
-                        <div id="responKanban"></div>
-                    </div>
+                    <div class="card"><h2>📦 Respon Kanban</h2><div id="responKanban"></div></div>
                 </div>
-                
                 <div id="tab-input-logistic" class="tab-content">
-                    <div class="card">
-                        <h2>✏️ Input Logistic</h2>
-                        <div id="inputLogistic"></div>
-                    </div>
+                    <div class="card"><h2>✏️ Input Logistic</h2><div id="inputLogistic"></div></div>
                 </div>
             </div>
             
             <!-- QC -->
             <div id="page-qc" class="page">
-                <div class="card">
-                    <h2>🔬 Quality Control</h2>
-                    <div id="qcList"></div>
-                </div>
+                <div class="card"><h2>🔬 Quality Control</h2><div id="qcList"></div></div>
             </div>
             
             <!-- QA -->
             <div id="page-qa" class="page">
-                <div class="card">
-                    <h2>✅ Quality Assurance</h2>
-                    <div id="qaList"></div>
-                </div>
+                <div class="card"><h2>✅ Quality Assurance</h2><div id="qaList"></div></div>
             </div>
             
             <!-- MANAGEMENT -->
@@ -843,63 +454,27 @@
                     <div>
                         <div class="card">
                             <h2>👤 Manage Personil</h2>
-                            <div class="form-group">
-                                <label>Nama</label>
-                                <input type="text" id="personilName" placeholder="Masukkan nama">
-                            </div>
-                            <div class="form-group">
-                                <label>Departemen</label>
-                                <select id="personilDept">
-                                    <option value="PPIC">PPIC</option>
-                                    <option value="Produksi">Produksi</option>
-                                    <option value="Logistic">Logistic</option>
-                                    <option value="QC">QC</option>
-                                    <option value="QA">QA</option>
-                                    <option value="Management">Management</option>
-                                </select>
-                            </div>
+                            <div class="form-group"><label>Nama</label><input type="text" id="personilName" placeholder="Masukkan nama"></div>
+                            <div class="form-group"><label>Departemen</label><select id="personilDept"><option value="PPIC">PPIC</option><option value="Produksi">Produksi</option><option value="Logistic">Logistic</option><option value="QC">QC</option><option value="QA">QA</option><option value="Management">Management</option></select></div>
                             <button class="btn btn-primary" onclick="addPersonil()">➕ Tambah Personil</button>
-                            <div style="margin-top:15px;">
-                                <h3>Daftar Personil</h3>
-                                <div id="personilList"></div>
-                            </div>
+                            <div style="margin-top:15px;"><h3>Daftar Personil</h3><div id="personilList"></div></div>
                         </div>
                     </div>
                     <div>
                         <div class="card">
                             <h2>📦 Manage Kode Produk</h2>
-                            <div style="background:#fff3e0;padding:10px 15px;border-radius:6px;border-left:4px solid #f57c00;margin-bottom:15px;color:#e65100;font-size:13px;">
-                                ⚠️ Kode produk ini akan digunakan untuk mapping target ke nomor batch
-                            </div>
-                            <div class="form-group">
-                                <label>Kode Produk (5 Huruf)</label>
-                                <input type="text" id="productCode" placeholder="Contoh: TABCD" maxlength="5">
+                            <div style="background:#fff3e0;padding:10px 15px;border-radius:6px;border-left:4px solid #f57c00;margin-bottom:15px;color:#e65100;font-size:13px;">⚠️ Kode produk untuk mapping target ke nomor batch</div>
+                            <div class="form-group"><label>Kode Produk (5 Huruf)</label><input type="text" id="productCode" placeholder="Contoh: TABCD" maxlength="5"></div>
+                            <div class="form-row">
+                                <div class="form-group"><label>Target Timbang (Jam)</label><input type="number" id="targetTimbang" placeholder="0" step="0.5"></div>
+                                <div class="form-group"><label>Target Produksi (Jam)</label><input type="number" id="targetProduksi" placeholder="0" step="0.5"></div>
                             </div>
                             <div class="form-row">
-                                <div class="form-group">
-                                    <label>Target Timbang (Jam)</label>
-                                    <input type="number" id="targetTimbang" placeholder="0" step="0.5">
-                                </div>
-                                <div class="form-group">
-                                    <label>Target Produksi (Jam)</label>
-                                    <input type="number" id="targetProduksi" placeholder="0" step="0.5">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Target Analisa Sample (Jam)</label>
-                                    <input type="number" id="targetAnalisa" placeholder="0" step="0.5">
-                                </div>
-                                <div class="form-group">
-                                    <label>Target Perilisan (Jam)</label>
-                                    <input type="number" id="targetPerilisan" placeholder="0" step="0.5">
-                                </div>
+                                <div class="form-group"><label>Target Analisa (Jam)</label><input type="number" id="targetAnalisa" placeholder="0" step="0.5"></div>
+                                <div class="form-group"><label>Target Perilisan (Jam)</label><input type="number" id="targetPerilisan" placeholder="0" step="0.5"></div>
                             </div>
                             <button class="btn btn-primary" onclick="addProduct()">➕ Tambah Produk</button>
-                            <div style="margin-top:15px;">
-                                <h3>Daftar Produk</h3>
-                                <div id="productList"></div>
-                            </div>
+                            <div style="margin-top:15px;"><h3>Daftar Produk</h3><div id="productList"></div></div>
                         </div>
                     </div>
                 </div>
@@ -911,25 +486,14 @@
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-box">
             <h3 id="modalTitle">Input Alasan Problem</h3>
-            <div class="form-group">
-                <label id="modalLabel">Masukkan alasan problem:</label>
-                <textarea id="modalInput" placeholder="Contoh: Material belum tersedia, Kerusakan mesin, dll"></textarea>
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-secondary btn-sm" onclick="closeModal()">Batal</button>
-                <button class="btn btn-success btn-sm" onclick="confirmModal()">OK</button>
-            </div>
+            <div class="form-group"><label id="modalLabel">Masukkan alasan problem:</label><textarea id="modalInput" placeholder="Contoh: Material belum tersedia, Kerusakan mesin, dll"></textarea></div>
+            <div class="modal-actions"><button class="btn btn-secondary btn-sm" onclick="closeModal()">Batal</button><button class="btn btn-success btn-sm" onclick="confirmModal()">OK</button></div>
         </div>
     </div>
 
     <script>
         // ==================== DATA STORE ====================
-        let data = {
-            personil: [],
-            products: [],
-            batches: []
-        };
-        
+        let data = { personil: [], products: [], batches: [] };
         let modalCallback = null;
         let currentUser = null;
         
@@ -946,34 +510,15 @@
         function login() {
             const input = document.getElementById('loginInput').value.trim();
             const errorEl = document.getElementById('loginError');
-            
-            if (!input) {
-                errorEl.textContent = '⚠️ Masukkan nama atau admin!';
-                errorEl.classList.add('show');
-                return;
-            }
-            
-            if (input === 'admin123') {
-                currentUser = { role: 'admin', name: 'Admin', department: null };
-                showMainApp();
-                return;
-            }
-            
+            if (!input) { errorEl.textContent = '⚠️ Masukkan nama atau admin!'; errorEl.classList.add('show'); return; }
+            if (input === 'admin123') { currentUser = { role: 'admin', name: 'Admin', department: null }; showMainApp(); return; }
             const personil = data.personil.find(p => p.name.toLowerCase() === input.toLowerCase());
-            if (personil) {
-                currentUser = { role: 'user', name: personil.name, department: personil.department };
-                showMainApp();
-                return;
-            }
-            
+            if (personil) { currentUser = { role: 'user', name: personil.name, department: personil.department }; showMainApp(); return; }
             errorEl.textContent = '⚠️ Nama tidak ditemukan! Pastikan nama sudah terdaftar di Management.';
             errorEl.classList.add('show');
         }
         
-        function loginGuest() {
-            currentUser = { role: 'guest', name: 'Guest', department: null };
-            showMainApp();
-        }
+        function loginGuest() { currentUser = { role: 'guest', name: 'Guest', department: null }; showMainApp(); }
         
         function logout() {
             currentUser = null;
@@ -986,16 +531,10 @@
         function showMainApp() {
             document.getElementById('loginPage').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
-            
             const userInfo = document.getElementById('userInfo');
-            if (currentUser.role === 'admin') {
-                userInfo.textContent = '👑 Admin';
-            } else if (currentUser.role === 'user') {
-                userInfo.textContent = `👤 ${currentUser.name} - ${currentUser.department}`;
-            } else {
-                userInfo.textContent = '👤 Guest';
-            }
-            
+            if (currentUser.role === 'admin') userInfo.textContent = '👑 Admin';
+            else if (currentUser.role === 'user') userInfo.textContent = `👤 ${currentUser.name} - ${currentUser.department}`;
+            else userInfo.textContent = '👤 Guest';
             updateNavigation();
             loadData();
             renderAll();
@@ -1005,24 +544,15 @@
         function updateNavigation() {
             const navBtns = document.querySelectorAll('.nav-btn');
             const visiblePages = ['dashboard'];
-            
-            if (currentUser.role === 'admin') {
-                navBtns.forEach(btn => btn.classList.remove('hidden'));
-                return;
-            }
-            
+            if (currentUser.role === 'admin') { navBtns.forEach(btn => btn.classList.remove('hidden')); return; }
             if (currentUser.role === 'user' && currentUser.department) {
                 const deptPages = DEPT_PAGES[currentUser.department] || [];
                 visiblePages.push(...deptPages);
             }
-            
             navBtns.forEach(btn => {
                 const page = btn.dataset.page;
-                if (visiblePages.includes(page)) {
-                    btn.classList.remove('hidden');
-                } else {
-                    btn.classList.add('hidden');
-                }
+                if (visiblePages.includes(page)) btn.classList.remove('hidden');
+                else btn.classList.add('hidden');
             });
         }
         
@@ -1030,24 +560,18 @@
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             const target = document.getElementById('page-' + page);
             if (target) target.classList.add('active');
-            
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             const navBtn = document.querySelector(`.nav-btn[data-page="${page}"]`);
             if (navBtn) navBtn.classList.add('active');
         }
         
-        // Navigation click
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const page = this.dataset.page;
-                if (!this.classList.contains('hidden')) {
-                    showPage(page);
-                    renderAll();
-                }
+                if (!this.classList.contains('hidden')) { showPage(page); renderAll(); }
             });
         });
         
-        // Tabs
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const parent = this.closest('.page');
@@ -1063,110 +587,31 @@
         });
         
         // ==================== UTILITY ====================
-        function generateId() {
-            return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-        }
+        function generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 5); }
+        function getBatchType(bn) { if (!bn) return 'unknown'; const fc = bn.charAt(0).toUpperCase(); return fc === 'V' ? 'injeksi' : (fc === 'T' ? 'oral' : 'unknown'); }
+        function getProductCode(bn) { if (!bn || bn.length < 5) return null; return bn.substring(0, 5).toUpperCase(); }
+        function getStatusLabel(s) { const labels = { 'draft':'Draft','produksi':'Produksi','logistic':'Logistic - Respon','logistic_input':'Logistic - Input','produksi_input':'Produksi - Input','qc':'QC','qa':'QA','done':'Selesai','problem':'Problem' }; return labels[s] || s; }
+        function getStatusColor(s) { const colors = { 'draft':'#757575','produksi':'#e65100','logistic':'#0d47a1','logistic_input':'#2e7d32','produksi_input':'#6a1b9a','qc':'#c62828','qa':'#6a1b9a','done':'#1b5e20','problem':'#b71c1c' }; return colors[s] || '#757575'; }
         
-        function getBatchType(batchNumber) {
-            if (!batchNumber) return 'unknown';
-            const firstChar = batchNumber.charAt(0).toUpperCase();
-            return firstChar === 'V' ? 'injeksi' : (firstChar === 'T' ? 'oral' : 'unknown');
-        }
-        
-        function getProductCode(batchNumber) {
-            if (!batchNumber || batchNumber.length < 5) return null;
-            return batchNumber.substring(0, 5).toUpperCase();
-        }
-        
-        function getStatusLabel(status) {
-            const labels = {
-                'draft': 'Draft',
-                'produksi': 'Produksi',
-                'logistic': 'Logistic - Respon',
-                'logistic_input': 'Logistic - Input',
-                'produksi_input': 'Produksi - Input',
-                'qc': 'QC',
-                'qa': 'QA',
-                'done': 'Selesai',
-                'problem': 'Problem'
-            };
-            return labels[status] || status;
-        }
-        
-        function getStatusColor(status) {
-            const colors = {
-                'draft': '#757575',
-                'produksi': '#e65100',
-                'logistic': '#0d47a1',
-                'logistic_input': '#2e7d32',
-                'produksi_input': '#6a1b9a',
-                'qc': '#c62828',
-                'qa': '#6a1b9a',
-                'done': '#1b5e20',
-                'problem': '#b71c1c'
-            };
-            return colors[status] || '#757575';
-        }
-        
-        function showNotification(message, type = 'info') {
+        function showNotification(msg, type = 'info') {
             const notif = document.getElementById('notification');
             if (!notif) return;
             notif.className = 'notification ' + type;
-            notif.textContent = message;
-            setTimeout(() => {
-                notif.className = 'notification';
-            }, 4000);
+            notif.textContent = msg;
+            setTimeout(() => { notif.className = 'notification'; }, 4000);
         }
         
-        function formatDateTime(value) {
-            if (!value) return '-';
-            try {
-                const date = new Date(value);
-                return date.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }) + 
-                       ' ' + date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-            } catch(e) {
-                return value;
-            }
+        function formatDateTime(v) {
+            if (!v) return '-';
+            try { const d = new Date(v); return d.toLocaleDateString('id-ID', { day:'2-digit', month:'2-digit', year:'numeric' }) + ' ' + d.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' }); } catch(e) { return v; }
         }
         
-        function parseDate(str) {
-            if (!str) return null;
-            const d = new Date(str);
-            return isNaN(d.getTime()) ? null : d;
-        }
-        
-        function diffHours(d1, d2) {
-            if (!d1 || !d2) return null;
-            const diff = (d2 - d1) / (1000 * 60 * 60);
-            return Math.round(diff * 100) / 100;
-        }
-        
-        function jamKeHari(jam) {
-            if (jam === null || jam === undefined) return null;
-            return Math.round((jam / 24) * 100) / 100;
-        }
-        
-        function getStatusClass(actual, target) {
-            if (actual === null || target === null || target === 0) return 'progress';
-            const ratio = actual / target;
-            if (ratio <= 1) return 'on-target';
-            if (ratio <= 1.2) return 'warning';
-            return 'over';
-        }
-        
-        function getStatusText(actual, target) {
-            if (actual === null || target === null || target === 0) return '⏳ Menunggu';
-            const ratio = actual / target;
-            if (ratio <= 1) return '✅ On Target';
-            if (ratio <= 1.2) return '⚠️ Warning';
-            return '❌ Over';
-        }
-        
-        function getStatusBadge(actual, target) {
-            const cls = getStatusClass(actual, target);
-            const text = getStatusText(actual, target);
-            return `<span class="status-badge ${cls}">${text}</span>`;
-        }
+        function parseDate(str) { if (!str) return null; const d = new Date(str); return isNaN(d.getTime()) ? null : d; }
+        function diffHours(d1, d2) { if (!d1 || !d2) return null; const diff = (d2 - d1) / (1000 * 60 * 60); return Math.round(diff * 100) / 100; }
+        function jamKeHari(jam) { if (jam === null || jam === undefined) return null; return Math.round((jam / 24) * 100) / 100; }
+        function getStatusClass(actual, target) { if (actual === null || target === null || target === 0) return 'progress'; const ratio = actual / target; if (ratio <= 1) return 'on-target'; if (ratio <= 1.2) return 'warning'; return 'over'; }
+        function getStatusText(actual, target) { if (actual === null || target === null || target === 0) return '⏳ Menunggu'; const ratio = actual / target; if (ratio <= 1) return '✅ On Target'; if (ratio <= 1.2) return '⚠️ Warning'; return '❌ Over'; }
+        function getStatusBadge(actual, target) { const cls = getStatusClass(actual, target); const text = getStatusText(actual, target); return `<span class="status-badge ${cls}">${text}</span>`; }
         
         // ==================== MODAL ====================
         function openModal(title, label, callback) {
@@ -1175,76 +620,31 @@
             document.getElementById('modalInput').value = '';
             document.getElementById('modalOverlay').classList.add('active');
             modalCallback = callback;
-            setTimeout(() => {
-                document.getElementById('modalInput').focus();
-            }, 100);
+            setTimeout(() => { document.getElementById('modalInput').focus(); }, 100);
         }
-        
-        function closeModal() {
-            document.getElementById('modalOverlay').classList.remove('active');
-            modalCallback = null;
-        }
-        
-        function confirmModal() {
-            const value = document.getElementById('modalInput').value.trim();
-            if (modalCallback) {
-                modalCallback(value);
-            }
-            closeModal();
-        }
-        
-        document.getElementById('modalOverlay').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
-            }
-        });
-        
-        document.getElementById('modalInput').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                confirmModal();
-            }
-        });
+        function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); modalCallback = null; }
+        function confirmModal() { const value = document.getElementById('modalInput').value.trim(); if (modalCallback) { modalCallback(value); } closeModal(); }
+        document.getElementById('modalOverlay').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+        document.getElementById('modalInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') confirmModal(); });
         
         // ==================== MANAGEMENT ====================
         function addPersonil() {
             const name = document.getElementById('personilName').value.trim();
             const dept = document.getElementById('personilDept').value;
-            if (!name) {
-                showNotification('Masukkan nama personil!', 'error');
-                return;
-            }
-            if (data.personil.some(p => p.name.toLowerCase() === name.toLowerCase())) {
-                showNotification('Nama sudah terdaftar!', 'error');
-                return;
-            }
+            if (!name) { showNotification('Masukkan nama personil!', 'error'); return; }
+            if (data.personil.some(p => p.name.toLowerCase() === name.toLowerCase())) { showNotification('Nama sudah terdaftar!', 'error'); return; }
             data.personil.push({ id: generateId(), name: name, department: dept });
             document.getElementById('personilName').value = '';
             showNotification('Personil berhasil ditambahkan!', 'success');
             saveData();
             renderPersonilList();
         }
-        
-        function deletePersonil(id) {
-            if (!confirm('Hapus personil ini?')) return;
-            data.personil = data.personil.filter(p => p.id !== id);
-            saveData();
-            renderPersonilList();
-            showNotification('Personil dihapus!', 'info');
-        }
-        
+        function deletePersonil(id) { if (!confirm('Hapus personil ini?')) return; data.personil = data.personil.filter(p => p.id !== id); saveData(); renderPersonilList(); showNotification('Personil dihapus!', 'info'); }
         function renderPersonilList() {
             const container = document.getElementById('personilList');
             if (!container) return;
-            if (data.personil.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>Belum ada personil</p></div>';
-                return;
-            }
-            container.innerHTML = data.personil.map(p => `
-                <div class="personil-item">
-                    <span><strong>${p.name}</strong> - ${p.department}</span>
-                    <span class="delete-btn" onclick="deletePersonil('${p.id}')">✕</span>
-                </div>
-            `).join('');
+            if (data.personil.length === 0) { container.innerHTML = '<div class="empty-state"><p>Belum ada personil</p></div>'; return; }
+            container.innerHTML = data.personil.map(p => `<div class="personil-item"><span><strong>${p.name}</strong> - ${p.department}</span><span class="delete-btn" onclick="deletePersonil('${p.id}')">✕</span></div>`).join('');
         }
         
         function addProduct() {
@@ -1253,29 +653,10 @@
             const targetProduksi = parseFloat(document.getElementById('targetProduksi').value);
             const targetAnalisa = parseFloat(document.getElementById('targetAnalisa').value);
             const targetPerilisan = parseFloat(document.getElementById('targetPerilisan').value);
-            
-            if (!code || code.length !== 5) {
-                showNotification('Kode produk harus 5 huruf!', 'error');
-                return;
-            }
-            if (data.products.some(p => p.code === code)) {
-                showNotification('Kode produk sudah ada!', 'error');
-                return;
-            }
-            if (isNaN(targetTimbang) || isNaN(targetProduksi) || isNaN(targetAnalisa) || isNaN(targetPerilisan)) {
-                showNotification('Isi semua target durasi dengan angka!', 'error');
-                return;
-            }
-            
-            data.products.push({
-                id: generateId(),
-                code: code,
-                targetTimbang: targetTimbang,
-                targetProduksi: targetProduksi,
-                targetAnalisa: targetAnalisa,
-                targetPerilisan: targetPerilisan
-            });
-            
+            if (!code || code.length !== 5) { showNotification('Kode produk harus 5 huruf!', 'error'); return; }
+            if (data.products.some(p => p.code === code)) { showNotification('Kode produk sudah ada!', 'error'); return; }
+            if (isNaN(targetTimbang) || isNaN(targetProduksi) || isNaN(targetAnalisa) || isNaN(targetPerilisan)) { showNotification('Isi semua target durasi dengan angka!', 'error'); return; }
+            data.products.push({ id: generateId(), code: code, targetTimbang, targetProduksi, targetAnalisa, targetPerilisan });
             document.getElementById('productCode').value = '';
             document.getElementById('targetTimbang').value = '';
             document.getElementById('targetProduksi').value = '';
@@ -1285,68 +666,25 @@
             saveData();
             renderProductList();
         }
-        
-        function deleteProduct(id) {
-            if (!confirm('Hapus produk ini?')) return;
-            data.products = data.products.filter(p => p.id !== id);
-            saveData();
-            renderProductList();
-            showNotification('Produk dihapus!', 'info');
-        }
-        
+        function deleteProduct(id) { if (!confirm('Hapus produk ini?')) return; data.products = data.products.filter(p => p.id !== id); saveData(); renderProductList(); showNotification('Produk dihapus!', 'info'); }
         function renderProductList() {
             const container = document.getElementById('productList');
             if (!container) return;
-            if (data.products.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>Belum ada produk</p></div>';
-                return;
-            }
-            container.innerHTML = data.products.map(p => `
-                <div class="personil-item">
-                    <div>
-                        <strong>${p.code}</strong><br>
-                        <small style="font-size:11px;">
-                            Timbang: ${p.targetTimbang} jam | 
-                            Produksi: ${p.targetProduksi} jam | 
-                            Analisa: ${p.targetAnalisa} jam | 
-                            Perilisan: ${p.targetPerilisan} jam
-                        </small>
-                    </div>
-                    <span class="delete-btn" onclick="deleteProduct('${p.id}')">✕</span>
-                </div>
-            `).join('');
+            if (data.products.length === 0) { container.innerHTML = '<div class="empty-state"><p>Belum ada produk</p></div>'; return; }
+            container.innerHTML = data.products.map(p => `<div class="personil-item"><div><strong>${p.code}</strong><br><small style="font-size:11px;">Timbang: ${p.targetTimbang} jam | Produksi: ${p.targetProduksi} jam | Analisa: ${p.targetAnalisa} jam | Perilisan: ${p.targetPerilisan} jam</small></div><span class="delete-btn" onclick="deleteProduct('${p.id}')">✕</span></div>`).join('');
         }
         
         // ==================== PPIC ====================
         function addBatch() {
             const input = document.getElementById('batchInput').value.trim().toUpperCase();
-            
-            if (!input) {
-                showNotification('Masukkan nomor batch!', 'error');
-                return;
-            }
-            if (input.length !== 10) {
-                showNotification('Nomor batch harus 10 karakter (5 huruf + 5 angka)!', 'error');
-                return;
-            }
-            
+            if (!input) { showNotification('Masukkan nomor batch!', 'error'); return; }
+            if (input.length !== 10) { showNotification('Nomor batch harus 10 karakter!', 'error'); return; }
             const type = getBatchType(input);
-            if (type === 'unknown') {
-                showNotification('Nomor batch harus diawali V (Injeksi) atau T (Oral)!', 'error');
-                return;
-            }
-            
+            if (type === 'unknown') { showNotification('Nomor batch harus diawali V atau T!', 'error'); return; }
             const productCode = getProductCode(input);
             const product = data.products.find(p => p.code === productCode);
-            if (!product) {
-                showNotification(`Kode produk "${productCode}" tidak ditemukan di Management!`, 'error');
-                return;
-            }
-            
-            if (data.batches.some(b => b.batchNumber === input)) {
-                showNotification('Nomor batch sudah ada!', 'error');
-                return;
-            }
+            if (!product) { showNotification(`Kode produk "${productCode}" tidak ditemukan!`, 'error'); return; }
+            if (data.batches.some(b => b.batchNumber === input)) { showNotification('Nomor batch sudah ada!', 'error'); return; }
             
             data.batches.push({
                 id: generateId(),
@@ -1376,7 +714,7 @@
             });
             
             document.getElementById('batchInput').value = '';
-            showNotification(`✅ Batch ${input} berhasil ditambahkan dengan target dari produk ${productCode}!`, 'success');
+            showNotification(`✅ Batch ${input} berhasil ditambahkan!`, 'success');
             saveData();
             renderAll();
         }
@@ -1397,27 +735,19 @@
             const mikroJam = diffHours(tglKimia, tglMikro);
             const mikroHari = jamKeHari(mikroJam);
             let pctExclude = null;
-            if (pctInclude !== null && mikroHari !== null) {
-                pctExclude = Math.round((pctInclude - mikroHari) * 100) / 100;
-            }
+            if (pctInclude !== null && mikroHari !== null) { pctExclude = Math.round((pctInclude - mikroHari) * 100) / 100; }
             
             const logistikJam = diffHours(tglTimbang, tglSerah);
             const logistik = jamKeHari(logistikJam);
-            
             const produksiJam = diffHours(tglSerah, tglKirim);
             const produksi = jamKeHari(produksiJam);
-            
             const qcJam = diffHours(tglSample, tglMikro);
             const qc = jamKeHari(qcJam);
             
             let latestDate = null;
-            if (tglKirim && tglMikro) {
-                latestDate = tglKirim > tglMikro ? tglKirim : tglMikro;
-            } else if (tglKirim) {
-                latestDate = tglKirim;
-            } else if (tglMikro) {
-                latestDate = tglMikro;
-            }
+            if (tglKirim && tglMikro) { latestDate = tglKirim > tglMikro ? tglKirim : tglMikro; }
+            else if (tglKirim) { latestDate = tglKirim; }
+            else if (tglMikro) { latestDate = tglMikro; }
             const qaJam = diffHours(latestDate, tglRilis);
             const qa = jamKeHari(qaJam);
             
@@ -1427,148 +757,307 @@
             
             const totalTargetJam = batch.targetTimbang + batch.targetProduksi + batch.targetAnalisa + batch.targetPerilisan;
             let targetRilis = null;
-            if (tglTimbang) {
-                targetRilis = new Date(tglTimbang);
-                targetRilis.setHours(targetRilis.getHours() + totalTargetJam);
-            }
+            if (tglTimbang) { targetRilis = new Date(tglTimbang); targetRilis.setHours(targetRilis.getHours() + totalTargetJam); }
             
-            return {
-                pctInclude, pctExclude, logistik, produksi, qc, qa, onGoing, targetRilis,
-                totalTargetJam,
-                logistikTarget: 0.29,
-                produksiTarget: 5,
-                qcTarget: 5.5,
-                qaTarget: 0.125
-            };
+            return { pctInclude, pctExclude, logistik, produksi, qc, qa, onGoing, targetRilis, totalTargetJam, logistikTarget: 0.29, produksiTarget: 5, qcTarget: 5.5, qaTarget: 0.125 };
         }
         
-        // ==================== RENDER SCORE CARD ====================
-        function renderScoreCard(batch, showActions = true, showFields = {}) {
+        // ==================== RENDER SCORE CARD (DENGAN SISTEM GILIRAN) ====================
+        function renderScoreCard(batch, showActions = true) {
             if (!batch) return '';
             
             const typeLabel = batch.type === 'injeksi' ? 'Injeksi' : 'Oral';
             const typeClass = batch.type;
             
+            // Hitung target vs actual
             const logisticActual = diffHours(parseDate(batch.tanggalTimbang), parseDate(batch.tanggalSerahTerima));
             const produksiActual = diffHours(parseDate(batch.tanggalSerahTerima), parseDate(batch.tanggalKirimDokumen));
             const qcActual = diffHours(parseDate(batch.tanggalTerimaSample), parseDate(batch.tanggalSelesaiMikro));
             
             let latestDate = null;
             if (batch.tanggalKirimDokumen && batch.tanggalSelesaiMikro) {
-                latestDate = new Date(batch.tanggalKirimDokumen) > new Date(batch.tanggalSelesaiMikro) 
-                    ? batch.tanggalKirimDokumen : batch.tanggalSelesaiMikro;
-            } else if (batch.tanggalKirimDokumen) {
-                latestDate = batch.tanggalKirimDokumen;
-            } else if (batch.tanggalSelesaiMikro) {
-                latestDate = batch.tanggalSelesaiMikro;
-            }
+                latestDate = new Date(batch.tanggalKirimDokumen) > new Date(batch.tanggalSelesaiMikro) ? batch.tanggalKirimDokumen : batch.tanggalSelesaiMikro;
+            } else if (batch.tanggalKirimDokumen) { latestDate = batch.tanggalKirimDokumen; }
+            else if (batch.tanggalSelesaiMikro) { latestDate = batch.tanggalSelesaiMikro; }
             const qaActual = diffHours(parseDate(latestDate), parseDate(batch.tanggalRilis));
             
             const totalActual = diffHours(parseDate(batch.tanggalTimbang), parseDate(batch.tanggalRilis));
             const totalTarget = batch.targetTimbang + batch.targetProduksi + batch.targetAnalisa + batch.targetPerilisan;
             
+            // ==================== DETAILS ====================
             let detailsHtml = '';
-            if (showFields.jadwalWadah !== undefined) {
-                detailsHtml += `<div><span class="field">Jadwal Wadah:</span> <span class="value">${batch.jadwalWadah || '-'}</span></div>`;
-            }
-            if (showFields.jadwalKemas !== undefined) {
-                detailsHtml += `<div><span class="field">Jadwal Kemas:</span> <span class="value">${batch.jadwalKemas || '-'}</span></div>`;
-            }
-            if (showFields.tanggalTimbang !== undefined) {
-                detailsHtml += `<div><span class="field">Tanggal Timbang:</span> <span class="value">${formatDateTime(batch.tanggalTimbang)}</span></div>`;
-            }
-            if (showFields.tanggalSerahTerima !== undefined) {
-                detailsHtml += `<div><span class="field">Tanggal Serah Terima:</span> <span class="value">${formatDateTime(batch.tanggalSerahTerima)}</span></div>`;
-            }
-            if (showFields.tanggalBPP !== undefined) {
-                detailsHtml += `<div><span class="field">Tanggal BPP:</span> <span class="value">${formatDateTime(batch.tanggalBPP)}</span></div>`;
-            }
-            if (showFields.tanggalKirimDokumen !== undefined) {
-                detailsHtml += `<div><span class="field">Tanggal Kirim Dokumen:</span> <span class="value">${formatDateTime(batch.tanggalKirimDokumen)}</span></div>`;
-            }
-            if (showFields.tanggalTerimaSample !== undefined) {
-                detailsHtml += `<div><span class="field">Tanggal Terima Sample:</span> <span class="value">${formatDateTime(batch.tanggalTerimaSample)}</span></div>`;
-            }
-            if (showFields.estimasiLWS !== undefined) {
-                detailsHtml += `<div><span class="field">Estimasi LWS:</span> <span class="value">${formatDateTime(batch.estimasiLWS)}</span></div>`;
-            }
-            if (showFields.tanggalSelesaiKimia !== undefined) {
-                if (batch.type !== 'injeksi') {
-                    detailsHtml += `<div><span class="field">Selesai Analisa Kimia:</span> <span class="value">${formatDateTime(batch.tanggalSelesaiKimia)}</span></div>`;
-                }
-            }
-            if (showFields.tanggalSelesaiMikro !== undefined) {
-                detailsHtml += `<div><span class="field">Selesai Analisa Mikro:</span> <span class="value">${formatDateTime(batch.tanggalSelesaiMikro)}</span></div>`;
-            }
-            if (showFields.tanggalRilis !== undefined) {
-                detailsHtml += `<div><span class="field">Tanggal Rilis:</span> <span class="value">${formatDateTime(batch.tanggalRilis)}</span></div>`;
-            }
+            const fields = [
+                { key: 'jadwalWadah', label: 'Jadwal Wadah', value: batch.jadwalWadah },
+                { key: 'jadwalKemas', label: 'Jadwal Kemas', value: batch.jadwalKemas },
+                { key: 'tanggalTimbang', label: 'Tanggal Timbang', value: formatDateTime(batch.tanggalTimbang) },
+                { key: 'tanggalSerahTerima', label: 'Tanggal Serah Terima', value: formatDateTime(batch.tanggalSerahTerima) },
+                { key: 'tanggalBPP', label: 'Tanggal BPP', value: formatDateTime(batch.tanggalBPP) },
+                { key: 'tanggalKirimDokumen', label: 'Tanggal Kirim Dokumen', value: formatDateTime(batch.tanggalKirimDokumen) },
+                { key: 'tanggalTerimaSample', label: 'Tanggal Terima Sample', value: formatDateTime(batch.tanggalTerimaSample) },
+                { key: 'estimasiLWS', label: 'Estimasi LWS', value: formatDateTime(batch.estimasiLWS) },
+                { key: 'tanggalSelesaiKimia', label: 'Selesai Analisa Kimia', value: formatDateTime(batch.tanggalSelesaiKimia), hide: batch.type === 'injeksi' },
+                { key: 'tanggalSelesaiMikro', label: 'Selesai Analisa Mikro', value: formatDateTime(batch.tanggalSelesaiMikro) },
+                { key: 'tanggalRilis', label: 'Tanggal Rilis', value: formatDateTime(batch.tanggalRilis) }
+            ];
             
+            fields.forEach(f => {
+                if (f.hide) return;
+                if (f.value && f.value !== '-') {
+                    detailsHtml += `<div><span class="field">${f.label}:</span> <span class="value">${f.value}</span></div>`;
+                }
+            });
+            
+            // ==================== TARGET VS ACTUAL ====================
             let targetHtml = `
                 <div style="grid-column:1/-1;margin-top:5px;padding:8px 12px;background:#f5f5f5;border-radius:6px;font-size:12px;">
                     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:5px;">
-                        <div>
-                            <span class="field">🎯 Logistic:</span>
-                            <span class="value">${logisticActual !== null ? logisticActual + ' jam' : '-'}</span>
-                            <span class="target">(target ${batch.targetTimbang} jam) ${getStatusText(logisticActual, batch.targetTimbang)}</span>
-                        </div>
-                        <div>
-                            <span class="field">🎯 Produksi:</span>
-                            <span class="value">${produksiActual !== null ? produksiActual + ' jam' : '-'}</span>
-                            <span class="target">(target ${batch.targetProduksi} jam) ${getStatusText(produksiActual, batch.targetProduksi)}</span>
-                        </div>
-                        <div>
-                            <span class="field">🎯 QC:</span>
-                            <span class="value">${qcActual !== null ? qcActual + ' jam' : '-'}</span>
-                            <span class="target">(target ${batch.targetAnalisa} jam) ${getStatusText(qcActual, batch.targetAnalisa)}</span>
-                        </div>
-                        <div>
-                            <span class="field">🎯 QA:</span>
-                            <span class="value">${qaActual !== null ? qaActual + ' jam' : '-'}</span>
-                            <span class="target">(target ${batch.targetPerilisan} jam) ${getStatusText(qaActual, batch.targetPerilisan)}</span>
-                        </div>
+                        <div><span class="field">🎯 Logistic:</span> <span class="value">${logisticActual !== null ? logisticActual + ' jam' : '-'}</span> <span class="target">(target ${batch.targetTimbang} jam)</span></div>
+                        <div><span class="field">🎯 Produksi:</span> <span class="value">${produksiActual !== null ? produksiActual + ' jam' : '-'}</span> <span class="target">(target ${batch.targetProduksi} jam)</span></div>
+                        <div><span class="field">🎯 QC:</span> <span class="value">${qcActual !== null ? qcActual + ' jam' : '-'}</span> <span class="target">(target ${batch.targetAnalisa} jam)</span></div>
+                        <div><span class="field">🎯 QA:</span> <span class="value">${qaActual !== null ? qaActual + ' jam' : '-'}</span> <span class="target">(target ${batch.targetPerilisan} jam)</span></div>
                     </div>
                     <div style="margin-top:5px;padding-top:5px;border-top:1px solid #ddd;">
-                        <span class="field">📊 Total CT:</span>
-                        <span class="value" style="font-weight:700;">${totalActual !== null ? totalActual + ' jam' : '-'}</span>
-                        <span class="target">(target ${totalTarget} jam) ${getStatusText(totalActual, totalTarget)}</span>
+                        <span class="field">📊 Total CT:</span> <span class="value" style="font-weight:700;">${totalActual !== null ? totalActual + ' jam' : '-'}</span>
+                        <span class="target">(target ${totalTarget} jam)</span>
                         <span class="status ${getStatusClass(totalActual, totalTarget)}" style="margin-left:10px;">${getStatusText(totalActual, totalTarget)}</span>
                     </div>
                 </div>
             `;
             
+            // ==================== SISTEM GILIRAN - ACTION ====================
             let actionsHtml = '';
-            if (showActions && batch.status === 'produksi') {
-                const jadwalLengkap = batch.jadwalWadah && batch.jadwalKemas;
-                actionsHtml += `
-                    <div style="margin-top:10px;width:100%;">
-                        <div class="jadwal-container">
-                            <div class="jadwal-item">
-                                <label>📦 Jadwal Permintaan Wadah</label>
-                                ${batch.jadwalWadah ? 
-                                    `<div class="jadwal-value">✅ ${batch.jadwalWadah}</div>` :
-                                    `<div><input type="datetime-local" id="jadwalWadah_${batch.id}" style="width:100%;"><div class="date-time-label">Pilih tanggal dan jam</div></div>`
-                                }
+            let turnInfoHtml = '';
+            
+            // Cek status batch dan tentukan action apa yang muncul
+            const isDone = batch.status === 'done';
+            const isProblem = batch.status === 'problem';
+            
+            // Tentukan apakah halaman ini adalah giliran batch
+            const isMyTurn = (
+                (batch.status === 'produksi' && document.getElementById('page-produksi')?.classList.contains('active') && document.querySelector('[data-tab="kanban-produksi"]')?.classList.contains('active')) ||
+                (batch.status === 'logistic' && document.getElementById('page-logistic')?.classList.contains('active') && document.querySelector('[data-tab="respon-kanban"]')?.classList.contains('active')) ||
+                (batch.status === 'logistic_input' && document.getElementById('page-logistic')?.classList.contains('active') && document.querySelector('[data-tab="input-logistic"]')?.classList.contains('active')) ||
+                (batch.status === 'produksi_input' && document.getElementById('page-produksi')?.classList.contains('active') && document.querySelector('[data-tab="input-produksi"]')?.classList.contains('active')) ||
+                (batch.status === 'qc' && document.getElementById('page-qc')?.classList.contains('active')) ||
+                (batch.status === 'qa' && document.getElementById('page-qa')?.classList.contains('active'))
+            );
+            
+            // Tentukan status giliran
+            let turnStatus = 'waiting';
+            let turnMessage = '⏳ Menunggu giliran';
+            
+            if (isDone) {
+                turnStatus = 'done';
+                turnMessage = '✅ Selesai - Tidak ada action';
+            } else if (isProblem) {
+                turnStatus = 'problem';
+                turnMessage = '⚠️ Ada Problem - Selesaikan terlebih dahulu';
+            } else if (isMyTurn) {
+                turnStatus = 'active';
+                turnMessage = '✏️ Giliran Anda - Silahkan isi data';
+            }
+            
+            turnInfoHtml = `<div class="turn-info ${turnStatus}">${turnMessage}</div>`;
+            
+            // ACTION hanya muncul jika giliran dan showActions = true
+            if (showActions && isMyTurn && !isDone && !isProblem) {
+                // KANBAN PRODUKSI - Status: produksi
+                if (batch.status === 'produksi') {
+                    const jadwalLengkap = batch.jadwalWadah && batch.jadwalKemas;
+                    if (!jadwalLengkap) {
+                        actionsHtml = `
+                            <div style="margin-top:10px;width:100%;">
+                                <div class="jadwal-container">
+                                    <div class="jadwal-item">
+                                        <label>📦 Jadwal Permintaan Wadah</label>
+                                        <input type="datetime-local" id="jadwalWadah_${batch.id}" style="width:100%;">
+                                        <div class="date-time-label">Pilih tanggal dan jam</div>
+                                    </div>
+                                    <div class="jadwal-item">
+                                        <label>📦 Jadwal Permintaan Kemas</label>
+                                        <input type="datetime-local" id="jadwalKemas_${batch.id}" style="width:100%;">
+                                        <div class="date-time-label">Pilih tanggal dan jam</div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-success btn-sm" onclick="saveJadwal('${batch.id}')" style="margin-top:10px;">💾 Simpan Jadwal</button>
                             </div>
-                            <div class="jadwal-item">
-                                <label>📦 Jadwal Permintaan Kemas</label>
-                                ${batch.jadwalKemas ? 
-                                    `<div class="jadwal-value">✅ ${batch.jadwalKemas}</div>` :
-                                    `<div><input type="datetime-local" id="jadwalKemas_${batch.id}" style="width:100%;"><div class="date-time-label">Pilih tanggal dan jam</div></div>`
-                                }
+                        `;
+                    } else {
+                        actionsHtml = `
+                            <div style="margin-top:10px;padding:10px;background:#e8f5e9;border-radius:6px;border-left:3px solid #2e7d32;">
+                                <span class="locked-field"><span class="lock-icon">🔒</span> Jadwal sudah disimpan</span>
+                                <div style="margin-top:5px;font-size:13px;color:#555;">
+                                    Wadah: ${batch.jadwalWadah} | Kemas: ${batch.jadwalKemas}
+                                </div>
                             </div>
-                        </div>
-                        ${!jadwalLengkap ? 
-                            `<button class="btn btn-success btn-sm" onclick="saveJadwal('${batch.id}')" style="margin-top:10px;">💾 Simpan Jadwal</button>` :
-                            `<div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">
-                                <button class="btn btn-success btn-sm" onclick="saveJadwal('${batch.id}')">✅ Update Jadwal</button>
-                                <button class="btn btn-warning btn-sm" onclick="editJadwal('${batch.id}')">✏️ Edit</button>
-                            </div>`
+                        `;
+                    }
+                }
+                
+                // RESPON LOGISTIC - Status: logistic
+                if (batch.status === 'logistic') {
+                    if (!batch.logisticReady && !batch.logisticProblem) {
+                        actionsHtml = `
+                            <div class="actions">
+                                <button class="btn btn-success btn-sm" onclick="logisticReady('${batch.id}')">✅ Ready</button>
+                                <button class="btn btn-danger btn-sm" onclick="logisticProblem('${batch.id}')">⚠️ Problem</button>
+                            </div>
+                        `;
+                    }
+                }
+                
+                // INPUT LOGISTIC - Status: logistic_input
+                if (batch.status === 'logistic_input') {
+                    const isFilled = batch.tanggalTimbang && batch.tanggalSerahTerima;
+                    if (!isFilled) {
+                        actionsHtml = `
+                            <div style="margin-top:10px;">
+                                <div class="datetime-grid">
+                                    <div class="form-group">
+                                        <label style="font-size:12px;">📅 Tanggal Timbang</label>
+                                        <input type="datetime-local" id="logTimbang_${batch.id}" value="${batch.tanggalTimbang || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
+                                        <div class="date-time-label">Pilih tanggal dan jam</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label style="font-size:12px;">📅 Tanggal Serah Terima</label>
+                                        <input type="datetime-local" id="logSerah_${batch.id}" value="${batch.tanggalSerahTerima || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
+                                        <div class="date-time-label">Pilih tanggal dan jam</div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-success btn-sm" onclick="saveLogisticInput('${batch.id}')" style="margin-top:5px;padding:8px 20px;">Simpan</button>
+                            </div>
+                        `;
+                    } else {
+                        actionsHtml = `
+                            <div style="margin-top:10px;padding:10px;background:#e8f5e9;border-radius:6px;border-left:3px solid #2e7d32;">
+                                <span class="locked-field"><span class="lock-icon">🔒</span> Data logistic sudah disimpan</span>
+                            </div>
+                        `;
+                    }
+                }
+                
+                // INPUT PRODUKSI - Status: produksi_input
+                if (batch.status === 'produksi_input') {
+                    const isFilled = batch.tanggalBPP && batch.tanggalKirimDokumen;
+                    if (!isFilled) {
+                        actionsHtml = `
+                            <div style="margin-top:10px;">
+                                <div class="datetime-grid">
+                                    <div class="form-group">
+                                        <label style="font-size:12px;">📅 Tanggal BPP</label>
+                                        <input type="datetime-local" id="bpp_${batch.id}" value="${batch.tanggalBPP || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
+                                        <div class="date-time-label">Pilih tanggal dan jam</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label style="font-size:12px;">📅 Tanggal Kirim Dokumen</label>
+                                        <input type="datetime-local" id="kirim_${batch.id}" value="${batch.tanggalKirimDokumen || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
+                                        <div class="date-time-label">Pilih tanggal dan jam</div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-success btn-sm" onclick="saveProduksiInput('${batch.id}')" style="margin-top:5px;padding:8px 20px;">Simpan</button>
+                            </div>
+                        `;
+                    } else {
+                        actionsHtml = `
+                            <div style="margin-top:10px;padding:10px;background:#e8f5e9;border-radius:6px;border-left:3px solid #2e7d32;">
+                                <span class="locked-field"><span class="lock-icon">🔒</span> Data produksi sudah disimpan</span>
+                            </div>
+                        `;
+                    }
+                }
+                
+                // QC - Status: qc
+                if (batch.status === 'qc') {
+                    const isFilled = batch.tanggalTerimaSample && batch.estimasiLWS && batch.tanggalSelesaiMikro;
+                    if (!isFilled) {
+                        let qcFields = `
+                            <div class="form-group">
+                                <label style="font-size:12px;">📅 Tanggal Terima Sample</label>
+                                <input type="datetime-local" id="qcSample_${batch.id}" value="${batch.tanggalTerimaSample || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
+                                <div class="date-time-label">Pilih tanggal dan jam</div>
+                            </div>
+                            <div class="form-group">
+                                <label style="font-size:12px;">📅 Estimasi LWS</label>
+                                <input type="datetime-local" id="qcLWS_${batch.id}" value="${batch.estimasiLWS || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
+                                <div class="date-time-label">Pilih tanggal dan jam</div>
+                            </div>
+                        `;
+                        if (batch.type !== 'injeksi') {
+                            qcFields += `
+                                <div class="form-group">
+                                    <label style="font-size:12px;">📅 Selesai Analisa Kimia</label>
+                                    <input type="datetime-local" id="qcKimia_${batch.id}" value="${batch.tanggalSelesaiKimia || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
+                                    <div class="date-time-label">Pilih tanggal dan jam</div>
+                                </div>
+                            `;
                         }
+                        qcFields += `
+                            <div class="form-group">
+                                <label style="font-size:12px;">📅 Selesai Analisa Mikro</label>
+                                <input type="datetime-local" id="qcMikro_${batch.id}" value="${batch.tanggalSelesaiMikro || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
+                                <div class="date-time-label">Pilih tanggal dan jam</div>
+                            </div>
+                        `;
+                        
+                        actionsHtml = `
+                            <div style="margin-top:10px;">
+                                <div class="datetime-grid">${qcFields}</div>
+                                <button class="btn btn-success btn-sm" onclick="saveQC('${batch.id}')" style="margin-top:5px;padding:8px 20px;">Simpan</button>
+                            </div>
+                        `;
+                    } else {
+                        actionsHtml = `
+                            <div style="margin-top:10px;padding:10px;background:#e8f5e9;border-radius:6px;border-left:3px solid #2e7d32;">
+                                <span class="locked-field"><span class="lock-icon">🔒</span> Data QC sudah disimpan</span>
+                            </div>
+                        `;
+                    }
+                }
+                
+                // QA - Status: qa
+                if (batch.status === 'qa') {
+                    if (!batch.tanggalRilis) {
+                        actionsHtml = `
+                            <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:end;">
+                                <div class="form-group" style="flex:1;min-width:200px;">
+                                    <label style="font-size:12px;">📅 Tanggal Rilis</label>
+                                    <input type="datetime-local" id="qaRilis_${batch.id}" value="${batch.tanggalRilis || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
+                                    <div class="date-time-label">Pilih tanggal dan jam</div>
+                                </div>
+                                <button class="btn btn-success btn-sm" onclick="saveQA('${batch.id}')" style="padding:8px 20px;">Rilis</button>
+                            </div>
+                        `;
+                    } else {
+                        actionsHtml = `
+                            <div style="margin-top:10px;padding:10px;background:#e8f5e9;border-radius:6px;border-left:3px solid #2e7d32;">
+                                <span class="locked-field"><span class="lock-icon">🔒</span> Batch sudah dirilis</span>
+                            </div>
+                        `;
+                    }
+                }
+            }
+            
+            // Jika sudah done atau problem, tampilkan pesan
+            if (isDone) {
+                actionsHtml = `
+                    <div style="margin-top:10px;padding:10px;background:#e8f5e9;border-radius:6px;border-left:3px solid #2e7d32;">
+                        <span class="locked-field"><span class="lock-icon">✅</span> Batch Selesai - Tidak ada action</span>
                     </div>
                 `;
             }
             
+            if (isProblem && !isDone) {
+                actionsHtml = `
+                    <div style="margin-top:10px;padding:10px;background:#ffcdd2;border-radius:6px;border-left:3px solid #c62828;">
+                        <span class="locked-field" style="border-left-color:#c62828;background:#ffcdd2;color:#b71c1c;">
+                            <span class="lock-icon">⚠️</span> Problem: ${batch.logisticProblemReason || 'Alasan tidak tersedia'}
+                        </span>
+                        <button class="btn btn-success btn-sm" onclick="resolveProblem('${batch.id}')" style="margin-top:5px;">🔧 Resolve Problem</button>
+                    </div>
+                `;
+            }
+            
+            // ==================== STEP INDICATOR ====================
             let stepHtml = '';
             const steps = [
                 { key: 'produksi', label: 'Kanban Produksi' },
@@ -1594,6 +1083,7 @@
             });
             stepHtml += `</div>`;
             
+            // ==================== LOGISTIC STATUS BADGE ====================
             let logisticStatusHtml = '';
             if (batch.status === 'logistic' || batch.status === 'logistic_input' || batch.status === 'problem') {
                 if (batch.logisticReady) {
@@ -1606,10 +1096,11 @@
             }
             
             let problemHtml = '';
-            if (batch.logisticProblem && batch.logisticProblemReason) {
+            if (batch.logisticProblem && batch.logisticProblemReason && batch.status !== 'problem') {
                 problemHtml = `<div class="problem-text">🚨 Problem: ${batch.logisticProblemReason}</div>`;
             }
             
+            // ==================== RENDER ====================
             return `
                 <div class="score-card" style="border-left-color: ${batch.type === 'injeksi' ? '#0d47a1' : '#6a1b9a'}">
                     ${stepHtml}
@@ -1620,10 +1111,12 @@
                             <span class="batch-type ${typeClass}">${typeLabel}</span>
                             <span class="status ${batch.status}">${getStatusLabel(batch.status)}</span>
                             ${logisticStatusHtml}
+                            <span class="stage-badge ${turnStatus}">${turnStatus === 'active' ? '🔄 Aktif' : turnStatus === 'done' ? '✅ Selesai' : turnStatus === 'problem' ? '⚠️ Problem' : '⏳ Menunggu'}</span>
                         </div>
                         <small style="color:#999;">ID: ${batch.id.substring(0,8)}</small>
                     </div>
                     ${problemHtml}
+                    ${turnInfoHtml}
                     ${detailsHtml ? `<div class="details">${detailsHtml}</div>` : ''}
                     ${targetHtml}
                     ${actionsHtml ? `<div class="actions">${actionsHtml}</div>` : ''}
@@ -1651,65 +1144,21 @@
             renderAll();
         }
         
-        function editJadwal(id) {
-            const batch = data.batches.find(b => b.id === id);
-            if (!batch) return;
-            batch.jadwalWadah = '';
-            batch.jadwalKemas = '';
-            saveData();
-            renderAll();
-            showNotification('Silahkan isi jadwal baru', 'info');
-        }
-        
         // ==================== RENDER FUNCTIONS ====================
         function renderKanbanProduksi() {
             const container = document.getElementById('kanbanProduksi');
             if (!container) return;
             const batches = data.batches.filter(b => b.status === 'produksi');
-            
-            if (batches.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>Belum ada batch di kanban produksi</p></div>';
-                return;
-            }
-            
-            container.innerHTML = batches.map(b => renderScoreCard(b, true, { jadwalWadah: true, jadwalKemas: true })).join('');
+            if (batches.length === 0) { container.innerHTML = '<div class="empty-state"><p>Belum ada batch di kanban produksi</p></div>'; return; }
+            container.innerHTML = batches.map(b => renderScoreCard(b, true)).join('');
         }
         
         function renderInputProduksi() {
             const container = document.getElementById('inputProduksi');
             if (!container) return;
             const batches = data.batches.filter(b => b.status === 'produksi_input');
-            
-            if (batches.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>Belum ada batch yang siap diinput produksi</p></div>';
-                return;
-            }
-            
-            container.innerHTML = batches.map(b => {
-                let actionsHtml = `
-                    <div style="margin-top:10px;">
-                        <div class="datetime-grid">
-                            <div class="form-group">
-                                <label style="font-size:12px;">📅 Tanggal BPP</label>
-                                <input type="datetime-local" id="bpp_${b.id}" value="${b.tanggalBPP || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
-                                <div class="date-time-label">Pilih tanggal dan jam</div>
-                            </div>
-                            <div class="form-group">
-                                <label style="font-size:12px;">📅 Tanggal Kirim Dokumen</label>
-                                <input type="datetime-local" id="kirim_${b.id}" value="${b.tanggalKirimDokumen || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
-                                <div class="date-time-label">Pilih tanggal dan jam</div>
-                            </div>
-                        </div>
-                        <button class="btn btn-success btn-sm" onclick="saveProduksiInput('${b.id}')" style="margin-top:5px;padding:8px 20px;">
-                            Simpan & Kirim ke QC
-                        </button>
-                    </div>
-                `;
-                return renderScoreCard(b, false, { 
-                    jadwalWadah: true, jadwalKemas: true, tanggalTimbang: true, 
-                    tanggalSerahTerima: true, tanggalBPP: true, tanggalKirimDokumen: true 
-                }) + actionsHtml;
-            }).join('');
+            if (batches.length === 0) { container.innerHTML = '<div class="empty-state"><p>Belum ada batch yang siap diinput produksi</p></div>'; return; }
+            container.innerHTML = batches.map(b => renderScoreCard(b, true)).join('');
         }
         
         function saveProduksiInput(id) {
@@ -1735,53 +1184,8 @@
             const container = document.getElementById('responKanban');
             if (!container) return;
             const batches = data.batches.filter(b => b.status === 'logistic' || b.status === 'problem');
-            
-            if (batches.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>Belum ada batch yang membutuhkan respon logistic</p></div>';
-                return;
-            }
-            
-            container.innerHTML = batches.map(b => {
-                let actionsHtml = '';
-                
-                if (b.status === 'logistic' && !b.logisticReady && !b.logisticProblem) {
-                    actionsHtml = `
-                        <div class="actions">
-                            <button class="btn btn-success btn-sm" onclick="logisticReady('${b.id}')">✅ Ready</button>
-                            <button class="btn btn-danger btn-sm" onclick="logisticProblem('${b.id}')">⚠️ Problem</button>
-                        </div>
-                    `;
-                }
-                
-                if (b.logisticReady) {
-                    actionsHtml = `
-                        <div class="actions">
-                            <span style="padding:5px 15px;background:#c8e6c9;border-radius:4px;color:#1b5e20;font-weight:600;">✅ Sudah Ready</span>
-                            <button class="btn btn-warning btn-sm" onclick="undoLogisticReady('${b.id}')">↩️ Undo</button>
-                        </div>
-                    `;
-                }
-                
-                if (b.logisticProblem || b.status === 'problem') {
-                    actionsHtml = `
-                        <div class="actions">
-                            <span style="padding:5px 15px;background:#ffcdd2;border-radius:4px;color:#b71c1c;font-weight:600;">⚠️ Problem: ${b.logisticProblemReason || 'Alasan tidak tersedia'}</span>
-                            <button class="btn btn-success btn-sm" onclick="resolveProblem('${b.id}')">🔧 Resolve Problem</button>
-                            <button class="btn btn-danger btn-sm" onclick="deleteBatch('${b.id}')">🗑️ Hapus Batch</button>
-                        </div>
-                    `;
-                }
-                
-                return renderScoreCard(b, false, { jadwalWadah: true, jadwalKemas: true }) + actionsHtml;
-            }).join('');
-        }
-        
-        function deleteBatch(id) {
-            if (!confirm('Yakin ingin menghapus batch ini?')) return;
-            data.batches = data.batches.filter(b => b.id !== id);
-            saveData();
-            renderAll();
-            showNotification('Batch dihapus!', 'info');
+            if (batches.length === 0) { container.innerHTML = '<div class="empty-state"><p>Belum ada batch yang membutuhkan respon logistic</p></div>'; return; }
+            container.innerHTML = batches.map(b => renderScoreCard(b, true)).join('');
         }
         
         function logisticReady(id) {
@@ -1797,23 +1201,10 @@
             }
         }
         
-        function undoLogisticReady(id) {
-            const batch = data.batches.find(b => b.id === id);
-            if (batch) {
-                batch.logisticReady = false;
-                batch.logisticProblem = false;
-                batch.logisticProblemReason = '';
-                batch.status = 'logistic';
-                showNotification('Status Ready dibatalkan', 'info');
-                saveData();
-                renderAll();
-            }
-        }
-        
         function logisticProblem(id) {
             openModal(
                 '⚠️ Input Alasan Problem',
-                'Masukkan alasan problem (contoh: Material belum tersedia, Kerusakan mesin, dll):',
+                'Masukkan alasan problem:',
                 function(reason) {
                     if (!reason) { showNotification('Alasan problem harus diisi!', 'error'); return; }
                     const batch = data.batches.find(b => b.id === id);
@@ -1837,7 +1228,7 @@
                 batch.logisticProblemReason = '';
                 batch.logisticReady = true;
                 batch.status = 'logistic_input';
-                showNotification('✅ Problem resolved! Silahkan input data logistic di tab Input Logistic', 'success');
+                showNotification('✅ Problem resolved! Silahkan input data logistic', 'success');
                 saveData();
                 renderAll();
             }
@@ -1847,37 +1238,8 @@
             const container = document.getElementById('inputLogistic');
             if (!container) return;
             const batches = data.batches.filter(b => b.status === 'logistic_input');
-            
-            if (batches.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>Belum ada batch yang perlu diinput logistic</p></div>';
-                return;
-            }
-            
-            container.innerHTML = batches.map(b => {
-                let actionsHtml = `
-                    <div style="margin-top:10px;">
-                        <div class="datetime-grid">
-                            <div class="form-group">
-                                <label style="font-size:12px;">📅 Tanggal Timbang</label>
-                                <input type="datetime-local" id="logTimbang_${b.id}" value="${b.tanggalTimbang || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
-                                <div class="date-time-label">Pilih tanggal dan jam</div>
-                            </div>
-                            <div class="form-group">
-                                <label style="font-size:12px;">📅 Tanggal Serah Terima</label>
-                                <input type="datetime-local" id="logSerah_${b.id}" value="${b.tanggalSerahTerima || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
-                                <div class="date-time-label">Pilih tanggal dan jam</div>
-                            </div>
-                        </div>
-                        <button class="btn btn-success btn-sm" onclick="saveLogisticInput('${b.id}')" style="margin-top:5px;padding:8px 20px;">
-                            Simpan & Kirim ke Produksi
-                        </button>
-                    </div>
-                `;
-                return renderScoreCard(b, false, { 
-                    jadwalWadah: true, jadwalKemas: true, 
-                    tanggalTimbang: true, tanggalSerahTerima: true 
-                }) + actionsHtml;
-            }).join('');
+            if (batches.length === 0) { container.innerHTML = '<div class="empty-state"><p>Belum ada batch yang perlu diinput logistic</p></div>'; return; }
+            container.innerHTML = batches.map(b => renderScoreCard(b, true)).join('');
         }
         
         function saveLogisticInput(id) {
@@ -1903,53 +1265,8 @@
             const container = document.getElementById('qcList');
             if (!container) return;
             const batches = data.batches.filter(b => b.status === 'qc' || b.status === 'qa');
-            
-            if (batches.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>Belum ada batch di QC</p></div>';
-                return;
-            }
-            
-            container.innerHTML = batches.map(b => {
-                let actionsHtml = '';
-                if (b.status === 'qc') {
-                    actionsHtml = `
-                        <div style="margin-top:10px;">
-                            <div class="datetime-grid">
-                                <div class="form-group">
-                                    <label style="font-size:12px;">📅 Tanggal Terima Sample</label>
-                                    <input type="datetime-local" id="qcSample_${b.id}" value="${b.tanggalTerimaSample || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
-                                    <div class="date-time-label">Pilih tanggal dan jam</div>
-                                </div>
-                                <div class="form-group">
-                                    <label style="font-size:12px;">📅 Estimasi LWS</label>
-                                    <input type="datetime-local" id="qcLWS_${b.id}" value="${b.estimasiLWS || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
-                                    <div class="date-time-label">Pilih tanggal dan jam</div>
-                                </div>
-                                ${b.type !== 'injeksi' ? `
-                                <div class="form-group">
-                                    <label style="font-size:12px;">📅 Selesai Analisa Kimia</label>
-                                    <input type="datetime-local" id="qcKimia_${b.id}" value="${b.tanggalSelesaiKimia || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
-                                    <div class="date-time-label">Pilih tanggal dan jam</div>
-                                </div>
-                                ` : ''}
-                                <div class="form-group">
-                                    <label style="font-size:12px;">📅 Selesai Analisa Mikro</label>
-                                    <input type="datetime-local" id="qcMikro_${b.id}" value="${b.tanggalSelesaiMikro || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
-                                    <div class="date-time-label">Pilih tanggal dan jam</div>
-                                </div>
-                            </div>
-                            <button class="btn btn-success btn-sm" onclick="saveQC('${b.id}')" style="margin-top:5px;padding:8px 20px;">
-                                Simpan & Kirim ke QA
-                            </button>
-                        </div>
-                    `;
-                }
-                return renderScoreCard(b, false, { 
-                    jadwalWadah: true, jadwalKemas: true, tanggalBPP: true, 
-                    tanggalKirimDokumen: true, tanggalTerimaSample: true, 
-                    estimasiLWS: true, tanggalSelesaiKimia: true, tanggalSelesaiMikro: true 
-                }) + actionsHtml;
-            }).join('');
+            if (batches.length === 0) { container.innerHTML = '<div class="empty-state"><p>Belum ada batch di QC</p></div>'; return; }
+            container.innerHTML = batches.map(b => renderScoreCard(b, true)).join('');
         }
         
         function saveQC(id) {
@@ -1962,14 +1279,14 @@
             
             if (!sample || !lws || !mikro) { showNotification('Error: Field tidak ditemukan!', 'error'); return; }
             if (!sample.value || !lws.value || !mikro.value) {
-                showNotification('Isi field yang wajib (Sample, LWS, Mikro) dengan tanggal dan jam!', 'error');
+                showNotification('Isi field yang wajib (Sample, LWS, Mikro)!', 'error');
                 return;
             }
             
             if (batch.type !== 'injeksi') {
                 const kimia = document.getElementById('qcKimia_' + id);
                 if (!kimia || !kimia.value) {
-                    showNotification('Isi Selesai Analisa Kimia dengan tanggal dan jam!', 'error');
+                    showNotification('Isi Selesai Analisa Kimia!', 'error');
                     return;
                 }
                 batch.tanggalSelesaiKimia = kimia.value;
@@ -1989,33 +1306,8 @@
             const container = document.getElementById('qaList');
             if (!container) return;
             const batches = data.batches.filter(b => b.status === 'qa');
-            
-            if (batches.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>Belum ada batch di QA</p></div>';
-                return;
-            }
-            
-            container.innerHTML = batches.map(b => {
-                let actionsHtml = '';
-                if (b.status === 'qa' && !b.tanggalRilis) {
-                    actionsHtml = `
-                        <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:end;">
-                            <div class="form-group" style="flex:1;min-width:200px;">
-                                <label style="font-size:12px;">📅 Tanggal Rilis</label>
-                                <input type="datetime-local" id="qaRilis_${b.id}" value="${b.tanggalRilis || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
-                                <div class="date-time-label">Pilih tanggal dan jam</div>
-                            </div>
-                            <button class="btn btn-success btn-sm" onclick="saveQA('${b.id}')" style="padding:8px 20px;">
-                                Rilis
-                            </button>
-                        </div>
-                    `;
-                }
-                return renderScoreCard(b, false, { 
-                    jadwalWadah: true, jadwalKemas: true, 
-                    tanggalBPP: true, tanggalKirimDokumen: true, tanggalRilis: true 
-                }) + actionsHtml;
-            }).join('');
+            if (batches.length === 0) { container.innerHTML = '<div class="empty-state"><p>Belum ada batch di QA</p></div>'; return; }
+            container.innerHTML = batches.map(b => renderScoreCard(b, true)).join('');
         }
         
         function saveQA(id) {
@@ -2038,15 +1330,9 @@
             const container = document.getElementById('ppicScoreCards');
             if (!container) return;
             const allBatches = data.batches;
-            
-            if (allBatches.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>Belum ada batch yang diinput</p></div>';
-                return;
-            }
-            
-            container.innerHTML = allBatches.map(b => renderScoreCard(b, false, { 
-                jadwalWadah: true, jadwalKemas: true 
-            })).join('');
+            if (allBatches.length === 0) { container.innerHTML = '<div class="empty-state"><p>Belum ada batch yang diinput</p></div>'; return; }
+            // Di PPIC, showActions = false (hanya untuk monitoring, tidak ada action)
+            container.innerHTML = allBatches.map(b => renderScoreCard(b, false)).join('');
         }
         
         // ==================== DASHBOARD ====================
@@ -2056,13 +1342,8 @@
             const search = document.getElementById('filterSearch').value.toLowerCase();
             
             let batches = data.batches;
-            
-            if (typeFilter !== 'all') {
-                batches = batches.filter(b => b.type === typeFilter);
-            }
-            if (search) {
-                batches = batches.filter(b => b.batchNumber.toLowerCase().includes(search));
-            }
+            if (typeFilter !== 'all') batches = batches.filter(b => b.type === typeFilter);
+            if (search) batches = batches.filter(b => b.batchNumber.toLowerCase().includes(search));
             if (periode !== 'all') {
                 const days = parseInt(periode);
                 const cutoff = new Date();
@@ -2089,10 +1370,7 @@
             let oralAvg = '-', oralCount = 0;
             if (oralBatches.length > 0) {
                 const totals = oralBatches.map(b => calculatePCT(b).pctInclude).filter(v => v !== null);
-                if (totals.length > 0) {
-                    oralAvg = (totals.reduce((a, b) => a + b, 0) / totals.length).toFixed(2);
-                    oralCount = totals.length;
-                }
+                if (totals.length > 0) { oralAvg = (totals.reduce((a, b) => a + b, 0) / totals.length).toFixed(2); oralCount = totals.length; }
             }
             document.getElementById('kpiOralAvg').textContent = oralAvg;
             document.getElementById('kpiOralCount').textContent = oralCount + ' Batch';
@@ -2100,10 +1378,7 @@
             let injeksiAvg = '-', injeksiCount = 0;
             if (injeksiBatches.length > 0) {
                 const totals = injeksiBatches.map(b => calculatePCT(b).pctInclude).filter(v => v !== null);
-                if (totals.length > 0) {
-                    injeksiAvg = (totals.reduce((a, b) => a + b, 0) / totals.length).toFixed(2);
-                    injeksiCount = totals.length;
-                }
+                if (totals.length > 0) { injeksiAvg = (totals.reduce((a, b) => a + b, 0) / totals.length).toFixed(2); injeksiCount = totals.length; }
             }
             document.getElementById('kpiInjeksiAvg').textContent = injeksiAvg;
             document.getElementById('kpiInjeksiCount').textContent = injeksiCount + ' Batch';
@@ -2130,30 +1405,18 @@
         function renderLineChart(type, batches) {
             const container = document.getElementById(type === 'oral' ? 'lineOral' : 'lineInjeksi');
             const typeBatches = batches.filter(b => b.type === type && b.status === 'done');
-            
             if (typeBatches.length === 0) {
                 container.innerHTML = '<div class="empty-state" style="text-align:center;padding:40px;color:#999;">Belum ada data ' + (type === 'oral' ? 'Oral' : 'Injeksi') + '</div>';
                 return;
             }
-            
             typeBatches.sort((a, b) => new Date(a.tanggalRilis) - new Date(b.tanggalRilis));
-            
             const colors = type === 'oral' ? ['#6a1b9a', '#ce93d8'] : ['#0d47a1', '#64b5f6'];
             const maxVal = 15;
-            
             let html = '<div class="line-area">';
             typeBatches.forEach((b) => {
                 const calc = calculatePCT(b);
                 const heightInc = Math.min((calc.pctInclude || 0) / maxVal * 140, 140);
-                html += `
-                    <div class="line-point">
-                        <div style="font-size:9px;font-weight:600;color:${colors[0]};">${calc.pctInclude !== null ? calc.pctInclude.toFixed(2) : '-'}</div>
-                        <div class="dot-point" style="background:${colors[0]};">
-                            <div style="position:absolute;top:5px;left:5px;width:2px;height:${heightInc}px;background:${colors[0]};opacity:0.3;"></div>
-                        </div>
-                        <div class="label">${b.batchNumber}</div>
-                    </div>
-                `;
+                html += `<div class="line-point"><div style="font-size:9px;font-weight:600;color:${colors[0]};">${calc.pctInclude !== null ? calc.pctInclude.toFixed(2) : '-'}</div><div class="dot-point" style="background:${colors[0]};"><div style="position:absolute;top:5px;left:5px;width:2px;height:${heightInc}px;background:${colors[0]};opacity:0.3;"></div></div><div class="label">${b.batchNumber}</div></div>`;
             });
             html += '</div>';
             container.innerHTML = html;
@@ -2162,17 +1425,13 @@
         function renderBarChart(batches) {
             const container = document.getElementById('barChart');
             const doneBatches = batches.filter(b => b.status === 'done');
-            
             if (doneBatches.length === 0) {
                 container.innerHTML = '<div class="empty-state" style="text-align:center;padding:40px;color:#999;width:100%;">Belum ada data batch selesai</div>';
                 return;
             }
-            
             doneBatches.sort((a, b) => new Date(b.tanggalRilis) - new Date(a.tanggalRilis));
             const display = doneBatches.slice(0, 10).reverse();
-            
             const maxVal = Math.max(...display.map(b => calculatePCT(b).pctInclude || 0)) * 1.3 || 10;
-            
             let html = '';
             display.forEach(b => {
                 const calc = calculatePCT(b);
@@ -2183,17 +1442,7 @@
                 let color = '#1a237e';
                 if (status === 'warning') color = '#f57c00';
                 if (status === 'over') color = '#c62828';
-                
-                html += `
-                    <div class="bar-item">
-                        <div class="bar-value">${calc.pctInclude !== null ? calc.pctInclude.toFixed(1) : '-'}h</div>
-                        <div class="bar" style="height:${height}px;background:${color};">
-                            <div class="target-line" style="top:${100 - (targetHeight/height*100)}%;"></div>
-                        </div>
-                        <div class="bar-label">${b.batchNumber}</div>
-                        <div style="font-size:8px;color:#999;">target ${targetTotal.toFixed(1)}h</div>
-                    </div>
-                `;
+                html += `<div class="bar-item"><div class="bar-value">${calc.pctInclude !== null ? calc.pctInclude.toFixed(1) : '-'}h</div><div class="bar" style="height:${height}px;background:${color};"><div class="target-line" style="top:${100 - (targetHeight/height*100)}%;"></div></div><div class="bar-label">${b.batchNumber}</div><div style="font-size:8px;color:#999;">target ${targetTotal.toFixed(1)}h</div></div>`;
             });
             container.innerHTML = html;
         }
@@ -2201,73 +1450,32 @@
         function renderDetailTable(batches) {
             const tbody = document.getElementById('detailTableBody');
             const doneBatches = batches.filter(b => b.status === 'done');
-            
             if (doneBatches.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:#999;padding:30px;">Belum ada data</td></tr>';
                 return;
             }
-            
             doneBatches.sort((a, b) => new Date(b.tanggalRilis) - new Date(a.tanggalRilis));
-            
             tbody.innerHTML = doneBatches.map(b => {
                 const calc = calculatePCT(b);
                 const typeLabel = b.type === 'oral' ? 'Oral' : 'Injeksi';
                 const typeBadge = b.type === 'oral' ? 'badge-oral' : 'badge-injeksi';
                 const statusBadge = getStatusBadge(calc.pctInclude, jamKeHari(calc.totalTargetJam));
-                
-                return `
-                    <tr>
-                        <td><strong>${b.batchNumber}</strong></td>
-                        <td><span class="text-muted">${b.productCode}</span></td>
-                        <td><span class="${typeBadge}">${typeLabel}</span></td>
-                        <td>${formatDateTime(b.tanggalRilis)}</td>
-                        <td><strong>${calc.pctInclude !== null ? calc.pctInclude.toFixed(2) : '-'}</strong></td>
-                        <td>${calc.pctExclude !== null ? calc.pctExclude.toFixed(2) : '-'}</td>
-                        <td>${calc.logistik !== null ? calc.logistik.toFixed(2) : '-'} 
-                            ${calc.logistik !== null && calc.logistik <= 0.29 ? '✅' : calc.logistik !== null ? '⚠️' : ''}</td>
-                        <td>${calc.produksi !== null ? calc.produksi.toFixed(2) : '-'}
-                            ${calc.produksi !== null && calc.produksi <= 5 ? '✅' : calc.produksi !== null ? '⚠️' : ''}</td>
-                        <td>${calc.qc !== null ? calc.qc.toFixed(2) : '-'}
-                            ${calc.qc !== null && calc.qc <= 5.5 ? '✅' : calc.qc !== null ? '⚠️' : ''}</td>
-                        <td>${calc.qa !== null ? calc.qa.toFixed(2) : '-'}
-                            ${calc.qa !== null && calc.qa <= 0.125 ? '✅' : calc.qa !== null ? '⚠️' : ''}</td>
-                        <td>${statusBadge}</td>
-                    </tr>
-                `;
+                return `<tr><td><strong>${b.batchNumber}</strong></td><td><span class="text-muted">${b.productCode}</span></td><td><span class="${typeBadge}">${typeLabel}</span></td><td>${formatDateTime(b.tanggalRilis)}</td><td><strong>${calc.pctInclude !== null ? calc.pctInclude.toFixed(2) : '-'}</strong></td><td>${calc.pctExclude !== null ? calc.pctExclude.toFixed(2) : '-'}</td><td>${calc.logistik !== null ? calc.logistik.toFixed(2) : '-'} ${calc.logistik !== null && calc.logistik <= 0.29 ? '✅' : calc.logistik !== null ? '⚠️' : ''}</td><td>${calc.produksi !== null ? calc.produksi.toFixed(2) : '-'} ${calc.produksi !== null && calc.produksi <= 5 ? '✅' : calc.produksi !== null ? '⚠️' : ''}</td><td>${calc.qc !== null ? calc.qc.toFixed(2) : '-'} ${calc.qc !== null && calc.qc <= 5.5 ? '✅' : calc.qc !== null ? '⚠️' : ''}</td><td>${calc.qa !== null ? calc.qa.toFixed(2) : '-'} ${calc.qa !== null && calc.qa <= 0.125 ? '✅' : calc.qa !== null ? '⚠️' : ''}</td><td>${statusBadge}</td></tr>`;
             }).join('');
         }
         
         function renderOnGoingTable(batches) {
             const tbody = document.getElementById('onGoingTableBody');
             const onGoing = batches.filter(b => b.type === 'oral' && b.status !== 'done' && b.status !== 'problem');
-            
             if (onGoing.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;padding:30px;">Tidak ada batch On Going</td></tr>';
                 return;
             }
-            
-            const statusMap = {
-                'produksi': 'Kanban Produksi',
-                'logistic': 'Respon Logistic',
-                'logistic_input': 'Input Logistic',
-                'produksi_input': 'Input Produksi',
-                'qc': 'QC',
-                'qa': 'QA'
-            };
-            
+            const statusMap = { 'produksi':'Kanban Produksi', 'logistic':'Respon Logistic', 'logistic_input':'Input Logistic', 'produksi_input':'Input Produksi', 'qc':'QC', 'qa':'QA' };
             tbody.innerHTML = onGoing.map(b => {
                 const calc = calculatePCT(b);
                 const statusLabel = statusMap[b.status] || b.status;
-                
-                return `
-                    <tr>
-                        <td><strong>${b.batchNumber}</strong></td>
-                        <td>${calc.onGoing !== null ? calc.onGoing.toFixed(2) + ' hari' : '-'}</td>
-                        <td><span class="status-badge progress">${statusLabel}</span></td>
-                        <td>${b.tanggalTerimaSample ? formatDateTime(b.tanggalTerimaSample) : '-'}</td>
-                        <td>${calc.targetRilis ? formatDateTime(calc.targetRilis) : '-'}</td>
-                    </tr>
-                `;
+                return `<tr><td><strong>${b.batchNumber}</strong></td><td>${calc.onGoing !== null ? calc.onGoing.toFixed(2) + ' hari' : '-'}</td><td><span class="status-badge progress">${statusLabel}</span></td><td>${b.tanggalTerimaSample ? formatDateTime(b.tanggalTerimaSample) : '-'}</td><td>${calc.targetRilis ? formatDateTime(calc.targetRilis) : '-'}</td></tr>`;
             }).join('');
         }
         
@@ -2280,9 +1488,7 @@
         
         // ==================== SAVE & LOAD ====================
         function saveData() {
-            try {
-                localStorage.setItem('pctData', JSON.stringify(data));
-            } catch(e) { console.warn('Gagal save data:', e); }
+            try { localStorage.setItem('pctData', JSON.stringify(data)); } catch(e) { console.warn('Gagal save data:', e); }
         }
         
         function loadData() {
