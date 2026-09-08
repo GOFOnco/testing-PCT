@@ -74,6 +74,17 @@
             border-bottom-color: #0d47a1;
         }
         
+        .nav-btn .badge {
+            background: #e53935;
+            color: white;
+            border-radius: 50%;
+            padding: 1px 8px;
+            font-size: 11px;
+            position: absolute;
+            top: 5px;
+            right: 0;
+        }
+        
         .container {
             max-width: 1400px;
             margin: 20px auto;
@@ -181,6 +192,8 @@
         
         .btn-success:hover {
             background: #1b5e20;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(46, 125, 50, 0.3);
         }
         
         .btn-danger {
@@ -190,6 +203,8 @@
         
         .btn-danger:hover {
             background: #b71c1c;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(198, 40, 40, 0.3);
         }
         
         .btn-warning {
@@ -199,11 +214,24 @@
         
         .btn-warning:hover {
             background: #e65100;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(245, 124, 0, 0.3);
         }
         
         .btn-sm {
             padding: 5px 15px;
             font-size: 12px;
+        }
+        
+        .btn-info {
+            background: #0288d1;
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background: #01579b;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(2, 136, 209, 0.3);
         }
         
         .score-card {
@@ -266,9 +294,10 @@
         }
         
         .status.draft { background: #e0e0e0; color: #616161; }
-        .status.ppic { background: #e3f2fd; color: #0d47a1; }
         .status.produksi { background: #fff3e0; color: #e65100; }
-        .status.logistic { background: #e8f5e9; color: #2e7d32; }
+        .status.logistic { background: #e3f2fd; color: #0d47a1; }
+        .status.logistic_input { background: #e8f5e9; color: #2e7d32; }
+        .status.produksi_input { background: #f3e5f5; color: #6a1b9a; }
         .status.qc { background: #fce4ec; color: #c62828; }
         .status.qa { background: #f3e5f5; color: #6a1b9a; }
         .status.done { background: #c8e6c9; color: #1b5e20; }
@@ -419,48 +448,32 @@
             border-left: 4px solid #0d47a1;
         }
         
-        .input-group {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        
-        .input-group input[type="datetime-local"] {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-            flex: 1;
-            min-width: 200px;
-        }
-
         .jadwal-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
             margin-top: 5px;
         }
-
+        
         .jadwal-item {
             display: flex;
             flex-direction: column;
             gap: 5px;
         }
-
+        
         .jadwal-item label {
             font-size: 12px;
             font-weight: 600;
             color: #555;
         }
-
+        
         .jadwal-item input {
             padding: 6px 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 13px;
         }
-
+        
         .jadwal-item .jadwal-value {
             padding: 6px 10px;
             background: #e8f5e9;
@@ -468,6 +481,75 @@
             border-left: 3px solid #2e7d32;
             font-weight: 500;
             font-size: 13px;
+        }
+        
+        .storage-warning {
+            background: #fff3e0;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border-left: 4px solid #f57c00;
+            margin-bottom: 15px;
+            color: #e65100;
+        }
+        
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .step-indicator .step {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .step-indicator .step.active {
+            background: #0d47a1;
+            color: white;
+        }
+        
+        .step-indicator .step.done {
+            background: #c8e6c9;
+            color: #1b5e20;
+        }
+        
+        .step-indicator .step.pending {
+            background: #e0e0e0;
+            color: #757575;
+        }
+        
+        .step-indicator .arrow {
+            color: #999;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .status-badge.ready {
+            background: #c8e6c9;
+            color: #1b5e20;
+        }
+        
+        .status-badge.problem {
+            background: #ffcdd2;
+            color: #b71c1c;
+        }
+        
+        .status-badge.waiting {
+            background: #fff3e0;
+            color: #e65100;
         }
     </style>
 </head>
@@ -522,6 +604,9 @@
         <div id="page-ppic" class="page">
             <div class="card">
                 <h2>📋 Input Nomor Batch</h2>
+                <div id="storageWarning" class="storage-warning" style="display:none;">
+                    ⚠️ Menggunakan sessionStorage (data akan hilang jika tab ditutup)
+                </div>
                 <div class="form-group">
                     <label>Nomor Batch (5 Huruf + 5 Angka, tanpa spasi)</label>
                     <input type="text" id="batchInput" placeholder="Contoh: VABCD12345 atau TABCD12345" maxlength="10">
@@ -670,19 +755,50 @@
             batches: []
         };
         
+        let useSessionStorage = false;
+        try {
+            localStorage.setItem('test', 'test');
+            localStorage.removeItem('test');
+        } catch(e) {
+            useSessionStorage = true;
+            setTimeout(() => {
+                const warning = document.getElementById('storageWarning');
+                if (warning) warning.style.display = 'block';
+            }, 100);
+            console.warn('⚠️ Menggunakan sessionStorage');
+        }
+        
         function loadData() {
-            const stored = localStorage.getItem('pctData');
-            if (stored) {
-                try {
-                    data = JSON.parse(stored);
-                } catch(e) {
-                    data = { personil: [], products: [], batches: [] };
+            try {
+                let stored = null;
+                if (useSessionStorage) {
+                    stored = sessionStorage.getItem('pctData');
+                } else {
+                    stored = localStorage.getItem('pctData');
                 }
+                if (stored) {
+                    try {
+                        data = JSON.parse(stored);
+                    } catch(e) {
+                        data = { personil: [], products: [], batches: [] };
+                    }
+                }
+            } catch(e) {
+                data = { personil: [], products: [], batches: [] };
             }
         }
         
         function saveData() {
-            localStorage.setItem('pctData', JSON.stringify(data));
+            try {
+                const jsonData = JSON.stringify(data);
+                if (useSessionStorage) {
+                    sessionStorage.setItem('pctData', jsonData);
+                } else {
+                    localStorage.setItem('pctData', jsonData);
+                }
+            } catch(e) {
+                console.warn('Gagal save data:', e);
+            }
         }
         
         // ==================== UTILITY ====================
@@ -699,9 +815,10 @@
         function getStatusLabel(status) {
             const labels = {
                 'draft': 'Draft',
-                'ppic': 'PPIC',
                 'produksi': 'Produksi',
-                'logistic': 'Logistic',
+                'logistic': 'Logistic - Respon',
+                'logistic_input': 'Logistic - Input',
+                'produksi_input': 'Produksi - Input',
                 'qc': 'QC',
                 'qa': 'QA',
                 'done': 'Selesai',
@@ -710,8 +827,24 @@
             return labels[status] || status;
         }
         
+        function getStatusColor(status) {
+            const colors = {
+                'draft': '#757575',
+                'produksi': '#e65100',
+                'logistic': '#0d47a1',
+                'logistic_input': '#2e7d32',
+                'produksi_input': '#6a1b9a',
+                'qc': '#c62828',
+                'qa': '#6a1b9a',
+                'done': '#1b5e20',
+                'problem': '#b71c1c'
+            };
+            return colors[status] || '#757575';
+        }
+        
         function showNotification(message, type = 'info') {
             const notif = document.getElementById('notification');
+            if (!notif) return;
             notif.className = 'notification ' + type;
             notif.textContent = message;
             setTimeout(() => {
@@ -719,16 +852,32 @@
             }, 5000);
         }
         
+        function formatDate(value) {
+            if (!value) return '-';
+            try {
+                const date = new Date(value);
+                return date.toLocaleDateString('id-ID', { 
+                    day: '2-digit', 
+                    month: '2-digit', 
+                    year: 'numeric' 
+                }) + ' ' + date.toLocaleTimeString('id-ID', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+            } catch(e) {
+                return value;
+            }
+        }
+        
         // ==================== NAVIGATION ====================
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
-                
                 const page = this.dataset.page;
                 document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-                document.getElementById('page-' + page).classList.add('active');
-                
+                const targetPage = document.getElementById('page-' + page);
+                if (targetPage) targetPage.classList.add('active');
                 renderAll();
             });
         });
@@ -736,13 +885,13 @@
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const parent = this.closest('.page');
+                if (!parent) return;
                 parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
-                
                 const tab = this.dataset.tab;
                 parent.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-                document.getElementById('tab-' + tab).classList.add('active');
-                
+                const targetTab = document.getElementById('tab-' + tab);
+                if (targetTab) targetTab.classList.add('active');
                 renderAll();
             });
         });
@@ -751,18 +900,15 @@
         function addPersonil() {
             const name = document.getElementById('personilName').value.trim();
             const dept = document.getElementById('personilDept').value;
-            
             if (!name) {
                 showNotification('Masukkan nama personil!', 'error');
                 return;
             }
-            
             data.personil.push({
                 id: generateId(),
                 name: name,
                 department: dept
             });
-            
             saveData();
             document.getElementById('personilName').value = '';
             showNotification('Personil berhasil ditambahkan!', 'success');
@@ -780,6 +926,7 @@
         
         function renderPersonilList() {
             const container = document.getElementById('personilList');
+            if (!container) return;
             if (data.personil.length === 0) {
                 container.innerHTML = '<div class="empty-state"><p>Belum ada personil</p></div>';
                 return;
@@ -803,7 +950,6 @@
                 showNotification('Masukkan kode produk!', 'error');
                 return;
             }
-            
             if (isNaN(targetTimbang) || isNaN(targetProduksi) || isNaN(targetAnalisa) || isNaN(targetPerilisan)) {
                 showNotification('Isi semua target durasi dengan angka!', 'error');
                 return;
@@ -839,6 +985,7 @@
         
         function renderProductList() {
             const container = document.getElementById('productList');
+            if (!container) return;
             if (data.products.length === 0) {
                 container.innerHTML = '<div class="empty-state"><p>Belum ada produk</p></div>';
                 return;
@@ -862,7 +1009,6 @@
                 showNotification('Masukkan nomor batch!', 'error');
                 return;
             }
-            
             if (input.length !== 10) {
                 showNotification('Nomor batch harus 10 karakter (5 huruf + 5 angka)!', 'error');
                 return;
@@ -903,16 +1049,14 @@
             
             saveData();
             document.getElementById('batchInput').value = '';
-            showNotification('Batch berhasil ditambahkan! Status: Produksi', 'success');
-            
-            // RENDER SEMUA dengan delay kecil untuk memastikan DOM update
-            setTimeout(() => {
-                renderAll();
-            }, 100);
+            showNotification('✅ Batch berhasil ditambahkan! Silahkan isi jadwal di Kanban Produksi', 'success');
+            renderAll();
         }
         
-        // ==================== RENDER FUNCTIONS ====================
+        // ==================== RENDER SCORE CARD ====================
         function renderScoreCard(batch, showActions = true, showFields = {}) {
+            if (!batch) return '';
+            
             const typeLabel = batch.type === 'injeksi' ? 'Injeksi' : 'Oral';
             const typeClass = batch.type;
             
@@ -952,16 +1096,11 @@
             if (showFields.tanggalRilis !== undefined) {
                 detailsHtml += `<div><span class="field">Tanggal Rilis:</span> <span class="value">${batch.tanggalRilis || '-'}</span></div>`;
             }
-            if (showFields.logisticReady !== undefined) {
-                detailsHtml += `<div><span class="field">Status Logistic:</span> <span class="value">${batch.logisticReady ? '✅ Ready' : (batch.logisticProblem ? '⚠️ Problem' : '⏳ Waiting')}</span></div>`;
-                if (batch.logisticProblem && batch.logisticProblemReason) {
-                    detailsHtml += `<div class="problem-text">⚠️ Problem: ${batch.logisticProblemReason}</div>`;
-                }
-            }
             
             let actionsHtml = '';
             if (showActions) {
                 if (batch.status === 'produksi') {
+                    const jadwalLengkap = batch.jadwalWadah && batch.jadwalKemas;
                     actionsHtml += `
                         <div style="margin-top:10px;width:100%;">
                             <div class="jadwal-container">
@@ -980,12 +1119,53 @@
                                     }
                                 </div>
                             </div>
-                            ${(!batch.jadwalWadah || !batch.jadwalKemas) ? 
+                            ${!jadwalLengkap ? 
                                 `<button class="btn btn-success btn-sm" onclick="saveJadwal('${batch.id}')" style="margin-top:10px;">💾 Simpan Jadwal</button>` :
-                                `<button class="btn btn-warning btn-sm" onclick="editJadwal('${batch.id}')" style="margin-top:10px;">✏️ Edit Jadwal</button>`
+                                `<div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">
+                                    <button class="btn btn-success btn-sm" onclick="saveJadwal('${batch.id}')">✅ Update Jadwal</button>
+                                    <button class="btn btn-warning btn-sm" onclick="editJadwal('${batch.id}')">✏️ Edit</button>
+                                </div>`
                             }
                         </div>
                     `;
+                }
+            }
+            
+            // Step indicator
+            let stepHtml = '';
+            const steps = [
+                { key: 'produksi', label: 'Kanban Produksi' },
+                { key: 'logistic', label: 'Respon Logistic' },
+                { key: 'logistic_input', label: 'Input Logistic' },
+                { key: 'produksi_input', label: 'Input Produksi' },
+                { key: 'qc', label: 'QC' },
+                { key: 'qa', label: 'QA' },
+                { key: 'done', label: 'Selesai' }
+            ];
+            
+            let currentStep = steps.findIndex(s => s.key === batch.status);
+            if (currentStep === -1) currentStep = 0;
+            
+            stepHtml = `<div class="step-indicator">`;
+            steps.forEach((s, i) => {
+                if (i > 0) stepHtml += `<span class="arrow">→</span>`;
+                let cls = 'step';
+                if (i < currentStep) cls += ' done';
+                else if (i === currentStep) cls += ' active';
+                else cls += ' pending';
+                stepHtml += `<span class="${cls}">${s.label}</span>`;
+            });
+            stepHtml += `</div>`;
+            
+            // Logistic status badge
+            let logisticStatusHtml = '';
+            if (batch.status === 'logistic' || batch.status === 'logistic_input') {
+                if (batch.logisticReady) {
+                    logisticStatusHtml = `<span class="status-badge ready">✅ Ready</span>`;
+                } else if (batch.logisticProblem) {
+                    logisticStatusHtml = `<span class="status-badge problem">⚠️ Problem</span>`;
+                } else {
+                    logisticStatusHtml = `<span class="status-badge waiting">⏳ Waiting</span>`;
                 }
             }
             
@@ -996,12 +1176,13 @@
             
             return `
                 <div class="score-card" style="border-left-color: ${batch.type === 'injeksi' ? '#0d47a1' : '#6a1b9a'}">
+                    ${stepHtml}
                     <div class="header-info">
                         <div class="batch-info">
                             <span class="batch-number">${batch.batchNumber}</span>
                             <span class="batch-type ${typeClass}">${typeLabel}</span>
                             <span class="status ${batch.status}">${getStatusLabel(batch.status)}</span>
-                            ${batch.logisticProblem ? '<span class="status problem">⚠️ Problem</span>' : ''}
+                            ${logisticStatusHtml}
                         </div>
                         <small style="color:#999;">ID: ${batch.id.substring(0,8)}</small>
                     </div>
@@ -1012,44 +1193,13 @@
             `;
         }
         
-        function renderPPIC() {
-            const container = document.getElementById('ppicScoreCards');
-            // TAMPILKAN SEMUA BATCH
-            const allBatches = data.batches;
-            
-            if (allBatches.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>Belum ada batch yang diinput</p></div>';
-                return;
-            }
-            
-            container.innerHTML = allBatches.map(b => renderScoreCard(b, false, {
-                jadwalWadah: true,
-                jadwalKemas: true
-            })).join('');
-        }
-        
-        // ==================== PRODUKSI ====================
-        function renderKanbanProduksi() {
-            const container = document.getElementById('kanbanProduksi');
-            const batches = data.batches.filter(b => b.status === 'produksi');
-            
-            if (batches.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>Belum ada batch di kanban produksi</p></div>';
-                return;
-            }
-            
-            container.innerHTML = batches.map(b => {
-                return renderScoreCard(b, true, {
-                    jadwalWadah: true,
-                    jadwalKemas: true,
-                    logisticReady: true
-                });
-            }).join('');
-        }
-        
+        // ==================== PRODUKSI - KANBAN ====================
         function saveJadwal(id) {
             const batch = data.batches.find(b => b.id === id);
-            if (!batch) return;
+            if (!batch) {
+                showNotification('Batch tidak ditemukan!', 'error');
+                return;
+            }
             
             const wadahInput = document.getElementById('jadwalWadah_' + id);
             const kemasInput = document.getElementById('jadwalKemas_' + id);
@@ -1064,30 +1214,20 @@
                 return;
             }
             
-            const formatDate = (value) => {
-                const date = new Date(value);
-                return date.toLocaleDateString('id-ID', { 
-                    day: '2-digit', 
-                    month: '2-digit', 
-                    year: 'numeric' 
-                }) + ' ' + date.toLocaleTimeString('id-ID', { 
-                    hour: '2-digit', 
-                    minute: '2-digit' 
-                });
-            };
-            
             batch.jadwalWadah = formatDate(wadahInput.value);
             batch.jadwalKemas = formatDate(kemasInput.value);
             
+            // LANGSUNG KE LOGISTIC - RESPON KANBAN
+            batch.status = 'logistic';
+            
             saveData();
-            showNotification('Jadwal berhasil disimpan!', 'success');
+            showNotification('✅ Jadwal disimpan! Batch sekarang di Logistic - Respon Kanban', 'success');
             renderAll();
         }
         
         function editJadwal(id) {
             const batch = data.batches.find(b => b.id === id);
             if (!batch) return;
-            
             batch.jadwalWadah = '';
             batch.jadwalKemas = '';
             saveData();
@@ -1095,96 +1235,29 @@
             showNotification('Silahkan isi jadwal baru', 'info');
         }
         
-        function renderInputProduksi() {
-            const container = document.getElementById('inputProduksi');
-            const batches = data.batches.filter(b => b.status === 'produksi' || b.status === 'logistic');
+        // ==================== PRODUKSI - KANBAN RENDER ====================
+        function renderKanbanProduksi() {
+            const container = document.getElementById('kanbanProduksi');
+            if (!container) return;
+            const batches = data.batches.filter(b => b.status === 'produksi');
             
             if (batches.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>Belum ada batch yang siap diinput produksi</p></div>';
+                container.innerHTML = '<div class="empty-state"><p>Belum ada batch di kanban produksi</p></div>';
                 return;
             }
             
             container.innerHTML = batches.map(b => {
-                let actionsHtml = '';
-                if (b.status === 'produksi' || b.status === 'logistic') {
-                    // Cek apakah jadwal sudah diisi
-                    if (!b.jadwalWadah || !b.jadwalKemas) {
-                        actionsHtml = `
-                            <div style="margin-top:10px;padding:10px;background:#fff3e0;border-radius:4px;border-left:3px solid #f57c00;">
-                                ⚠️ Harap isi jadwal permintaan di Kanban Produksi terlebih dahulu
-                            </div>
-                        `;
-                    } else {
-                        actionsHtml = `
-                            <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">
-                                <div class="form-group" style="flex:1;min-width:150px;">
-                                    <label style="font-size:12px;">Tanggal Timbang</label>
-                                    <input type="date" id="timbang_${b.id}" value="${b.tanggalTimbang || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
-                                </div>
-                                <div class="form-group" style="flex:1;min-width:150px;">
-                                    <label style="font-size:12px;">Tanggal Serah Terima</label>
-                                    <input type="date" id="serah_${b.id}" value="${b.tanggalSerahTerima || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
-                                </div>
-                                <div class="form-group" style="flex:1;min-width:150px;">
-                                    <label style="font-size:12px;">Tanggal BPP</label>
-                                    <input type="date" id="bpp_${b.id}" value="${b.tanggalBPP || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
-                                </div>
-                                <div class="form-group" style="flex:1;min-width:150px;">
-                                    <label style="font-size:12px;">Tanggal Kirim Dokumen</label>
-                                    <input type="date" id="kirim_${b.id}" value="${b.tanggalKirimDokumen || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
-                                </div>
-                                <button class="btn btn-success btn-sm" onclick="saveProduksi('${b.id}')" style="align-self:flex-end;padding:8px 20px;">
-                                    Simpan
-                                </button>
-                            </div>
-                        `;
-                    }
-                }
-                
-                return renderScoreCard(b, false, {
+                return renderScoreCard(b, true, {
                     jadwalWadah: true,
-                    jadwalKemas: true,
-                    tanggalTimbang: true,
-                    tanggalSerahTerima: true,
-                    tanggalBPP: true,
-                    tanggalKirimDokumen: true
-                }) + actionsHtml;
+                    jadwalKemas: true
+                });
             }).join('');
         }
         
-        function saveProduksi(id) {
-            const batch = data.batches.find(b => b.id === id);
-            if (!batch) return;
-            
-            const timbang = document.getElementById('timbang_' + id);
-            const serah = document.getElementById('serah_' + id);
-            const bpp = document.getElementById('bpp_' + id);
-            const kirim = document.getElementById('kirim_' + id);
-            
-            if (!timbang || !serah || !bpp || !kirim) {
-                showNotification('Error: Field tidak ditemukan!', 'error');
-                return;
-            }
-            
-            if (!timbang.value || !serah.value || !bpp.value || !kirim.value) {
-                showNotification('Isi semua field!', 'error');
-                return;
-            }
-            
-            batch.tanggalTimbang = timbang.value;
-            batch.tanggalSerahTerima = serah.value;
-            batch.tanggalBPP = bpp.value;
-            batch.tanggalKirimDokumen = kirim.value;
-            batch.status = 'logistic';
-            
-            saveData();
-            showNotification('Data produksi berhasil disimpan!', 'success');
-            renderAll();
-        }
-        
-        // ==================== LOGISTIC ====================
+        // ==================== LOGISTIC - RESPON KANBAN ====================
         function renderResponKanban() {
             const container = document.getElementById('responKanban');
+            if (!container) return;
             const batches = data.batches.filter(b => b.status === 'logistic');
             
             if (batches.length === 0) {
@@ -1203,46 +1276,106 @@
                     `;
                 }
                 
+                if (b.logisticReady) {
+                    actionsHtml = `
+                        <div class="actions">
+                            <span style="padding:5px 15px;background:#c8e6c9;border-radius:4px;color:#1b5e20;font-weight:600;">✅ Sudah Ready</span>
+                            <button class="btn btn-warning btn-sm" onclick="undoLogisticReady('${b.id}')">↩️ Undo</button>
+                        </div>
+                    `;
+                }
+                
+                if (b.logisticProblem) {
+                    actionsHtml = `
+                        <div class="actions">
+                            <span style="padding:5px 15px;background:#ffcdd2;border-radius:4px;color:#b71c1c;font-weight:600;">⚠️ Problem: ${b.logisticProblemReason}</span>
+                            <button class="btn btn-success btn-sm" onclick="resolveProblem('${b.id}')">🔧 Resolve</button>
+                        </div>
+                    `;
+                }
+                
                 return renderScoreCard(b, false, {
                     jadwalWadah: true,
-                    jadwalKemas: true,
-                    logisticReady: true
+                    jadwalKemas: true
                 }) + actionsHtml;
             }).join('');
         }
         
         function logisticReady(id) {
+            if (!confirm('Apakah material sudah siap untuk batch ini?')) return;
+            
             const batch = data.batches.find(b => b.id === id);
             if (batch) {
                 batch.logisticReady = true;
                 batch.logisticProblem = false;
                 batch.logisticProblemReason = '';
-                batch.status = 'qc';
+                batch.status = 'logistic_input';
                 saveData();
-                showNotification('Material siap! Batch dilanjutkan ke QC', 'success');
+                showNotification('✅ Material siap! Silahkan input data logistic di tab Input Logistic', 'success');
+                renderAll();
+            }
+        }
+        
+        function undoLogisticReady(id) {
+            if (!confirm('Batalkan status Ready untuk batch ini?')) return;
+            
+            const batch = data.batches.find(b => b.id === id);
+            if (batch) {
+                batch.logisticReady = false;
+                batch.logisticProblem = false;
+                batch.logisticProblemReason = '';
+                batch.status = 'logistic';
+                saveData();
+                showNotification('Status Ready dibatalkan', 'info');
                 renderAll();
             }
         }
         
         function logisticProblem(id) {
-            const reason = prompt('Masukkan alasan problem:');
-            if (reason !== null && reason.trim()) {
-                const batch = data.batches.find(b => b.id === id);
-                if (batch) {
-                    batch.logisticProblem = true;
-                    batch.logisticProblemReason = reason.trim();
-                    batch.logisticReady = false;
-                    batch.status = 'problem';
-                    saveData();
-                    showNotification('Problem tercatat!', 'info');
-                    renderAll();
-                }
+            const reason = prompt('Masukkan alasan problem (contoh: Material belum tersedia, Kerusakan mesin, dll):');
+            
+            if (reason === null) {
+                showNotification('Aksi dibatalkan', 'info');
+                return;
+            }
+            
+            if (reason.trim() === '') {
+                showNotification('Alasan problem harus diisi!', 'error');
+                return;
+            }
+            
+            const batch = data.batches.find(b => b.id === id);
+            if (batch) {
+                batch.logisticProblem = true;
+                batch.logisticProblemReason = reason.trim();
+                batch.logisticReady = false;
+                batch.status = 'problem';
+                saveData();
+                showNotification('⚠️ Problem tercatat: ' + reason.trim(), 'error');
+                renderAll();
             }
         }
         
+        function resolveProblem(id) {
+            if (!confirm('Apakah problem sudah selesai dan material sudah siap?')) return;
+            
+            const batch = data.batches.find(b => b.id === id);
+            if (batch) {
+                batch.logisticProblem = false;
+                batch.logisticProblemReason = '';
+                batch.logisticReady = true;
+                batch.status = 'logistic_input';
+                saveData();
+                showNotification('✅ Problem resolved! Silahkan input data logistic di tab Input Logistic', 'success');
+                renderAll();
+            }
+        }
+        
+        // ==================== LOGISTIC - INPUT LOGISTIC ====================
         function renderInputLogistic() {
             const container = document.getElementById('inputLogistic');
-            const batches = data.batches.filter(b => b.status === 'logistic' || b.status === 'qc');
+            if (!container) return;
+            const batches = data.batches.filter(b => b.status === 'logistic_input');
             
             if (batches.length === 0) {
                 container.innerHTML = '<div class="empty-state"><p>Belum ada batch yang perlu diinput logistic</p></div>';
@@ -1250,24 +1383,21 @@
             }
             
             container.innerHTML = batches.map(b => {
-                let actionsHtml = '';
-                if (b.status === 'logistic' || b.status === 'qc') {
-                    actionsHtml = `
-                        <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">
-                            <div class="form-group" style="flex:1;min-width:150px;">
-                                <label style="font-size:12px;">Tanggal Timbang</label>
-                                <input type="date" id="logTimbang_${b.id}" value="${b.tanggalTimbang || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
-                            </div>
-                            <div class="form-group" style="flex:1;min-width:150px;">
-                                <label style="font-size:12px;">Tanggal Serah Terima</label>
-                                <input type="date" id="logSerah_${b.id}" value="${b.tanggalSerahTerima || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
-                            </div>
-                            <button class="btn btn-success btn-sm" onclick="saveLogisticInput('${b.id}')" style="align-self:flex-end;padding:8px 20px;">
-                                Simpan
-                            </button>
+                let actionsHtml = `
+                    <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">
+                        <div class="form-group" style="flex:1;min-width:150px;">
+                            <label style="font-size:12px;">Tanggal Timbang</label>
+                            <input type="date" id="logTimbang_${b.id}" value="${b.tanggalTimbang || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
                         </div>
-                    `;
-                }
+                        <div class="form-group" style="flex:1;min-width:150px;">
+                            <label style="font-size:12px;">Tanggal Serah Terima</label>
+                            <input type="date" id="logSerah_${b.id}" value="${b.tanggalSerahTerima || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
+                        </div>
+                        <button class="btn btn-success btn-sm" onclick="saveLogisticInput('${b.id}')" style="align-self:flex-end;padding:8px 20px;">
+                            Simpan & Kirim ke Produksi
+                        </button>
+                    </div>
+                `;
                 
                 return renderScoreCard(b, false, {
                     jadwalWadah: true,
@@ -1280,7 +1410,10 @@
         
         function saveLogisticInput(id) {
             const batch = data.batches.find(b => b.id === id);
-            if (!batch) return;
+            if (!batch) {
+                showNotification('Batch tidak ditemukan!', 'error');
+                return;
+            }
             
             const timbang = document.getElementById('logTimbang_' + id);
             const serah = document.getElementById('logSerah_' + id);
@@ -1297,16 +1430,85 @@
             
             batch.tanggalTimbang = timbang.value;
             batch.tanggalSerahTerima = serah.value;
+            batch.status = 'produksi_input';
+            
+            saveData();
+            showNotification('✅ Data logistic disimpan! Batch sekarang di Produksi - Input Produksi', 'success');
+            renderAll();
+        }
+        
+        // ==================== PRODUKSI - INPUT PRODUKSI ====================
+        function renderInputProduksi() {
+            const container = document.getElementById('inputProduksi');
+            if (!container) return;
+            const batches = data.batches.filter(b => b.status === 'produksi_input');
+            
+            if (batches.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>Belum ada batch yang siap diinput produksi</p></div>';
+                return;
+            }
+            
+            container.innerHTML = batches.map(b => {
+                let actionsHtml = `
+                    <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">
+                        <div class="form-group" style="flex:1;min-width:150px;">
+                            <label style="font-size:12px;">Tanggal BPP</label>
+                            <input type="date" id="bpp_${b.id}" value="${b.tanggalBPP || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
+                        </div>
+                        <div class="form-group" style="flex:1;min-width:150px;">
+                            <label style="font-size:12px;">Tanggal Kirim Dokumen</label>
+                            <input type="date" id="kirim_${b.id}" value="${b.tanggalKirimDokumen || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
+                        </div>
+                        <button class="btn btn-success btn-sm" onclick="saveProduksiInput('${b.id}')" style="align-self:flex-end;padding:8px 20px;">
+                            Simpan & Kirim ke QC
+                        </button>
+                    </div>
+                `;
+                
+                return renderScoreCard(b, false, {
+                    jadwalWadah: true,
+                    jadwalKemas: true,
+                    tanggalTimbang: true,
+                    tanggalSerahTerima: true,
+                    tanggalBPP: true,
+                    tanggalKirimDokumen: true
+                }) + actionsHtml;
+            }).join('');
+        }
+        
+        function saveProduksiInput(id) {
+            const batch = data.batches.find(b => b.id === id);
+            if (!batch) {
+                showNotification('Batch tidak ditemukan!', 'error');
+                return;
+            }
+            
+            const bpp = document.getElementById('bpp_' + id);
+            const kirim = document.getElementById('kirim_' + id);
+            
+            if (!bpp || !kirim) {
+                showNotification('Error: Field tidak ditemukan!', 'error');
+                return;
+            }
+            
+            if (!bpp.value || !kirim.value) {
+                showNotification('Isi semua field!', 'error');
+                return;
+            }
+            
+            batch.tanggalBPP = bpp.value;
+            batch.tanggalKirimDokumen = kirim.value;
             batch.status = 'qc';
             
             saveData();
-            showNotification('Data logistic berhasil disimpan!', 'success');
+            showNotification('✅ Data produksi disimpan! Batch sekarang di QC', 'success');
             renderAll();
         }
         
         // ==================== QC ====================
         function renderQC() {
             const container = document.getElementById('qcList');
+            if (!container) return;
             const batches = data.batches.filter(b => b.status === 'qc' || b.status === 'qa');
             
             if (batches.length === 0) {
@@ -1359,7 +1561,10 @@
         
         function saveQC(id) {
             const batch = data.batches.find(b => b.id === id);
-            if (!batch) return;
+            if (!batch) {
+                showNotification('Batch tidak ditemukan!', 'error');
+                return;
+            }
             
             const sample = document.getElementById('qcSample_' + id);
             const lws = document.getElementById('qcLWS_' + id);
@@ -1390,13 +1595,14 @@
             batch.status = 'qa';
             
             saveData();
-            showNotification('Data QC berhasil disimpan! Batch dikirim ke QA', 'success');
+            showNotification('Data QC berhasil disimpan! Batch sekarang di QA', 'success');
             renderAll();
         }
         
         // ==================== QA ====================
         function renderQA() {
             const container = document.getElementById('qaList');
+            if (!container) return;
             const batches = data.batches.filter(b => b.status === 'qa');
             
             if (batches.length === 0) {
@@ -1432,7 +1638,10 @@
         
         function saveQA(id) {
             const batch = data.batches.find(b => b.id === id);
-            if (!batch) return;
+            if (!batch) {
+                showNotification('Batch tidak ditemukan!', 'error');
+                return;
+            }
             
             const rilis = document.getElementById('qaRilis_' + id);
             
@@ -1450,8 +1659,25 @@
             batch.status = 'done';
             
             saveData();
-            showNotification('Batch berhasil dirilis!', 'success');
+            showNotification('🎉 Batch berhasil dirilis!', 'success');
             renderAll();
+        }
+        
+        // ==================== PPIC RENDER ====================
+        function renderPPIC() {
+            const container = document.getElementById('ppicScoreCards');
+            if (!container) return;
+            const allBatches = data.batches;
+            
+            if (allBatches.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>Belum ada batch yang diinput</p></div>';
+                return;
+            }
+            
+            container.innerHTML = allBatches.map(b => renderScoreCard(b, false, {
+                jadwalWadah: true,
+                jadwalKemas: true
+            })).join('');
         }
         
         // ==================== DASHBOARD ====================
@@ -1460,11 +1686,15 @@
             const done = data.batches.filter(b => b.status === 'done').length;
             const progress = data.batches.filter(b => b.status !== 'done' && b.status !== 'problem').length;
             
-            document.getElementById('totalBatch').textContent = total;
-            document.getElementById('doneBatch').textContent = done;
-            document.getElementById('progressBatch').textContent = progress;
+            const totalEl = document.getElementById('totalBatch');
+            const doneEl = document.getElementById('doneBatch');
+            const progressEl = document.getElementById('progressBatch');
+            if (totalEl) totalEl.textContent = total;
+            if (doneEl) doneEl.textContent = done;
+            if (progressEl) progressEl.textContent = progress;
             
             const container = document.getElementById('statusChart');
+            if (!container) return;
             const statusCount = {};
             data.batches.forEach(b => {
                 statusCount[b.status] = (statusCount[b.status] || 0) + 1;
@@ -1483,23 +1713,8 @@
             `).join('');
         }
         
-        function getStatusColor(status) {
-            const colors = {
-                'draft': '#757575',
-                'ppic': '#0d47a1',
-                'produksi': '#e65100',
-                'logistic': '#2e7d32',
-                'qc': '#c62828',
-                'qa': '#6a1b9a',
-                'done': '#1b5e20',
-                'problem': '#b71c1c'
-            };
-            return colors[status] || '#757575';
-        }
-        
         // ==================== RENDER ALL ====================
         function renderAll() {
-            console.log('🔄 Rendering semua halaman...');
             renderDashboard();
             renderPPIC();
             renderKanbanProduksi();
@@ -1510,7 +1725,6 @@
             renderQA();
             renderPersonilList();
             renderProductList();
-            console.log('✅ Render selesai. Total batch:', data.batches.length);
         }
         
         // ==================== INIT ====================
@@ -1519,6 +1733,7 @@
         
         console.log('📊 PCT Monitoring System Loaded');
         console.log('📦 Total Batches:', data.batches.length);
+        console.log('💾 Storage mode:', useSessionStorage ? 'sessionStorage' : 'localStorage');
     </script>
 </body>
 </html>
