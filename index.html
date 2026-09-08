@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Monitoring PCT</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            font-weight: 300;
+        }
+        
+        .header h1 span {
+            font-weight: 700;
+        }
+        
+        .nav {
+            background: white;
+            padding: 0 20px;
+            display: flex;
+            gap: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 70px;
+            z-index: 999;
+            flex-wrap: wrap;
+        }
+        
+        .nav-btn {
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            color: #555;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            position: relative;
+        }
+        
+        .nav-btn:hover {
+            color: #0d47a1;
+            background: #f5f5f5;
+        }
+        
+        .nav-btn.active {
+            color: #0d47a1;
+            border-bottom-color: #0d47a1;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        
+        .page {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .card h2 {
+            color: #1a237e;
+            margin-bottom: 15px;
+            font-size: 20px;
+            border-bottom: 2px solid #e8eaf6;
+            padding-bottom: 10px;
+        }
+        
+        .card h3 {
+            color: #0d47a1;
+            margin: 15px 0 10px 0;
+            font-size: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+            font-size: 13px;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #0d47a1;
+            box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #0d47a1;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1a237e;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(13, 71, 161, 0.3);
+        }
+        
+        .btn-success {
+            background: #2e7d32;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #1b5e20;
+        }
+        
+        .btn-danger {
+            background: #c62828;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #b71c1c;
+        }
+        
+        .btn-warning {
+            background: #f57c00;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background: #e65100;
+        }
+        
+        .btn-sm {
+            padding: 5px 15px;
+            font-size: 12px;
+        }
+        
+        .score-card {
+            background: #f8f9fa;
+            border-left: 4px solid #0d47a1;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+        
+        .score-card:hover {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transform: translateX(5px);
+        }
+        
+        .score-card .header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .score-card .batch-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .score-card .batch-number {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a237e;
+        }
+        
+        .score-card .batch-type {
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .batch-type.injeksi {
+            background: #e3f2fd;
+            color: #0d47a1;
+        }
+        
+        .batch-type.oral {
+            background: #f3e5f5;
+            color: #6a1b9a;
+        }
+        
+        .score-card .status {
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status.draft { background: #e0e0e0; color: #616161; }
+        .status.ppic { background: #e3f2fd; color: #0d47a1; }
+        .status.produksi { background: #fff3e0; color: #e65100; }
+        .status.logistic { background: #e8f5e9; color: #2e7d32; }
+        .status.qc { background: #fce4ec; color: #c62828; }
+        .status.qa { background: #f3e5f5; color: #6a1b9a; }
+        .status.done { background: #c8e6c9; color: #1b5e20; }
+        .status.problem { background: #ffcdd2; color: #b71c1c; }
+        
+        .score-card .details {
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            font-size: 13px;
+        }
+        
+        .score-card .details .field {
+            color: #757575;
+        }
+        
+        .score-card .details .value {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .score-card .actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+        
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e8eaf6;
+        }
+        
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            font-weight: 600;
+            color: #757575;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            color: #0d47a1;
+            border-bottom-color: #0d47a1;
+        }
+        
+        .tab-btn:hover {
+            color: #0d47a1;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .personil-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+        
+        .personil-item .delete-btn {
+            color: #c62828;
+            cursor: pointer;
+            font-weight: 700;
+            padding: 0 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 { font-size: 18px; }
+            .nav-btn { padding: 10px 12px; font-size: 12px; }
+            .form-row { grid-template-columns: 1fr; }
+            .grid-2 { grid-template-columns: 1fr; }
+            .score-card .header-info { flex-direction: column; align-items: flex-start; }
+        }
+        
+        .problem-text {
+            color: #c62828;
+            font-weight: 600;
+            padding: 5px 10px;
+            background: #ffcdd2;
+            border-radius: 4px;
+            margin-top: 5px;
+            font-size: 13px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+        
+        .empty-state p {
+            font-size: 16px;
+        }
+        
+        .notification {
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        .notification.success {
+            display: block;
+            background: #c8e6c9;
+            color: #1b5e20;
+            border-left: 4px solid #2e7d32;
+        }
+        
+        .notification.error {
+            display: block;
+            background: #ffcdd2;
+            color: #b71c1c;
+            border-left: 4px solid #c62828;
+        }
+        
+        .notification.info {
+            display: block;
+            background: #e3f2fd;
+            color: #0d47a1;
+            border-left: 4px solid #0d47a1;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .input-group input[type="datetime-local"] {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .jadwal-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .jadwal-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .jadwal-item label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .jadwal-item input {
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .jadwal-item .jadwal-value {
+            padding: 6px 10px;
+            background: #e8f5e9;
+            border-radius: 4px;
+            border-left: 3px solid #2e7d32;
+            font-weight: 500;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>📊 <span>PCT</span> Monitoring System</h1>
+        <div style="font-size:14px;opacity:0.8;">Production Cycle Time</div>
+    </header>
+    
+    <nav class="nav" id="mainNav">
+        <button class="nav-btn active" data-page="dashboard">📊 Dashboard</button>
+        <button class="nav-btn" data-page="ppic">📋 PPIC</button>
+        <button class="nav-btn" data-page="produksi">🏭 Produksi</button>
+        <button class="nav-btn" data-page="logistic">🚚 Logistic</button>
+        <button class="nav-btn" data-page="qc">🔬 QC</button>
+        <button class="nav-btn" data-page="qa">✅ QA</button>
+        <button class="nav-btn" data-page="management">⚙️ Management</button>
+    </nav>
+    
+    <div class="container">
+        <div id="notification" class="notification"></div>
+        
+        <!-- DASHBOARD -->
+        <div id="page-dashboard" class="page active">
+            <div class="card">
+                <h2>📊 Dashboard</h2>
+                <div class="grid-3" id="dashboardStats">
+                    <div class="card" style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);border:none;">
+                        <h3 style="color:#0d47a1;">Total Batch</h3>
+                        <p style="font-size:32px;font-weight:700;" id="totalBatch">0</p>
+                    </div>
+                    <div class="card" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border:none;">
+                        <h3 style="color:#2e7d32;">Selesai</h3>
+                        <p style="font-size:32px;font-weight:700;" id="doneBatch">0</p>
+                    </div>
+                    <div class="card" style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);border:none;">
+                        <h3 style="color:#e65100;">In Progress</h3>
+                        <p style="font-size:32px;font-weight:700;" id="progressBatch">0</p>
+                    </div>
+                </div>
+                <div style="margin-top:20px;">
+                    <h3>Status Overview</h3>
+                    <div id="statusChart" style="display:flex;gap:15px;flex-wrap:wrap;margin-top:10px;"></div>
+                </div>
+                <div style="margin-top:20px;padding:20px;background:#f5f5f5;border-radius:8px;">
+                    <p style="color:#757575;font-style:italic;">📌 Dashboard lengkap menyusul dengan grafik dan analisis mendalam.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- PPIC -->
+        <div id="page-ppic" class="page">
+            <div class="card">
+                <h2>📋 Input Nomor Batch</h2>
+                <div class="form-group">
+                    <label>Nomor Batch (5 Huruf + 5 Angka, tanpa spasi)</label>
+                    <input type="text" id="batchInput" placeholder="Contoh: VABCD12345 atau TABCD12345" maxlength="10">
+                    <small style="color:#757575;">Awalan V = Injeksi, T = Oral</small>
+                </div>
+                <button class="btn btn-primary" onclick="addBatch()">➕ Tambah Batch</button>
+            </div>
+            
+            <div class="card">
+                <h2>📋 Daftar Score Card</h2>
+                <div id="ppicScoreCards"></div>
+            </div>
+        </div>
+        
+        <!-- PRODUKSI -->
+        <div id="page-produksi" class="page">
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="kanban-produksi">📋 Kanban Produksi</button>
+                <button class="tab-btn" data-tab="input-produksi">✏️ Input Produksi</button>
+            </div>
+            
+            <div id="tab-kanban-produksi" class="tab-content active">
+                <div class="card">
+                    <h2>📋 Kanban Produksi</h2>
+                    <div id="kanbanProduksi"></div>
+                </div>
+            </div>
+            
+            <div id="tab-input-produksi" class="tab-content">
+                <div class="card">
+                    <h2>✏️ Input Produksi</h2>
+                    <div id="inputProduksi"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- LOGISTIC -->
+        <div id="page-logistic" class="page">
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="respon-kanban">📦 Respon Kanban</button>
+                <button class="tab-btn" data-tab="input-logistic">✏️ Input Logistic</button>
+            </div>
+            
+            <div id="tab-respon-kanban" class="tab-content active">
+                <div class="card">
+                    <h2>📦 Respon Kanban</h2>
+                    <div id="responKanban"></div>
+                </div>
+            </div>
+            
+            <div id="tab-input-logistic" class="tab-content">
+                <div class="card">
+                    <h2>✏️ Input Logistic</h2>
+                    <div id="inputLogistic"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- QC -->
+        <div id="page-qc" class="page">
+            <div class="card">
+                <h2>🔬 Quality Control</h2>
+                <div id="qcList"></div>
+            </div>
+        </div>
+        
+        <!-- QA -->
+        <div id="page-qa" class="page">
+            <div class="card">
+                <h2>✅ Quality Assurance</h2>
+                <div id="qaList"></div>
+            </div>
+        </div>
+        
+        <!-- MANAGEMENT -->
+        <div id="page-management" class="page">
+            <div class="grid-2">
+                <div>
+                    <div class="card">
+                        <h2>👤 Manage Personil</h2>
+                        <div class="form-group">
+                            <label>Nama</label>
+                            <input type="text" id="personilName" placeholder="Masukkan nama">
+                        </div>
+                        <div class="form-group">
+                            <label>Departemen</label>
+                            <select id="personilDept">
+                                <option value="PPIC">PPIC</option>
+                                <option value="Produksi">Produksi</option>
+                                <option value="Logistic">Logistic</option>
+                                <option value="QC">QC</option>
+                                <option value="QA">QA</option>
+                                <option value="Management">Management</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="addPersonil()">➕ Tambah Personil</button>
+                        <div style="margin-top:15px;">
+                            <h3>Daftar Personil</h3>
+                            <div id="personilList"></div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="card">
+                        <h2>📦 Manage Kode Produk</h2>
+                        <div class="form-group">
+                            <label>Kode Produk</label>
+                            <input type="text" id="productCode" placeholder="Masukkan kode produk">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Target Timbang (Jam)</label>
+                                <input type="number" id="targetTimbang" placeholder="0" step="0.5">
+                            </div>
+                            <div class="form-group">
+                                <label>Target Produksi (Jam)</label>
+                                <input type="number" id="targetProduksi" placeholder="0" step="0.5">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Target Analisa Sample (Jam)</label>
+                                <input type="number" id="targetAnalisa" placeholder="0" step="0.5">
+                            </div>
+                            <div class="form-group">
+                                <label>Target Perilisan (Jam)</label>
+                                <input type="number" id="targetPerilisan" placeholder="0" step="0.5">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="addProduct()">➕ Tambah Produk</button>
+                        <div style="margin-top:15px;">
+                            <h3>Daftar Produk</h3>
+                            <div id="productList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== DATA STORE ====================
+        let data = {
+            personil: [],
+            products: [],
+            batches: []
+        };
+        
+        function loadData() {
+            const stored = localStorage.getItem('pctData');
+            if (stored) {
+                try {
+                    data = JSON.parse(stored);
+                } catch(e) {
+                    data = { personil: [], products: [], batches: [] };
+                }
+            }
+        }
+        
+        function saveData() {
+            localStorage.setItem('pctData', JSON.stringify(data));
+        }
+        
+        // ==================== UTILITY ====================
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+        }
+        
+        function getBatchType(batchNumber) {
+            if (!batchNumber) return 'unknown';
+            const firstChar = batchNumber.charAt(0).toUpperCase();
+            return firstChar === 'V' ? 'injeksi' : (firstChar === 'T' ? 'oral' : 'unknown');
+        }
+        
+        function getStatusLabel(status) {
+            const labels = {
+                'draft': 'Draft',
+                'ppic': 'PPIC',
+                'produksi': 'Produksi',
+                'logistic': 'Logistic',
+                'qc': 'QC',
+                'qa': 'QA',
+                'done': 'Selesai',
+                'problem': 'Problem'
+            };
+            return labels[status] || status;
+        }
+        
+        function showNotification(message, type = 'info') {
+            const notif = document.getElementById('notification');
+            notif.className = 'notification ' + type;
+            notif.textContent = message;
+            setTimeout(() => {
+                notif.className = 'notification';
+            }, 5000);
+        }
+        
+        // ==================== NAVIGATION ====================
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const page = this.dataset.page;
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.getElementById('page-' + page).classList.add('active');
+                
+                renderAll();
+            });
+        });
+        
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const parent = this.closest('.page');
+                parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const tab = this.dataset.tab;
+                parent.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                document.getElementById('tab-' + tab).classList.add('active');
+                
+                renderAll();
+            });
+        });
+        
+        // ==================== MANAGEMENT ====================
+        function addPersonil() {
+            const name = document.getElementById('personilName').value.trim();
+            const dept = document.getElementById('personilDept').value;
+            
+            if (!name) {
+                showNotification('Masukkan nama personil!', 'error');
+                return;
+            }
+            
+            data.personil.push({
+                id: generateId(),
+                name: name,
+                department: dept
+            });
+            
+            saveData();
+            document.getElementById('personilName').value = '';
+            showNotification('Personil berhasil ditambahkan!', 'success');
+            renderPersonilList();
+        }
+        
+        function deletePersonil(id) {
+            if (confirm('Hapus personil ini?')) {
+                data.personil = data.personil.filter(p => p.id !== id);
+                saveData();
+                renderPersonilList();
+                showNotification('Personil dihapus!', 'info');
+            }
+        }
+        
+        function renderPersonilList() {
+            const container = document.getElementById('personilList');
+            if (data.personil.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>Belum ada personil</p></div>';
+                return;
+            }
+            container.innerHTML = data.personil.map(p => `
+                <div class="personil-item">
+                    <span><strong>${p.name}</strong> - ${p.department}</span>
+                    <span class="delete-btn" onclick="deletePersonil('${p.id}')">✕</span>
+                </div>
+            `).join('');
+        }
+        
+        function addProduct() {
+            const code = document.getElementById('productCode').value.trim();
+            const targetTimbang = parseFloat(document.getElementById('targetTimbang').value);
+            const targetProduksi = parseFloat(document.getElementById('targetProduksi').value);
+            const targetAnalisa = parseFloat(document.getElementById('targetAnalisa').value);
+            const targetPerilisan = parseFloat(document.getElementById('targetPerilisan').value);
+            
+            if (!code) {
+                showNotification('Masukkan kode produk!', 'error');
+                return;
+            }
+            
+            if (isNaN(targetTimbang) || isNaN(targetProduksi) || isNaN(targetAnalisa) || isNaN(targetPerilisan)) {
+                showNotification('Isi semua target durasi dengan angka!', 'error');
+                return;
+            }
+            
+            data.products.push({
+                id: generateId(),
+                code: code,
+                targetTimbang: targetTimbang,
+                targetProduksi: targetProduksi,
+                targetAnalisa: targetAnalisa,
+                targetPerilisan: targetPerilisan
+            });
+            
+            saveData();
+            document.getElementById('productCode').value = '';
+            document.getElementById('targetTimbang').value = '';
+            document.getElementById('targetProduksi').value = '';
+            document.getElementById('targetAnalisa').value = '';
+            document.getElementById('targetPerilisan').value = '';
+            showNotification('Produk berhasil ditambahkan!', 'success');
+            renderProductList();
+        }
+        
+        function deleteProduct(id) {
+            if (confirm('Hapus produk ini?')) {
+                data.products = data.products.filter(p => p.id !== id);
+                saveData();
+                renderProductList();
+                showNotification('Produk dihapus!', 'info');
+            }
+        }
+        
+        function renderProductList() {
+            const container = document.getElementById('productList');
+            if (data.products.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>Belum ada produk</p></div>';
+                return;
+            }
+            container.innerHTML = data.products.map(p => `
+                <div class="personil-item">
+                    <div>
+                        <strong>${p.code}</strong><br>
+                        <small>Timbang: ${p.targetTimbang} jam | Produksi: ${p.targetProduksi} jam | Analisa: ${p.targetAnalisa} jam | Perilisan: ${p.targetPerilisan} jam</small>
+                    </div>
+                    <span class="delete-btn" onclick="deleteProduct('${p.id}')">✕</span>
+                </div>
+            `).join('');
+        }
+        
+        // ==================== PPIC ====================
+        function addBatch() {
+            const input = document.getElementById('batchInput').value.trim().toUpperCase();
+            
+            if (!input) {
+                showNotification('Masukkan nomor batch!', 'error');
+                return;
+            }
+            
+            if (input.length !== 10) {
+                showNotification('Nomor batch harus 10 karakter (5 huruf + 5 angka)!', 'error');
+                return;
+            }
+            
+            const type = getBatchType(input);
+            if (type === 'unknown') {
+                showNotification('Nomor batch harus diawali V (Injeksi) atau T (Oral)!', 'error');
+                return;
+            }
+            
+            if (data.batches.some(b => b.batchNumber === input)) {
+                showNotification('Nomor batch sudah ada!', 'error');
+                return;
+            }
+            
+            data.batches.push({
+                id: generateId(),
+                batchNumber: input,
+                type: type,
+                status: 'produksi',
+                createdAt: new Date().toISOString(),
+                jadwalWadah: '',
+                jadwalKemas: '',
+                tanggalTimbang: '',
+                tanggalSerahTerima: '',
+                tanggalBPP: '',
+                tanggalKirimDokumen: '',
+                logisticReady: false,
+                logisticProblem: false,
+                logisticProblemReason: '',
+                tanggalTerimaSample: '',
+                estimasiLWS: '',
+                tanggalSelesaiKimia: '',
+                tanggalSelesaiMikro: '',
+                tanggalRilis: ''
+            });
+            
+            saveData();
+            document.getElementById('batchInput').value = '';
+            showNotification('Batch berhasil ditambahkan! Status: Produksi', 'success');
+            
+            // RENDER SEMUA dengan delay kecil untuk memastikan DOM update
+            setTimeout(() => {
+                renderAll();
+            }, 100);
+        }
+        
+        // ==================== RENDER FUNCTIONS ====================
+        function renderScoreCard(batch, showActions = true, showFields = {}) {
+            const typeLabel = batch.type === 'injeksi' ? 'Injeksi' : 'Oral';
+            const typeClass = batch.type;
+            
+            let detailsHtml = '';
+            if (showFields.jadwalWadah !== undefined) {
+                detailsHtml += `<div><span class="field">Jadwal Wadah:</span> <span class="value">${batch.jadwalWadah || '-'}</span></div>`;
+            }
+            if (showFields.jadwalKemas !== undefined) {
+                detailsHtml += `<div><span class="field">Jadwal Kemas:</span> <span class="value">${batch.jadwalKemas || '-'}</span></div>`;
+            }
+            if (showFields.tanggalTimbang !== undefined) {
+                detailsHtml += `<div><span class="field">Tanggal Timbang:</span> <span class="value">${batch.tanggalTimbang || '-'}</span></div>`;
+            }
+            if (showFields.tanggalSerahTerima !== undefined) {
+                detailsHtml += `<div><span class="field">Tanggal Serah Terima:</span> <span class="value">${batch.tanggalSerahTerima || '-'}</span></div>`;
+            }
+            if (showFields.tanggalBPP !== undefined) {
+                detailsHtml += `<div><span class="field">Tanggal BPP:</span> <span class="value">${batch.tanggalBPP || '-'}</span></div>`;
+            }
+            if (showFields.tanggalKirimDokumen !== undefined) {
+                detailsHtml += `<div><span class="field">Tanggal Kirim Dokumen:</span> <span class="value">${batch.tanggalKirimDokumen || '-'}</span></div>`;
+            }
+            if (showFields.tanggalTerimaSample !== undefined) {
+                detailsHtml += `<div><span class="field">Tanggal Terima Sample:</span> <span class="value">${batch.tanggalTerimaSample || '-'}</span></div>`;
+            }
+            if (showFields.estimasiLWS !== undefined) {
+                detailsHtml += `<div><span class="field">Estimasi LWS:</span> <span class="value">${batch.estimasiLWS || '-'}</span></div>`;
+            }
+            if (showFields.tanggalSelesaiKimia !== undefined) {
+                if (batch.type !== 'injeksi') {
+                    detailsHtml += `<div><span class="field">Selesai Analisa Kimia:</span> <span class="value">${batch.tanggalSelesaiKimia || '-'}</span></div>`;
+                }
+            }
+            if (showFields.tanggalSelesaiMikro !== undefined) {
+                detailsHtml += `<div><span class="field">Selesai Analisa Mikro:</span> <span class="value">${batch.tanggalSelesaiMikro || '-'}</span></div>`;
+            }
+            if (showFields.tanggalRilis !== undefined) {
+                detailsHtml += `<div><span class="field">Tanggal Rilis:</span> <span class="value">${batch.tanggalRilis || '-'}</span></div>`;
+            }
+            if (showFields.logisticReady !== undefined) {
+                detailsHtml += `<div><span class="field">Status Logistic:</span> <span class="value">${batch.logisticReady ? '✅ Ready' : (batch.logisticProblem ? '⚠️ Problem' : '⏳ Waiting')}</span></div>`;
+                if (batch.logisticProblem && batch.logisticProblemReason) {
+                    detailsHtml += `<div class="problem-text">⚠️ Problem: ${batch.logisticProblemReason}</div>`;
+                }
+            }
+            
+            let actionsHtml = '';
+            if (showActions) {
+                if (batch.status === 'produksi') {
+                    actionsHtml += `
+                        <div style="margin-top:10px;width:100%;">
+                            <div class="jadwal-container">
+                                <div class="jadwal-item">
+                                    <label>📦 Jadwal Permintaan Wadah</label>
+                                    ${batch.jadwalWadah ? 
+                                        `<div class="jadwal-value">✅ ${batch.jadwalWadah}</div>` :
+                                        `<input type="datetime-local" id="jadwalWadah_${batch.id}" style="width:100%;">`
+                                    }
+                                </div>
+                                <div class="jadwal-item">
+                                    <label>📦 Jadwal Permintaan Kemas</label>
+                                    ${batch.jadwalKemas ? 
+                                        `<div class="jadwal-value">✅ ${batch.jadwalKemas}</div>` :
+                                        `<input type="datetime-local" id="jadwalKemas_${batch.id}" style="width:100%;">`
+                                    }
+                                </div>
+                            </div>
+                            ${(!batch.jadwalWadah || !batch.jadwalKemas) ? 
+                                `<button class="btn btn-success btn-sm" onclick="saveJadwal('${batch.id}')" style="margin-top:10px;">💾 Simpan Jadwal</button>` :
+                                `<button class="btn btn-warning btn-sm" onclick="editJadwal('${batch.id}')" style="margin-top:10px;">✏️ Edit Jadwal</button>`
+                            }
+                        </div>
+                    `;
+                }
+            }
+            
+            let problemHtml = '';
+            if (batch.logisticProblem && batch.logisticProblemReason) {
+                problemHtml = `<div class="problem-text">🚨 Problem: ${batch.logisticProblemReason}</div>`;
+            }
+            
+            return `
+                <div class="score-card" style="border-left-color: ${batch.type === 'injeksi' ? '#0d47a1' : '#6a1b9a'}">
+                    <div class="header-info">
+                        <div class="batch-info">
+                            <span class="batch-number">${batch.batchNumber}</span>
+                            <span class="batch-type ${typeClass}">${typeLabel}</span>
+                            <span class="status ${batch.status}">${getStatusLabel(batch.status)}</span>
+                            ${batch.logisticProblem ? '<span class="status problem">⚠️ Problem</span>' : ''}
+                        </div>
+                        <small style="color:#999;">ID: ${batch.id.substring(0,8)}</small>
+                    </div>
+                    ${problemHtml}
+                    ${detailsHtml ? `<div class="details">${detailsHtml}</div>` : ''}
+                    ${actionsHtml ? `<div class="actions">${actionsHtml}</div>` : ''}
+                </div>
+            `;
+        }
+        
+        function renderPPIC() {
+            const container = document.getElementById('ppicScoreCards');
+            // TAMPILKAN SEMUA BATCH
+            const allBatches = data.batches;
+            
+            if (allBatches.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>Belum ada batch yang diinput</p></div>';
+                return;
+            }
+            
+            container.innerHTML = allBatches.map(b => renderScoreCard(b, false, {
+                jadwalWadah: true,
+                jadwalKemas: true
+            })).join('');
+        }
+        
+        // ==================== PRODUKSI ====================
+        function renderKanbanProduksi() {
+            const container = document.getElementById('kanbanProduksi');
+            const batches = data.batches.filter(b => b.status === 'produksi');
+            
+            if (batches.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>Belum ada batch di kanban produksi</p></div>';
+                return;
+            }
+            
+            container.innerHTML = batches.map(b => {
+                return renderScoreCard(b, true, {
+                    jadwalWadah: true,
+                    jadwalKemas: true,
+                    logisticReady: true
+                });
+            }).join('');
+        }
+        
+        function saveJadwal(id) {
+            const batch = data.batches.find(b => b.id === id);
+            if (!batch) return;
+            
+            const wadahInput = document.getElementById('jadwalWadah_' + id);
+            const kemasInput = document.getElementById('jadwalKemas_' + id);
+            
+            if (!wadahInput || !kemasInput) {
+                showNotification('Error: Input tidak ditemukan!', 'error');
+                return;
+            }
+            
+            if (!wadahInput.value || !kemasInput.value) {
+                showNotification('Isi kedua jadwal (Wadah dan Kemas)!', 'error');
+                return;
+            }
+            
+            const formatDate = (value) => {
+                const date = new Date(value);
+                return date.toLocaleDateString('id-ID', { 
+                    day: '2-digit', 
+                    month: '2-digit', 
+                    year: 'numeric' 
+                }) + ' ' + date.toLocaleTimeString('id-ID', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+            };
+            
+            batch.jadwalWadah = formatDate(wadahInput.value);
+            batch.jadwalKemas = formatDate(kemasInput.value);
+            
+            saveData();
+            showNotification('Jadwal berhasil disimpan!', 'success');
+            renderAll();
+        }
+        
+        function editJadwal(id) {
+            const batch = data.batches.find(b => b.id === id);
+            if (!batch) return;
+            
+            batch.jadwalWadah = '';
+            batch.jadwalKemas = '';
+            saveData();
+            renderAll();
+            showNotification('Silahkan isi jadwal baru', 'info');
+        }
+        
+        function renderInputProduksi() {
+            const container = document.getElementById('inputProduksi');
+            const batches = data.batches.filter(b => b.status === 'produksi' || b.status === 'logistic');
+            
+            if (batches.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>Belum ada batch yang siap diinput produksi</p></div>';
+                return;
+            }
+            
+            container.innerHTML = batches.map(b => {
+                let actionsHtml = '';
+                if (b.status === 'produksi' || b.status === 'logistic') {
+                    // Cek apakah jadwal sudah diisi
+                    if (!b.jadwalWadah || !b.jadwalKemas) {
+                        actionsHtml = `
+                            <div style="margin-top:10px;padding:10px;background:#fff3e0;border-radius:4px;border-left:3px solid #f57c00;">
+                                ⚠️ Harap isi jadwal permintaan di Kanban Produksi terlebih dahulu
+                            </div>
+                        `;
+                    } else {
+                        actionsHtml = `
+                            <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">
+                                <div class="form-group" style="flex:1;min-width:150px;">
+                                    <label style="font-size:12px;">Tanggal Timbang</label>
+                                    <input type="date" id="timbang_${b.id}" value="${b.tanggalTimbang || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
+                                </div>
+                                <div class="form-group" style="flex:1;min-width:150px;">
+                                    <label style="font-size:12px;">Tanggal Serah Terima</label>
+                                    <input type="date" id="serah_${b.id}" value="${b.tanggalSerahTerima || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
+                                </div>
+                                <div class="form-group" style="flex:1;min-width:150px;">
+                                    <label style="font-size:12px;">Tanggal BPP</label>
+                                    <input type="date" id="bpp_${b.id}" value="${b.tanggalBPP || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
+                                </div>
+                                <div class="form-group" style="flex:1;min-width:150px;">
+                                    <label style="font-size:12px;">Tanggal Kirim Dokumen</label>
+                                    <input type="date" id="kirim_${b.id}" value="${b.tanggalKirimDokumen || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
+                                </div>
+                                <button class="btn btn-success btn-sm" onclick="saveProduksi('${b.id}')" style="align-self:flex-end;padding:8px 20px;">
+                                    Simpan
+                                </button>
+                            </div>
+                        `;
+                    }
+                }
+                
+                return renderScoreCard(b, false, {
+                    jadwalWadah: true,
+                    jadwalKemas: true,
+                    tanggalTimbang: true,
+                    tanggalSerahTerima: true,
+                    tanggalBPP: true,
+                    tanggalKirimDokumen: true
+                }) + actionsHtml;
+            }).join('');
+        }
+        
+        function saveProduksi(id) {
+            const batch = data.batches.find(b => b.id === id);
+            if (!batch) return;
+            
+            const timbang = document.getElementById('timbang_' + id);
+            const serah = document.getElementById('serah_' + id);
+            const bpp = document.getElementById('bpp_' + id);
+            const kirim = document.getElementById('kirim_' + id);
+            
+            if (!timbang || !serah || !bpp || !kirim) {
+                showNotification('Error: Field tidak ditemukan!', 'error');
+                return;
+            }
+            
+            if (!timbang.value || !serah.value || !bpp.value || !kirim.value) {
+                showNotification('Isi semua field!', 'error');
+                return;
+            }
+            
+            batch.tanggalTimbang = timbang.value;
+            batch.tanggalSerahTerima = serah.value;
+            batch.tanggalBPP = bpp.value;
+            batch.tanggalKirimDokumen = kirim.value;
+            batch.status = 'logistic';
+            
+            saveData();
+            showNotification('Data produksi berhasil disimpan!', 'success');
+            renderAll();
+        }
+        
+        // ==================== LOGISTIC ====================
+        function renderResponKanban() {
+            const container = document.getElementById('responKanban');
+            const batches = data.batches.filter(b => b.status === 'logistic');
+            
+            if (batches.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>Belum ada batch yang membutuhkan respon logistic</p></div>';
+                return;
+            }
+            
+            container.innerHTML = batches.map(b => {
+                let actionsHtml = '';
+                if (b.status === 'logistic' && !b.logisticReady && !b.logisticProblem) {
+                    actionsHtml = `
+                        <div class="actions">
+                            <button class="btn btn-success btn-sm" onclick="logisticReady('${b.id}')">✅ Ready</button>
+                            <button class="btn btn-danger btn-sm" onclick="logisticProblem('${b.id}')">⚠️ Problem</button>
+                        </div>
+                    `;
+                }
+                
+                return renderScoreCard(b, false, {
+                    jadwalWadah: true,
+                    jadwalKemas: true,
+                    logisticReady: true
+                }) + actionsHtml;
+            }).join('');
+        }
+        
+        function logisticReady(id) {
+            const batch = data.batches.find(b => b.id === id);
+            if (batch) {
+                batch.logisticReady = true;
+                batch.logisticProblem = false;
+                batch.logisticProblemReason = '';
+                batch.status = 'qc';
+                saveData();
+                showNotification('Material siap! Batch dilanjutkan ke QC', 'success');
+                renderAll();
+            }
+        }
+        
+        function logisticProblem(id) {
+            const reason = prompt('Masukkan alasan problem:');
+            if (reason !== null && reason.trim()) {
+                const batch = data.batches.find(b => b.id === id);
+                if (batch) {
+                    batch.logisticProblem = true;
+                    batch.logisticProblemReason = reason.trim();
+                    batch.logisticReady = false;
+                    batch.status = 'problem';
+                    saveData();
+                    showNotification('Problem tercatat!', 'info');
+                    renderAll();
+                }
+            }
+        }
+        
+        function renderInputLogistic() {
+            const container = document.getElementById('inputLogistic');
+            const batches = data.batches.filter(b => b.status === 'logistic' || b.status === 'qc');
+            
+            if (batches.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>Belum ada batch yang perlu diinput logistic</p></div>';
+                return;
+            }
+            
+            container.innerHTML = batches.map(b => {
+                let actionsHtml = '';
+                if (b.status === 'logistic' || b.status === 'qc') {
+                    actionsHtml = `
+                        <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">
+                            <div class="form-group" style="flex:1;min-width:150px;">
+                                <label style="font-size:12px;">Tanggal Timbang</label>
+                                <input type="date" id="logTimbang_${b.id}" value="${b.tanggalTimbang || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
+                            </div>
+                            <div class="form-group" style="flex:1;min-width:150px;">
+                                <label style="font-size:12px;">Tanggal Serah Terima</label>
+                                <input type="date" id="logSerah_${b.id}" value="${b.tanggalSerahTerima || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
+                            </div>
+                            <button class="btn btn-success btn-sm" onclick="saveLogisticInput('${b.id}')" style="align-self:flex-end;padding:8px 20px;">
+                                Simpan
+                            </button>
+                        </div>
+                    `;
+                }
+                
+                return renderScoreCard(b, false, {
+                    jadwalWadah: true,
+                    jadwalKemas: true,
+                    tanggalTimbang: true,
+                    tanggalSerahTerima: true
+                }) + actionsHtml;
+            }).join('');
+        }
+        
+        function saveLogisticInput(id) {
+            const batch = data.batches.find(b => b.id === id);
+            if (!batch) return;
+            
+            const timbang = document.getElementById('logTimbang_' + id);
+            const serah = document.getElementById('logSerah_' + id);
+            
+            if (!timbang || !serah) {
+                showNotification('Error: Field tidak ditemukan!', 'error');
+                return;
+            }
+            
+            if (!timbang.value || !serah.value) {
+                showNotification('Isi semua field!', 'error');
+                return;
+            }
+            
+            batch.tanggalTimbang = timbang.value;
+            batch.tanggalSerahTerima = serah.value;
+            batch.status = 'qc';
+            
+            saveData();
+            showNotification('Data logistic berhasil disimpan!', 'success');
+            renderAll();
+        }
+        
+        // ==================== QC ====================
+        function renderQC() {
+            const container = document.getElementById('qcList');
+            const batches = data.batches.filter(b => b.status === 'qc' || b.status === 'qa');
+            
+            if (batches.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>Belum ada batch di QC</p></div>';
+                return;
+            }
+            
+            container.innerHTML = batches.map(b => {
+                let actionsHtml = '';
+                if (b.status === 'qc') {
+                    actionsHtml = `
+                        <div style="margin-top:10px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;">
+                            <div class="form-group">
+                                <label style="font-size:12px;">Tanggal Terima Sample</label>
+                                <input type="date" id="qcSample_${b.id}" value="${b.tanggalTerimaSample || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
+                            </div>
+                            <div class="form-group">
+                                <label style="font-size:12px;">Estimasi LWS</label>
+                                <input type="date" id="qcLWS_${b.id}" value="${b.estimasiLWS || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
+                            </div>
+                            ${b.type !== 'injeksi' ? `
+                            <div class="form-group">
+                                <label style="font-size:12px;">Selesai Analisa Kimia</label>
+                                <input type="date" id="qcKimia_${b.id}" value="${b.tanggalSelesaiKimia || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
+                            </div>
+                            ` : ''}
+                            <div class="form-group">
+                                <label style="font-size:12px;">Selesai Analisa Mikro</label>
+                                <input type="date" id="qcMikro_${b.id}" value="${b.tanggalSelesaiMikro || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
+                            </div>
+                            <button class="btn btn-success btn-sm" onclick="saveQC('${b.id}')" style="grid-column:1/-1;padding:8px 20px;">
+                                Simpan & Kirim ke QA
+                            </button>
+                        </div>
+                    `;
+                }
+                
+                return renderScoreCard(b, false, {
+                    jadwalWadah: true,
+                    jadwalKemas: true,
+                    tanggalBPP: true,
+                    tanggalKirimDokumen: true,
+                    tanggalTerimaSample: true,
+                    estimasiLWS: true,
+                    tanggalSelesaiKimia: true,
+                    tanggalSelesaiMikro: true
+                }) + actionsHtml;
+            }).join('');
+        }
+        
+        function saveQC(id) {
+            const batch = data.batches.find(b => b.id === id);
+            if (!batch) return;
+            
+            const sample = document.getElementById('qcSample_' + id);
+            const lws = document.getElementById('qcLWS_' + id);
+            const mikro = document.getElementById('qcMikro_' + id);
+            
+            if (!sample || !lws || !mikro) {
+                showNotification('Error: Field tidak ditemukan!', 'error');
+                return;
+            }
+            
+            if (!sample.value || !lws.value || !mikro.value) {
+                showNotification('Isi field yang wajib (Sample, LWS, Mikro)!', 'error');
+                return;
+            }
+            
+            if (batch.type !== 'injeksi') {
+                const kimia = document.getElementById('qcKimia_' + id);
+                if (!kimia || !kimia.value) {
+                    showNotification('Isi Selesai Analisa Kimia!', 'error');
+                    return;
+                }
+                batch.tanggalSelesaiKimia = kimia.value;
+            }
+            
+            batch.tanggalTerimaSample = sample.value;
+            batch.estimasiLWS = lws.value;
+            batch.tanggalSelesaiMikro = mikro.value;
+            batch.status = 'qa';
+            
+            saveData();
+            showNotification('Data QC berhasil disimpan! Batch dikirim ke QA', 'success');
+            renderAll();
+        }
+        
+        // ==================== QA ====================
+        function renderQA() {
+            const container = document.getElementById('qaList');
+            const batches = data.batches.filter(b => b.status === 'qa');
+            
+            if (batches.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>Belum ada batch di QA</p></div>';
+                return;
+            }
+            
+            container.innerHTML = batches.map(b => {
+                let actionsHtml = '';
+                if (b.status === 'qa' && !b.tanggalRilis) {
+                    actionsHtml = `
+                        <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:end;">
+                            <div class="form-group" style="flex:1;min-width:150px;">
+                                <label style="font-size:12px;">Tanggal Rilis</label>
+                                <input type="date" id="qaRilis_${b.id}" value="${b.tanggalRilis || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
+                            </div>
+                            <button class="btn btn-success btn-sm" onclick="saveQA('${b.id}')" style="padding:8px 20px;">
+                                Rilis
+                            </button>
+                        </div>
+                    `;
+                }
+                
+                return renderScoreCard(b, false, {
+                    jadwalWadah: true,
+                    jadwalKemas: true,
+                    tanggalBPP: true,
+                    tanggalKirimDokumen: true,
+                    tanggalRilis: true
+                }) + actionsHtml;
+            }).join('');
+        }
+        
+        function saveQA(id) {
+            const batch = data.batches.find(b => b.id === id);
+            if (!batch) return;
+            
+            const rilis = document.getElementById('qaRilis_' + id);
+            
+            if (!rilis) {
+                showNotification('Error: Field tidak ditemukan!', 'error');
+                return;
+            }
+            
+            if (!rilis.value) {
+                showNotification('Pilih tanggal rilis!', 'error');
+                return;
+            }
+            
+            batch.tanggalRilis = rilis.value;
+            batch.status = 'done';
+            
+            saveData();
+            showNotification('Batch berhasil dirilis!', 'success');
+            renderAll();
+        }
+        
+        // ==================== DASHBOARD ====================
+        function renderDashboard() {
+            const total = data.batches.length;
+            const done = data.batches.filter(b => b.status === 'done').length;
+            const progress = data.batches.filter(b => b.status !== 'done' && b.status !== 'problem').length;
+            
+            document.getElementById('totalBatch').textContent = total;
+            document.getElementById('doneBatch').textContent = done;
+            document.getElementById('progressBatch').textContent = progress;
+            
+            const container = document.getElementById('statusChart');
+            const statusCount = {};
+            data.batches.forEach(b => {
+                statusCount[b.status] = (statusCount[b.status] || 0) + 1;
+            });
+            
+            if (Object.keys(statusCount).length === 0) {
+                container.innerHTML = '<p style="color:#999;">Belum ada data batch</p>';
+                return;
+            }
+            
+            container.innerHTML = Object.entries(statusCount).map(([status, count]) => `
+                <div style="background:white;padding:10px 15px;border-radius:6px;border-left:4px solid ${getStatusColor(status)};flex:1;min-width:100px;">
+                    <div style="font-weight:600;font-size:14px;">${getStatusLabel(status)}</div>
+                    <div style="font-size:24px;font-weight:700;">${count}</div>
+                </div>
+            `).join('');
+        }
+        
+        function getStatusColor(status) {
+            const colors = {
+                'draft': '#757575',
+                'ppic': '#0d47a1',
+                'produksi': '#e65100',
+                'logistic': '#2e7d32',
+                'qc': '#c62828',
+                'qa': '#6a1b9a',
+                'done': '#1b5e20',
+                'problem': '#b71c1c'
+            };
+            return colors[status] || '#757575';
+        }
+        
+        // ==================== RENDER ALL ====================
+        function renderAll() {
+            console.log('🔄 Rendering semua halaman...');
+            renderDashboard();
+            renderPPIC();
+            renderKanbanProduksi();
+            renderInputProduksi();
+            renderResponKanban();
+            renderInputLogistic();
+            renderQC();
+            renderQA();
+            renderPersonilList();
+            renderProductList();
+            console.log('✅ Render selesai. Total batch:', data.batches.length);
+        }
+        
+        // ==================== INIT ====================
+        loadData();
+        renderAll();
+        
+        console.log('📊 PCT Monitoring System Loaded');
+        console.log('📦 Total Batches:', data.batches.length);
+    </script>
+</body>
+</html>
