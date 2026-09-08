@@ -212,17 +212,6 @@
             font-size: 12px;
         }
         
-        .btn-info {
-            background: #0288d1;
-            color: white;
-        }
-        
-        .btn-info:hover {
-            background: #01579b;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 10px rgba(2, 136, 209, 0.3);
-        }
-        
         .btn-secondary {
             background: #757575;
             color: white;
@@ -912,14 +901,12 @@
             closeModal();
         }
         
-        // Close modal on overlay click
         document.getElementById('modalOverlay').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeModal();
             }
         });
         
-        // Enter key on modal input
         document.getElementById('modalInput').addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 confirmModal();
@@ -1207,7 +1194,7 @@
             
             // Logistic status badge
             let logisticStatusHtml = '';
-            if (batch.status === 'logistic' || batch.status === 'logistic_input') {
+            if (batch.status === 'logistic' || batch.status === 'logistic_input' || batch.status === 'problem') {
                 if (batch.logisticReady) {
                     logisticStatusHtml = `<span class="status-badge ready">✅ Ready</span>`;
                 } else if (batch.logisticProblem) {
@@ -1303,7 +1290,8 @@
         function renderResponKanban() {
             const container = document.getElementById('responKanban');
             if (!container) return;
-            const batches = data.batches.filter(b => b.status === 'logistic');
+            // TAMPILKAN BATCH STATUS 'logistic' DAN 'problem'
+            const batches = data.batches.filter(b => b.status === 'logistic' || b.status === 'problem');
             
             if (batches.length === 0) {
                 container.innerHTML = '<div class="empty-state"><p>Belum ada batch yang membutuhkan respon logistic</p></div>';
@@ -1312,6 +1300,8 @@
             
             container.innerHTML = batches.map(b => {
                 let actionsHtml = '';
+                
+                // Jika status logistic dan belum ada respon
                 if (b.status === 'logistic' && !b.logisticReady && !b.logisticProblem) {
                     actionsHtml = `
                         <div class="actions">
@@ -1321,6 +1311,7 @@
                     `;
                 }
                 
+                // Jika sudah Ready
                 if (b.logisticReady) {
                     actionsHtml = `
                         <div class="actions">
@@ -1330,11 +1321,13 @@
                     `;
                 }
                 
-                if (b.logisticProblem) {
+                // Jika Problem
+                if (b.logisticProblem || b.status === 'problem') {
                     actionsHtml = `
                         <div class="actions">
-                            <span style="padding:5px 15px;background:#ffcdd2;border-radius:4px;color:#b71c1c;font-weight:600;">⚠️ Problem: ${b.logisticProblemReason}</span>
-                            <button class="btn btn-success btn-sm" onclick="resolveProblem('${b.id}')">🔧 Resolve</button>
+                            <span style="padding:5px 15px;background:#ffcdd2;border-radius:4px;color:#b71c1c;font-weight:600;">⚠️ Problem: ${b.logisticProblemReason || 'Alasan tidak tersedia'}</span>
+                            <button class="btn btn-success btn-sm" onclick="resolveProblem('${b.id}')">🔧 Resolve Problem</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteBatch('${b.id}')">🗑️ Hapus Batch</button>
                         </div>
                     `;
                 }
@@ -1344,6 +1337,14 @@
                     jadwalKemas: true
                 }) + actionsHtml;
             }).join('');
+        }
+        
+        function deleteBatch(id) {
+            if (confirm('Yakin ingin menghapus batch ini?')) {
+                data.batches = data.batches.filter(b => b.id !== id);
+                showNotification('Batch dihapus!', 'info');
+                renderAll();
+            }
         }
         
         function logisticReady(id) {
@@ -1384,7 +1385,8 @@
                         batch.logisticProblem = true;
                         batch.logisticProblemReason = reason;
                         batch.logisticReady = false;
-                        batch.status = 'problem';
+                        // TETAP DI STATUS 'logistic' AGAR TETAP TERLIHAT
+                        batch.status = 'logistic';
                         showNotification('⚠️ Problem tercatat: ' + reason, 'error');
                         renderAll();
                     }
