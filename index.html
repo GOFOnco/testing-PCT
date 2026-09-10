@@ -105,11 +105,7 @@
             padding-bottom: 10px;
         }
 
-        .card h3 {
-            color: #0d47a1;
-            margin: 15px 0 10px 0;
-            font-size: 16px;
-        }
+        .card h3 { color: #0d47a1; margin: 15px 0 10px 0; font-size: 16px; }
 
         .form-group { margin-bottom: 15px; }
 
@@ -142,11 +138,7 @@
 
         .form-group textarea { resize: vertical; min-height: 60px; }
 
-        .form-group .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .form-group .checkbox-group { display: flex; align-items: center; gap: 10px; }
 
         .form-group .checkbox-group input[type="checkbox"] {
             width: 20px;
@@ -154,10 +146,7 @@
             cursor: pointer;
         }
 
-        .form-group .checkbox-group label {
-            margin-bottom: 0;
-            cursor: pointer;
-        }
+        .form-group .checkbox-group label { margin-bottom: 0; cursor: pointer; }
 
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
@@ -211,7 +200,6 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* ==================== SCORE CARDS GRID - RESPONSIVE ==================== */
         .score-cards-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -220,9 +208,7 @@
         }
 
         @media (max-width: 1199px) {
-            .score-cards-grid {
-                grid-template-columns: 1fr;
-            }
+            .score-cards-grid { grid-template-columns: 1fr; }
         }
 
         .score-card {
@@ -257,11 +243,7 @@
             flex-wrap: wrap;
         }
 
-        .score-card .batch-number {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1a237e;
-        }
+        .score-card .batch-number { font-size: 18px; font-weight: 700; color: #1a237e; }
 
         .score-card .status {
             padding: 3px 12px;
@@ -291,14 +273,7 @@
 
         .score-card .details .field { color: #757575; }
         .score-card .details .value { font-weight: 600; color: #333; }
-
-        .score-card .actions {
-            margin-top: 10px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
+        .score-card .actions { margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 
         .total-ct {
             font-size: 14px;
@@ -327,12 +302,7 @@
             margin-bottom: 8px;
         }
 
-        .personil-item .delete-btn {
-            color: #c62828;
-            cursor: pointer;
-            font-weight: 700;
-            padding: 0 10px;
-        }
+        .personil-item .delete-btn { color: #c62828; cursor: pointer; font-weight: 700; padding: 0 10px; }
 
         @media (max-width: 768px) {
             .header h1 { font-size: 18px; }
@@ -550,7 +520,6 @@
         .dash-tab-content { display: none; }
         .dash-tab-content.active { display: block; }
 
-        /* Action section di dalam score card */
         .score-card-action {
             margin-top: 12px;
             padding-top: 12px;
@@ -559,28 +528,21 @@
     </style>
 </head>
 <body>
-    <!-- LOGIN PAGE -->
     <div id="loginPage" class="login-page">
         <div class="login-box">
             <h2>📊 PCT Monitoring</h2>
             <p class="subtitle">Production Cycle Time System</p>
-
             <div id="loginError" class="login-error"></div>
-
             <div class="form-group">
                 <label>Hy, Welcome!</label>
                 <input type="text" id="loginInput" placeholder="Masukkan Inisial" onkeydown="if(event.key==='Enter') login()">
             </div>
-
             <button class="btn btn-primary" onclick="login()">🔐 Login</button>
-
             <div class="login-divider">atau</div>
-
             <button class="btn btn-guest" onclick="loginGuest()">👤 Guest</button>
         </div>
     </div>
 
-    <!-- MAIN APP -->
     <div id="mainApp" style="display:none;">
         <header class="header">
             <h1>📊 <span>PCT</span> Monitoring System</h1>
@@ -603,14 +565,12 @@
         <div class="container">
             <div id="notification" class="notification"></div>
 
-            <!-- DASHBOARD -->
             <div id="page-dashboard" class="page active">
                 <div class="tabs" style="margin-bottom:20px;">
                     <button class="tab-btn active" data-dashtab="oral">💊 Oral</button>
                     <button class="tab-btn" data-dashtab="injeksi">💉 Injeksi</button>
                 </div>
 
-                <!-- ORAL DASHBOARD -->
                 <div id="dash-oral" class="dash-tab-content active">
                     <div class="filter-bar">
                         <div>
@@ -724,7 +684,6 @@
                     </div>
                 </div>
 
-                <!-- INJEKSI DASHBOARD -->
                 <div id="dash-injeksi" class="dash-tab-content">
                     <div class="filter-bar">
                         <div>
@@ -817,7 +776,6 @@
                 </div>
             </div>
 
-            <!-- PPIC -->
             <div id="page-ppic" class="page">
                 <div class="card">
                     <h2>📋 Input Nomor Batch</h2>
@@ -837,7 +795,6 @@
                 </div>
             </div>
 
-            <!-- PRODUKSI -->
             <div id="page-produksi" class="page">
                 <div class="tabs">
                     <button class="tab-btn active" data-tab="kanban-produksi">📋 Kanban Produksi</button>
@@ -857,7 +814,6 @@
                 </div>
             </div>
 
-            <!-- LOGISTIC -->
             <div id="page-logistic" class="page">
                 <div class="tabs">
                     <button class="tab-btn active" data-tab="wadah">📦 Wadah</button>
@@ -877,7 +833,6 @@
                 </div>
             </div>
 
-            <!-- QC -->
             <div id="page-qc" class="page">
                 <div class="card">
                     <h2>🔬 Quality Control</h2>
@@ -885,7 +840,6 @@
                 </div>
             </div>
 
-            <!-- QA -->
             <div id="page-qa" class="page">
                 <div class="card">
                     <h2>✅ Quality Assurance</h2>
@@ -893,7 +847,6 @@
                 </div>
             </div>
 
-            <!-- MANAGEMENT -->
             <div id="page-management" class="page">
                 <div class="grid-2">
                     <div>
@@ -963,7 +916,6 @@
         </div>
     </div>
 
-    <!-- MODAL - Problem -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-box">
             <h3 id="modalTitle">Input Alasan Problem</h3>
@@ -978,7 +930,6 @@
         </div>
     </div>
 
-    <!-- MODAL - Keterangan Tooltip -->
     <div class="modal-overlay" id="keteranganModal">
         <div class="modal-box">
             <h3 id="keteranganModalTitle">💬 Keterangan</h3>
@@ -991,13 +942,11 @@
     </div>
 
     <script>
-        // ==================== DATA STORE ====================
         let data = { personil: [], products: [], batches: [] };
         let modalCallback = null;
         let currentUser = null;
         let currentDashTab = 'oral';
 
-        // ==================== AUTH ====================
         const DEPT_PAGES = {
             'PPIC': ['ppic'], 'Produksi': ['produksi'], 'Logistic': ['logistic'],
             'QC': ['qc'], 'QA': ['qa'], 'Management': ['management']
@@ -1092,7 +1041,6 @@
             });
         });
 
-        // ==================== UTILITY ====================
         function generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 5); }
         function getBatchType(bn) { if (!bn) return 'unknown'; const fc = bn.charAt(0).toUpperCase(); return fc === 'V' ? 'injeksi' : (fc === 'T' ? 'oral' : 'unknown'); }
         function getProductCode(bn) { if (!bn || bn.length < 5) return null; return bn.substring(0, 5).toUpperCase(); }
@@ -1124,7 +1072,6 @@
         function getStatusText(actual, target) { if (actual === null || target === null || target === 0) return '⏳ Menunggu'; const ratio = actual / target; if (ratio <= 1) return '✅ On Target'; if (ratio <= 1.2) return '⚠️ Warning'; return '❌ Over'; }
         function getStatusBadge(actual, target) { const cls = getStatusClass(actual, target); const text = getStatusText(actual, target); return `<span class="status-badge ${cls}">${text}</span>`; }
 
-        // ==================== MODAL ====================
         function openModal(title, label, callback) {
             document.getElementById('modalTitle').textContent = title;
             document.getElementById('modalLabel').textContent = label;
@@ -1140,7 +1087,6 @@
         document.getElementById('modalOverlay').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
         document.getElementById('modalInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') confirmModal(); });
 
-        // ==================== KETERANGAN MODAL ====================
         function openKeteranganModal(stage, batchNumber, text) {
             const emoji = stage === 'Logistik' ? '🚚' : stage === 'Produksi' ? '🏭' : stage === 'QC' ? '🔬' : stage === 'QA' ? '✅' : '📝';
             document.getElementById('keteranganModalTitle').textContent = `💬 Keterangan ${emoji} ${stage} - ${batchNumber}`;
@@ -1151,7 +1097,6 @@
         function closeKeteranganModal() { document.getElementById('keteranganModal').classList.remove('active'); }
         document.getElementById('keteranganModal').addEventListener('click', function(e) { if (e.target === this) closeKeteranganModal(); });
 
-        // ==================== MANAGEMENT ====================
         function addPersonil() {
             const name = document.getElementById('personilName').value.trim();
             const dept = document.getElementById('personilDept').value;
@@ -1200,7 +1145,6 @@
             container.innerHTML = data.products.map(p => `<div class="personil-item"><div><strong>${p.code}</strong><br><small style="font-size:11px;">Timbang: ${p.targetTimbang} jam | Produksi: ${p.targetProduksi} jam | Analisa: ${p.targetAnalisa} jam | Perilisan: ${p.targetPerilisan} jam</small></div><span class="delete-btn" onclick="deleteProduct('${p.id}')">✕</span></div>`).join('');
         }
 
-        // ==================== PPIC ====================
         function addBatch() {
             const input = document.getElementById('batchInput').value.trim().toUpperCase();
             if (!input) { showNotification('Masukkan nomor batch!', 'error'); return; }
@@ -1229,7 +1173,6 @@
             saveData(); renderAll();
         }
 
-        // ==================== CALCULATE PCT ====================
         function calculatePCT(batch) {
             const tglTimbang = parseDate(batch.tanggalTimbang);
             const tglSerah = parseDate(batch.tanggalSerahTerima);
@@ -1267,7 +1210,6 @@
             return { pctInclude, pctExclude, logistik, produksi, qc, qa, onGoing, targetRilis, totalTargetJam };
         }
 
-        // ==================== RENDER SCORE CARD ====================
         function renderScoreCard(batch, actionHtml = '') {
             if (!batch) return '';
 
@@ -1292,7 +1234,6 @@
                 ctDisplay = totalCT !== null ? totalCT.toFixed(1) + ' hari' : '-';
             }
 
-            // Details
             let detailsHtml = '';
             const fields = [
                 { label: 'Jadwal Wadah', value: batch.jadwalWadah },
@@ -1305,19 +1246,17 @@
                 { label: 'Tanggal Kirim Dokumen', value: formatDateTime(batch.tanggalKirimDokumen) },
                 { label: 'Tanggal Terima Sample', value: formatDateTime(batch.tanggalTerimaSample) },
                 { label: 'Estimasi LWS', value: formatDateTime(batch.estimasiLWS) },
-                { label: 'Selesai Analisa Kimia', value: formatDateTime(batch.tanggalSelesaiKimia), hide: batch.type === 'injeksi' },
+                { label: 'Selesai Analisa Kimia', value: formatDateTime(batch.tanggalSelesaiKimia) },
                 { label: 'Selesai Analisa Mikro', value: formatDateTime(batch.tanggalSelesaiMikro) },
                 { label: 'Tanggal Rilis', value: formatDateTime(batch.tanggalRilis) }
             ];
 
             fields.forEach(f => {
-                if (f.hide) return;
                 if (f.value && f.value !== '-') {
                     detailsHtml += `<div><span class="field">${f.label}:</span> <span class="value">${f.value}</span></div>`;
                 }
             });
 
-            // Step indicator
             const steps = [
                 { key: 'produksi', label: 'Kanban Produksi' },
                 { key: 'logistic_wadah', label: 'Logistic - Wadah' },
@@ -1372,7 +1311,6 @@
             `;
         }
 
-        // ==================== PRODUKSI - KANBAN ====================
         function saveJadwal(id) {
             const batch = data.batches.find(b => b.id === id);
             if (!batch) { showNotification('Batch tidak ditemukan!', 'error'); return; }
@@ -1391,11 +1329,9 @@
             } else {
                 showNotification('⚠️ Isi Jadwal Wadah terlebih dahulu!', 'error');
             }
-
             saveData(); renderAll();
         }
 
-        // ==================== RENDER KANBAN PRODUKSI ====================
         function renderKanbanProduksi() {
             const container = document.getElementById('kanbanProduksi');
             if (!container) return;
@@ -1447,7 +1383,6 @@
                         </div>
                     `;
                 }
-
                 return renderScoreCard(b, actionHtml);
             }).join('');
         }
@@ -1495,7 +1430,6 @@
             saveData(); renderAll();
         }
 
-        // ==================== LOGISTIC - WADAH ====================
         function renderLogisticWadah() {
             const container = document.getElementById('logisticWadah');
             if (!container) return;
@@ -1539,7 +1473,6 @@
             saveData(); renderAll();
         }
 
-        // ==================== LOGISTIC - KEMAS ====================
         function renderLogisticKemas() {
             const container = document.getElementById('logisticKemas');
             if (!container) return;
@@ -1608,6 +1541,7 @@
             container.innerHTML = batches.map(b => {
                 let actionHtml = '';
                 if (b.status === 'qc') {
+                    // Selesai Analisa Kimia ditampilkan untuk SEMUA tipe (Oral & Injeksi)
                     actionHtml = `
                         <div class="datetime-grid">
                             <div class="form-group">
@@ -1618,12 +1552,10 @@
                                 <label style="font-size:12px;">📅 Estimasi LWS</label>
                                 <input type="datetime-local" id="qcLWS_${b.id}" value="${b.estimasiLWS || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
                             </div>
-                            ${b.type !== 'injeksi' ? `
                             <div class="form-group">
                                 <label style="font-size:12px;">📅 Selesai Analisa Kimia</label>
                                 <input type="datetime-local" id="qcKimia_${b.id}" value="${b.tanggalSelesaiKimia || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
                             </div>
-                            ` : ''}
                             <div class="form-group">
                                 <label style="font-size:12px;">📅 Selesai Analisa Mikro</label>
                                 <input type="datetime-local" id="qcMikro_${b.id}" value="${b.tanggalSelesaiMikro || ''}" style="width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;">
@@ -1645,20 +1577,23 @@
             if (!batch) return;
             const sample = document.getElementById('qcSample_' + id);
             const lws = document.getElementById('qcLWS_' + id);
+            const kimia = document.getElementById('qcKimia_' + id);
             const mikro = document.getElementById('qcMikro_' + id);
             const keterangan = document.getElementById('keterangan_qc_' + id);
 
-            if (!sample.value || !lws.value || !mikro.value) { showNotification('Isi field wajib (Sample, LWS, Mikro)!', 'error'); return; }
-            if (batch.type !== 'injeksi') {
-                const kimia = document.getElementById('qcKimia_' + id);
-                if (!kimia.value) { showNotification('Isi Selesai Analisa Kimia!', 'error'); return; }
-                batch.tanggalSelesaiKimia = kimia.value;
+            // Semua field wajib untuk Oral & Injeksi
+            if (!sample.value || !lws.value || !kimia.value || !mikro.value) {
+                showNotification('Isi semua field (Sample, LWS, Kimia, Mikro)!', 'error');
+                return;
             }
+
             batch.tanggalTerimaSample = sample.value;
             batch.estimasiLWS = lws.value;
+            batch.tanggalSelesaiKimia = kimia.value;
             batch.tanggalSelesaiMikro = mikro.value;
             if (keterangan) batch.keterangan_qc = keterangan.value.trim();
             batch.status = 'qa';
+
             showNotification('Data QC disimpan!', 'success');
             saveData(); renderAll();
         }
@@ -1710,7 +1645,6 @@
             container.innerHTML = allBatches.map(b => renderScoreCard(b)).join('');
         }
 
-        // ==================== DASHBOARD ====================
         function renderDashboard() {
             const type = currentDashTab;
             const periodeEl = document.getElementById(type === 'oral' ? 'filterPeriodeOral' : 'filterPeriodeInjeksi');
@@ -1872,7 +1806,6 @@
             renderDashboard();
         }
 
-        // ==================== SAVE & LOAD ====================
         function saveData() {
             try { localStorage.setItem('pctData', JSON.stringify(data)); }
             catch (e) { console.warn('Gagal save data:', e); }
@@ -1890,7 +1823,6 @@
             } catch (e) { console.warn('Gagal load data:', e); }
         }
 
-        // ==================== RENDER ALL ====================
         function renderAll() {
             renderDashboard();
             renderPPIC();
@@ -1904,7 +1836,6 @@
             renderProductList();
         }
 
-        // ==================== INIT ====================
         loadData();
         console.log('📊 PCT Monitoring System Loaded');
     </script>
