@@ -455,7 +455,6 @@ function parseDate(str) {
     return isNaN(d.getTime()) ? null : d;
 }
 
-// Format raw ISO (YYYY-MM-DDTHH:mm) ke display (DD/MM/YYYY HH:mm)
 function displayDT(raw) {
     if (!raw) return '-';
     const d = new Date(raw);
@@ -463,12 +462,9 @@ function displayDT(raw) {
     return d.toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric'}) + ' ' + d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
 }
 
-// Ambil raw value untuk input datetime-local (YYYY-MM-DDTHH:mm)
 function rawDT(stored) {
     if (!stored) return '';
-    // Kalau udah format ISO
     if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(stored)) return stored.slice(0,16);
-    // Kalau string display lama, coba parse
     const d = new Date(stored);
     if (isNaN(d.getTime())) return '';
     const pad = n => String(n).padStart(2,'0');
@@ -694,23 +690,14 @@ function createBatchObject(input, kategori, product) {
         createdAt: new Date().toISOString(),
         targetTimbang: product.targetTimbang, targetProduksi: product.targetProduksi,
         targetAnalisa: product.targetAnalisa, targetPerilisan: product.targetPerilisan,
-        // Jadwal Permintaan (Produksi)
         jadwalRawMaterial: '', jadwalWadah: '', jadwalKemas: '',
-        // Keterangan over-target jadwal
         ket_jadwalRawMaterial: '', ket_jadwalWadah: '', ket_jadwalKemas: '',
-        // Raw Material
         tanggalTimbang: '', tanggalSerahTerima: '', ket_rawMaterial: '',
-        // Wadah
         wadahReady: false, tanggalSerahTerimaWadah: '', ket_wadah: '',
-        // Kemas
         kemasReady: false, tanggalSerahTerimaKemas: '', ket_kemas: '',
-        // Produksi
         tanggalBPP: '', tanggalKirimDokumen: '', ket_produksi: '',
-        // QC
         tanggalTerimaSample: '', estimasiLWS: '', tanggalSelesaiKimia: '', tanggalSelesaiMikro: '', ket_qc: '',
-        // QA
         tanggalRilis: '', ket_qa: '',
-        // Unlock
         unlockedFields: []
     };
 }
@@ -830,6 +817,7 @@ function checkOverPreview(bid, field, inputId, ketField, startRaw, targetHours) 
     const input = document.getElementById(inputId);
     const ketBox = document.getElementById('ketbox_' + field + '_' + bid);
     if (!ketBox) return;
+    // Kalau targetHours = 0 → gak ada over check (misal Jadwal Permintaan)
     if (!input || !input.value || !startRaw || !targetHours) { ketBox.innerHTML = ''; return; }
     const dur = diffHours(parseDate(startRaw), parseDate(input.value));
     if (dur === null || dur <= targetHours) { ketBox.innerHTML = ''; return; }
@@ -840,13 +828,13 @@ function checkOverPreview(bid, field, inputId, ketField, startRaw, targetHours) 
 }
 
 // ============ SAVE FIELD GENERIC ============
-function doSaveField(bid, field, ketField, startRaw, targetHours, inputId, nextStage) {
+function doSaveField(bid, field, ketField, startRaw, targetHours, inputId) {
     const input = document.getElementById(inputId);
     if (!input || !input.value) { showNotification('Isi field terlebih dahulu!', 'error'); return false; }
     const b = data.batches.find(x => x.id === bid);
     if (!b) return false;
 
-    // Validasi over-target
+    // Validasi over-target (skip kalau targetHours = 0)
     let ket = '';
     if (startRaw && targetHours) {
         const dur = diffHours(parseDate(startRaw), parseDate(input.value));
@@ -860,7 +848,7 @@ function doSaveField(bid, field, ketField, startRaw, targetHours, inputId, nextS
         }
     }
 
-    b[field] = input.value; // SIMPAN RAW
+    b[field] = input.value;
     if (ket) b[ketField] = ket;
     b.unlockedFields = (b.unlockedFields || []).filter(f => f !== field);
     addAudit('UPDATE', 'Batch', `${b.batchNumber}: ${field} = ${displayDT(input.value)}`);
@@ -903,7 +891,6 @@ function checkAutoAdvance(b) {
             addAudit('UPDATE', 'Batch', `${b.batchNumber}: → QA`);
         }
     }
-    // QA → done saat tanggalRilis diisi (di saveQA)
 }
 
 // ============ CHECKBOX ============
@@ -1035,7 +1022,6 @@ function renderScoreCard(b, actionHtml = '', showEditDelete = false) {
 }
 
 // ============ RENDER FIELD HELPER ============
-// config: { b, field, label, icon, ketField, startField, targetHours, nextLabel }
 function renderEditableField(cfg) {
     const { b, field, label, icon, ketField, startField, targetHours } = cfg;
     const saved = !!b[field];
@@ -1043,7 +1029,6 @@ function renderEditableField(cfg) {
     const inputId = `in_${field}_${b.id}`;
     const ketBoxId = `ketbox_${field}_${b.id}`;
 
-    // Cek over
     let overInfo = null;
     const startRaw = startField ? b[startField] : null;
     if (saved && startRaw && targetHours) {
@@ -1076,47 +1061,11 @@ function renderEditableField(cfg) {
     </div>`;
 }
 
-// Wrapper untuk save field generic — hitung nextStage otomatis
 function saveFieldWrapper(bid, field, ketField, startRaw, targetHours, inputId) {
     doSaveField(bid, field, ketField, startRaw, targetHours, inputId);
 }
 
-// Wrapper khusus produk (pakai startRaw dari serah terima kemas/wadah)
-function saveProduksiField(bid, field, ketField, startField, targetHours, inputId) {
-    const b = data.batches.find(x => x.id === bid);
-    if (!b) return;
-    const startRaw = b[startField] || b.tanggalSerahTerimaKemas || b.tanggalSerahTerimaWadah || b.tanggalSerahTerima;
-    doSaveField(bid, field, ketField, startRaw, targetHours, inputId);
-}
-
-// Wrapper QC — target analisa dari terima sample ke selesai mikro
-function saveQCFieldWrapper(bid, field, ketField, targetHours, inputId) {
-    const b = data.batches.find(x => x.id === bid);
-    if (!b) return;
-    // Over-target check hanya untuk tanggalSelesaiMikro (durasi analisa)
-    let startRaw = null, tgt = 0;
-    if (field === 'tanggalSelesaiMikro') {
-        startRaw = b.tanggalTerimaSample;
-        tgt = targetHours;
-    }
-    doSaveField(bid, field, ketField, startRaw, tgt, inputId);
-}
-
-// Wrapper QA
-function saveQAFieldWrapper(bid, field, ketField, targetHours, inputId) {
-    const b = data.batches.find(x => x.id === bid);
-    if (!b) return;
-    const startRaw = b.tanggalSelesaiMikro;
-    doSaveField(bid, field, ketField, startRaw, targetHours, inputId);
-    // Setelah simpan, cek rilis
-    if (b.tanggalRilis) {
-        b.status = 'done';
-        addAudit('UPDATE', 'Batch', `${b.batchNumber}: RILIS / SELESAI`);
-        saveData(); renderAll();
-    }
-}
-
-// ============ KANBAN PRODUKSI ============
+// ============ KANBAN PRODUKSI (FIX: jadwal permintaan tidak ada over-check) ============
 function renderKanbanProduksi() {
     const c = document.getElementById('kanbanProduksi');
     if (!c) return;
@@ -1127,9 +1076,9 @@ function renderKanbanProduksi() {
         const actionHtml = `
             <div class="section-title">📅 Jadwal Permintaan</div>
             <div class="jadwal-container">
-                ${renderEditableField({ b, field: 'jadwalRawMaterial', label: 'Permintaan Raw Material', icon: '🧪', ketField: 'ket_jadwalRawMaterial', startField: 'createdAt', targetHours: b.targetTimbang })}
-                ${renderEditableField({ b, field: 'jadwalWadah', label: 'Permintaan Wadah', icon: '📦', ketField: 'ket_jadwalWadah', startField: 'createdAt', targetHours: b.targetTimbang })}
-                ${renderEditableField({ b, field: 'jadwalKemas', label: 'Permintaan Kemas', icon: '📦', ketField: 'ket_jadwalKemas', startField: 'createdAt', targetHours: b.targetTimbang })}
+                ${renderEditableField({ b, field: 'jadwalRawMaterial', label: 'Permintaan Raw Material', icon: '🧪', ketField: 'ket_jadwalRawMaterial', startField: null, targetHours: 0 })}
+                ${renderEditableField({ b, field: 'jadwalWadah', label: 'Permintaan Wadah', icon: '📦', ketField: 'ket_jadwalWadah', startField: null, targetHours: 0 })}
+                ${renderEditableField({ b, field: 'jadwalKemas', label: 'Permintaan Kemas', icon: '📦', ketField: 'ket_jadwalKemas', startField: null, targetHours: 0 })}
             </div>
         `;
         return renderScoreCard(b, actionHtml);
@@ -1244,18 +1193,6 @@ function renderQC() {
         `;
         return renderScoreCard(b, actionHtml);
     }).join('');
-}
-
-// Override save untuk QC (karena butuh start dari tanggalTerimaSample, bukan dari startField langsung)
-function saveFieldQC(bid, field, ketField, targetHours, inputId) {
-    const b = data.batches.find(x => x.id === bid);
-    if (!b) return;
-    let startRaw = null, tgt = 0;
-    if (field === 'tanggalSelesaiMikro') {
-        startRaw = b.tanggalTerimaSample;
-        tgt = targetHours;
-    }
-    doSaveField(bid, field, ketField, startRaw, tgt, inputId);
 }
 
 // ============ QA ============
@@ -1394,7 +1331,6 @@ function loadData() {
             data.products = p.products || [];
             data.batches = p.batches || [];
             data.auditLog = p.auditLog || [];
-            // Migrasi: pastikan field baru ada
             const dateFields = ['jadwalRawMaterial','jadwalWadah','jadwalKemas','tanggalTimbang','tanggalSerahTerima','tanggalSerahTerimaWadah','tanggalSerahTerimaKemas','tanggalBPP','tanggalKirimDokumen','tanggalTerimaSample','estimasiLWS','tanggalSelesaiKimia','tanggalSelesaiMikro','tanggalRilis'];
             data.batches.forEach(b => {
                 if (!b.kategori) b.kategori = 'Rutin';
@@ -1410,7 +1346,6 @@ function loadData() {
                 if (!b.ket_produksi) b.ket_produksi = '';
                 if (!b.ket_qc) b.ket_qc = '';
                 if (!b.ket_qa) b.ket_qa = '';
-                // Konversi string display lama ke raw
                 dateFields.forEach(f => {
                     if (b[f] && !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(b[f])) {
                         const conv = rawDT(b[f]);
