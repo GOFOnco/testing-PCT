@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Monitoring PCT</title>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -525,6 +526,20 @@
             padding-top: 12px;
             border-top: 1px dashed #ddd;
         }
+
+        /* Badge kategori */
+        .badge-kategori {
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+        .badge-kategori.rutin { background: #e8eaf6; color: #1a237e; }
+        .badge-kategori.validasi { background: #fff3e0; color: #e65100; }
+        .badge-kategori.study { background: #f3e5f5; color: #6a1b9a; }
+
+        .upload-result-box { margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -586,6 +601,15 @@
                             <label>🔍 Cari</label>
                             <input type="text" id="filterSearchOral" placeholder="Nomor batch..." oninput="renderDashboard()">
                         </div>
+                        <div>
+                            <label>🏷️ Kategori</label>
+                            <select id="filterKategoriOral" onchange="renderDashboard()">
+                                <option value="all">Semua</option>
+                                <option value="Rutin">Rutin</option>
+                                <option value="Validasi">Validasi</option>
+                                <option value="Study">Study</option>
+                            </select>
+                        </div>
                         <button class="btn btn-primary btn-sm" onclick="resetFilter('oral')" style="padding:8px 20px;">Reset</button>
                     </div>
 
@@ -642,6 +666,7 @@
                                     <tr>
                                         <th>BATCH</th>
                                         <th>Kode</th>
+                                        <th>Kategori</th>
                                         <th>Rilis</th>
                                         <th>PCT inc</th>
                                         <th>PCT exc</th>
@@ -654,7 +679,7 @@
                                 </thead>
                                 <tbody id="detailTableBodyOral">
                                     <tr>
-                                        <td colspan="10" style="text-align:center;color:#999;padding:30px;">Belum ada data</td>
+                                        <td colspan="11" style="text-align:center;color:#999;padding:30px;">Belum ada data</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -668,6 +693,7 @@
                                 <thead>
                                     <tr>
                                         <th>BATCH</th>
+                                        <th>Kategori</th>
                                         <th>PCT On Going</th>
                                         <th>Status</th>
                                         <th>Estimasi LWS</th>
@@ -676,7 +702,7 @@
                                 </thead>
                                 <tbody id="onGoingTableBodyOral">
                                     <tr>
-                                        <td colspan="5" style="text-align:center;color:#999;padding:30px;">Tidak ada batch On Going</td>
+                                        <td colspan="6" style="text-align:center;color:#999;padding:30px;">Tidak ada batch On Going</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -698,6 +724,15 @@
                         <div>
                             <label>🔍 Cari</label>
                             <input type="text" id="filterSearchInjeksi" placeholder="Nomor batch..." oninput="renderDashboard()">
+                        </div>
+                        <div>
+                            <label>🏷️ Kategori</label>
+                            <select id="filterKategoriInjeksi" onchange="renderDashboard()">
+                                <option value="all">Semua</option>
+                                <option value="Rutin">Rutin</option>
+                                <option value="Validasi">Validasi</option>
+                                <option value="Study">Study</option>
+                            </select>
                         </div>
                         <button class="btn btn-primary btn-sm" onclick="resetFilter('injeksi')" style="padding:8px 20px;">Reset</button>
                     </div>
@@ -755,6 +790,7 @@
                                     <tr>
                                         <th>BATCH</th>
                                         <th>Kode</th>
+                                        <th>Kategori</th>
                                         <th>Rilis</th>
                                         <th>PCT inc</th>
                                         <th>PCT exc</th>
@@ -767,7 +803,7 @@
                                 </thead>
                                 <tbody id="detailTableBodyInjeksi">
                                     <tr>
-                                        <td colspan="10" style="text-align:center;color:#999;padding:30px;">Belum ada data</td>
+                                        <td colspan="11" style="text-align:center;color:#999;padding:30px;">Belum ada data</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -780,15 +816,51 @@
                 <div class="card">
                     <h2>📋 Input Nomor Batch</h2>
                     <div style="background:#fff3e0;padding:10px 15px;border-radius:6px;border-left:4px solid #f57c00;margin-bottom:15px;color:#e65100;font-size:13px;">
-                        ⚠️ Data disimpan di memory (akan hilang jika refresh)<br> 💡 5 huruf pertama = Kode Produk (harus terdaftar di Management)
+                        ⚠️ Data disimpan di localStorage<br> 💡 5 huruf pertama = Kode Produk (harus terdaftar di Management)
                     </div>
-                    <div class="form-group">
-                        <label>Nomor Batch (5 Huruf + 5 Angka, tanpa spasi)</label>
-                        <input type="text" id="batchInput" placeholder="Contoh: VABCD12345 atau TABCD12345" maxlength="10">
-                        <small style="color:#757575;">Awalan V = Injeksi, T = Oral</small>
+
+                    <!-- TABS: Manual / Upload -->
+                    <div class="tabs" style="margin-bottom:15px;">
+                        <button class="tab-btn active" data-ppictab="manual">✏️ Manual</button>
+                        <button class="tab-btn" data-ppictab="upload">📁 Upload Excel</button>
                     </div>
-                    <button class="btn btn-primary" onclick="addBatch()">➕ Tambah Batch</button>
+
+                    <!-- TAB MANUAL -->
+                    <div id="ppic-manual" class="tab-content active">
+                        <div class="form-group">
+                            <label>Nomor Batch (5 Huruf + 5 Angka, tanpa spasi)</label>
+                            <input type="text" id="batchInput" placeholder="Contoh: VABCD12345 atau TABCD12345" maxlength="10">
+                            <small style="color:#757575;">Awalan V = Injeksi, T = Oral</small>
+                        </div>
+                        <div class="form-group">
+                            <label>Kategori</label>
+                            <select id="batchKategori">
+                                <option value="Rutin">Rutin</option>
+                                <option value="Validasi">Validasi</option>
+                                <option value="Study">Study</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="addBatch()">➕ Tambah Batch</button>
+                    </div>
+
+                    <!-- TAB UPLOAD -->
+                    <div id="ppic-upload" class="tab-content">
+                        <div style="background:#e3f2fd;padding:12px 15px;border-radius:6px;border-left:4px solid #0d47a1;margin-bottom:15px;color:#0d47a1;font-size:13px;">
+                            📌 Format file Excel (.xlsx / .xls) atau CSV:<br>
+                            <strong>Kolom A:</strong> Batch Number &nbsp;|&nbsp; <strong>Kolom B:</strong> Kategori<br>
+                            <em>Baris pertama = header (Batch Number | Kategori)</em><br>
+                            Kategori valid: <strong>Rutin / Validasi / Study</strong>
+                        </div>
+                        <div class="form-group">
+                            <label>Pilih File</label>
+                            <input type="file" id="batchFileInput" accept=".xlsx,.xls,.csv">
+                        </div>
+                        <button class="btn btn-success" onclick="uploadBatchFile()">📤 Upload & Proses</button>
+                        <button class="btn btn-secondary" onclick="downloadTemplate()" style="margin-left:8px;">📥 Download Template</button>
+                        <div id="uploadResult" class="upload-result-box"></div>
+                    </div>
                 </div>
+
                 <div class="card">
                     <h2>📋 Daftar Score Card</h2>
                     <div id="ppicScoreCards" class="score-cards-grid"></div>
@@ -1018,6 +1090,9 @@
 
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', function() {
+                // Skip PPIC tabs (handled separately)
+                if (this.dataset.ppictab) return;
+
                 const dashtab = this.dataset.dashtab;
                 if (dashtab) {
                     document.querySelectorAll('.tab-btn[data-dashtab]').forEach(b => b.classList.remove('active'));
@@ -1041,14 +1116,32 @@
             });
         });
 
+        // PPIC internal tabs (Manual / Upload)
+        document.querySelectorAll('.tab-btn[data-ppictab]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn[data-ppictab]').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelectorAll('#page-ppic .tab-content').forEach(c => c.classList.remove('active'));
+                const target = document.getElementById('ppic-' + this.dataset.ppictab);
+                if (target) target.classList.add('active');
+            });
+        });
+
         function generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 5); }
         function getBatchType(bn) { if (!bn) return 'unknown'; const fc = bn.charAt(0).toUpperCase(); return fc === 'V' ? 'injeksi' : (fc === 'T' ? 'oral' : 'unknown'); }
         function getProductCode(bn) { if (!bn || bn.length < 5) return null; return bn.substring(0, 5).toUpperCase(); }
+
         function getStatusLabel(s) {
             const labels = { 'draft': 'Draft', 'produksi': 'Produksi', 'logistic_wadah': 'Logistic - Wadah',
                 'logistic_kemas': 'Logistic - Kemas', 'produksi_input': 'Produksi - Input', 'qc': 'QC', 'qa': 'QA',
                 'done': 'Selesai', 'problem': 'Problem' };
             return labels[s] || s;
+        }
+
+        function getKategoriBadge(kategori) {
+            if (!kategori) return '';
+            const cls = kategori.toLowerCase();
+            return `<span class="badge-kategori ${cls}">${kategori}</span>`;
         }
 
         function showNotification(msg, type = 'info') {
@@ -1145,8 +1238,26 @@
             container.innerHTML = data.products.map(p => `<div class="personil-item"><div><strong>${p.code}</strong><br><small style="font-size:11px;">Timbang: ${p.targetTimbang} jam | Produksi: ${p.targetProduksi} jam | Analisa: ${p.targetAnalisa} jam | Perilisan: ${p.targetPerilisan} jam</small></div><span class="delete-btn" onclick="deleteProduct('${p.id}')">✕</span></div>`).join('');
         }
 
+        // ==================== BATCH ====================
+        function createBatchObject(input, kategori, product) {
+            return {
+                id: generateId(), batchNumber: input, productCode: product.code,
+                type: getBatchType(input), status: 'produksi',
+                kategori: kategori,
+                createdAt: new Date().toISOString(),
+                targetTimbang: product.targetTimbang, targetProduksi: product.targetProduksi,
+                targetAnalisa: product.targetAnalisa, targetPerilisan: product.targetPerilisan,
+                jadwalWadah: '', jadwalKemas: '', tanggalTimbang: '', tanggalSerahTerima: '',
+                kemasReady: false, tanggalSerahTerimaKemas: '', tanggalBPP: '', tanggalKirimDokumen: '',
+                logisticReady: false, logisticProblem: false, logisticProblemReason: '',
+                tanggalTerimaSample: '', estimasiLWS: '', tanggalSelesaiKimia: '', tanggalSelesaiMikro: '', tanggalRilis: '',
+                keterangan_logistik: '', keterangan_produksi: '', keterangan_qc: '', keterangan_qa: '', keterangan_umum: ''
+            };
+        }
+
         function addBatch() {
             const input = document.getElementById('batchInput').value.trim().toUpperCase();
+            const kategori = document.getElementById('batchKategori').value;
             if (!input) { showNotification('Masukkan nomor batch!', 'error'); return; }
             if (input.length !== 10) { showNotification('Nomor batch harus 10 karakter!', 'error'); return; }
             const type = getBatchType(input);
@@ -1156,21 +1267,102 @@
             if (!product) { showNotification(`Kode produk "${productCode}" tidak ditemukan!`, 'error'); return; }
             if (data.batches.some(b => b.batchNumber === input)) { showNotification('Nomor batch sudah ada!', 'error'); return; }
 
-            data.batches.push({
-                id: generateId(), batchNumber: input, productCode: productCode, type: type, status: 'produksi',
-                createdAt: new Date().toISOString(),
-                targetTimbang: product.targetTimbang, targetProduksi: product.targetProduksi,
-                targetAnalisa: product.targetAnalisa, targetPerilisan: product.targetPerilisan,
-                jadwalWadah: '', jadwalKemas: '', tanggalTimbang: '', tanggalSerahTerima: '',
-                kemasReady: false, tanggalSerahTerimaKemas: '', tanggalBPP: '', tanggalKirimDokumen: '',
-                logisticReady: false, logisticProblem: false, logisticProblemReason: '',
-                tanggalTerimaSample: '', estimasiLWS: '', tanggalSelesaiKimia: '', tanggalSelesaiMikro: '', tanggalRilis: '',
-                keterangan_logistik: '', keterangan_produksi: '', keterangan_qc: '', keterangan_qa: '', keterangan_umum: ''
-            });
-
+            data.batches.push(createBatchObject(input, kategori, product));
             document.getElementById('batchInput').value = '';
-            showNotification(`✅ Batch ${input} berhasil ditambahkan!`, 'success');
+            showNotification(`✅ Batch ${input} (${kategori}) berhasil ditambahkan!`, 'success');
             saveData(); renderAll();
+        }
+
+        // ==================== UPLOAD EXCEL ====================
+        function uploadBatchFile() {
+            const fileInput = document.getElementById('batchFileInput');
+            const resultEl = document.getElementById('uploadResult');
+            if (!fileInput.files || fileInput.files.length === 0) {
+                showNotification('Pilih file terlebih dahulu!', 'error');
+                return;
+            }
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                try {
+                    const dataBin = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(dataBin, { type: 'array' });
+                    const sheetName = workbook.SheetNames[0];
+                    const sheet = workbook.Sheets[sheetName];
+                    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+
+                    if (rows.length < 2) {
+                        showNotification('File kosong / tidak ada data!', 'error');
+                        return;
+                    }
+
+                    const validKategori = ['Rutin', 'Validasi', 'Study'];
+                    let berhasil = 0, gagal = 0;
+                    let errorList = [];
+
+                    for (let i = 1; i < rows.length; i++) {
+                        const row = rows[i];
+                        const batchNumber = String(row[0] || '').trim().toUpperCase();
+                        const kategoriRaw = String(row[1] || '').trim();
+                        const kategori = kategoriRaw.charAt(0).toUpperCase() + kategoriRaw.slice(1).toLowerCase();
+
+                        if (!batchNumber && !kategoriRaw) continue;
+
+                        if (batchNumber.length !== 10) {
+                            gagal++; errorList.push(`Baris ${i+1}: "${batchNumber}" panjang bukan 10`); continue;
+                        }
+                        const type = getBatchType(batchNumber);
+                        if (type === 'unknown') {
+                            gagal++; errorList.push(`Baris ${i+1}: "${batchNumber}" harus awalan V/T`); continue;
+                        }
+                        const productCode = getProductCode(batchNumber);
+                        const product = data.products.find(p => p.code === productCode);
+                        if (!product) {
+                            gagal++; errorList.push(`Baris ${i+1}: kode produk "${productCode}" tidak terdaftar`); continue;
+                        }
+                        if (data.batches.some(b => b.batchNumber === batchNumber)) {
+                            gagal++; errorList.push(`Baris ${i+1}: "${batchNumber}" duplikat`); continue;
+                        }
+                        if (!validKategori.includes(kategori)) {
+                            gagal++; errorList.push(`Baris ${i+1}: kategori "${kategoriRaw}" tidak valid`); continue;
+                        }
+
+                        data.batches.push(createBatchObject(batchNumber, kategori, product));
+                        berhasil++;
+                    }
+
+                    saveData(); renderAll();
+
+                    let html = `<div class="notification success" style="display:block;margin-bottom:10px;">
+                        ✅ Berhasil: <strong>${berhasil}</strong> batch | ❌ Gagal: <strong>${gagal}</strong>
+                    </div>`;
+                    if (errorList.length > 0) {
+                        html += `<div style="max-height:200px;overflow-y:auto;background:#ffcdd2;padding:10px 15px;border-radius:6px;border-left:4px solid #c62828;font-size:12px;color:#b71c1c;">
+                            <strong>Detail error:</strong><br>${errorList.join('<br>')}
+                        </div>`;
+                    }
+                    resultEl.innerHTML = html;
+                    fileInput.value = '';
+                } catch (err) {
+                    console.error(err);
+                    showNotification('Gagal membaca file: ' + err.message, 'error');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function downloadTemplate() {
+            const wsData = [
+                ['Batch Number', 'Kategori'],
+                ['TABCD12345', 'Rutin'],
+                ['VABCD12346', 'Validasi'],
+                ['TABCD12347', 'Study']
+            ];
+            const ws = XLSX.utils.aoa_to_sheet(wsData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Template');
+            XLSX.writeFile(wb, 'template_batch.xlsx');
         }
 
         function calculatePCT(batch) {
@@ -1289,12 +1481,15 @@
                 problemHtml = `<div class="problem-text">🚨 Problem: ${batch.logisticProblemReason}</div>`;
             }
 
+            const kategoriHtml = batch.kategori ? getKategoriBadge(batch.kategori) : '';
+
             return `
                 <div class="score-card" style="border-left-color: ${batch.type === 'injeksi' ? '#0d47a1' : '#6a1b9a'}">
                     <div class="header-info">
                         <div class="batch-info">
                             <span class="batch-number">${batch.batchNumber}</span>
                             <span class="status ${batch.status}">${getStatusLabel(batch.status)}</span>
+                            ${kategoriHtml}
                             ${logisticStatusHtml}
                         </div>
                         <div>
@@ -1541,7 +1736,6 @@
             container.innerHTML = batches.map(b => {
                 let actionHtml = '';
                 if (b.status === 'qc') {
-                    // Selesai Analisa Kimia ditampilkan untuk SEMUA tipe (Oral & Injeksi)
                     actionHtml = `
                         <div class="datetime-grid">
                             <div class="form-group">
@@ -1581,7 +1775,6 @@
             const mikro = document.getElementById('qcMikro_' + id);
             const keterangan = document.getElementById('keterangan_qc_' + id);
 
-            // Semua field wajib untuk Oral & Injeksi
             if (!sample.value || !lws.value || !kimia.value || !mikro.value) {
                 showNotification('Isi semua field (Sample, LWS, Kimia, Mikro)!', 'error');
                 return;
@@ -1649,11 +1842,14 @@
             const type = currentDashTab;
             const periodeEl = document.getElementById(type === 'oral' ? 'filterPeriodeOral' : 'filterPeriodeInjeksi');
             const searchEl = document.getElementById(type === 'oral' ? 'filterSearchOral' : 'filterSearchInjeksi');
+            const kategoriEl = document.getElementById(type === 'oral' ? 'filterKategoriOral' : 'filterKategoriInjeksi');
             const periode = periodeEl ? periodeEl.value : 'all';
             const search = searchEl ? searchEl.value.toLowerCase() : '';
+            const kategoriFilter = kategoriEl ? kategoriEl.value : 'all';
 
             let batches = data.batches.filter(b => b.type === type);
             if (search) batches = batches.filter(b => b.batchNumber.toLowerCase().includes(search));
+            if (kategoriFilter !== 'all') batches = batches.filter(b => (b.kategori || '') === kategoriFilter);
             if (periode !== 'all') {
                 const days = parseInt(periode);
                 const cutoff = new Date();
@@ -1747,7 +1943,7 @@
             const tbody = document.getElementById(type === 'oral' ? 'detailTableBodyOral' : 'detailTableBodyInjeksi');
             if (!tbody) return;
             const doneBatches = batches.filter(b => b.status === 'done');
-            if (doneBatches.length === 0) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#999;padding:30px;">Belum ada data</td></tr>'; return; }
+            if (doneBatches.length === 0) { tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:#999;padding:30px;">Belum ada data</td></tr>'; return; }
             doneBatches.sort((a, b) => new Date(b.tanggalRilis) - new Date(a.tanggalRilis));
             tbody.innerHTML = doneBatches.map(b => {
                 const calc = calculatePCT(b);
@@ -1761,6 +1957,7 @@
                 return `<tr>
                     <td><strong>${b.batchNumber}</strong></td>
                     <td><span class="text-muted">${b.productCode}</span></td>
+                    <td>${b.kategori ? getKategoriBadge(b.kategori) : '-'}</td>
                     <td>${formatDateTime(b.tanggalRilis)}</td>
                     <td><strong>${calc.pctInclude !== null ? calc.pctInclude.toFixed(2) : '-'}</strong></td>
                     <td>${calc.pctExclude !== null ? calc.pctExclude.toFixed(2) : '-'}</td>
@@ -1785,13 +1982,13 @@
             const tbody = document.getElementById('onGoingTableBodyOral');
             if (!tbody) return;
             const onGoing = batches.filter(b => b.status !== 'done' && b.status !== 'problem');
-            if (onGoing.length === 0) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;padding:30px;">Tidak ada batch On Going</td></tr>'; return; }
+            if (onGoing.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;padding:30px;">Tidak ada batch On Going</td></tr>'; return; }
             const statusMap = { 'produksi': 'Kanban Produksi', 'logistic_wadah': 'Logistic - Wadah',
                 'logistic_kemas': 'Logistic - Kemas', 'produksi_input': 'Input Produksi', 'qc': 'QC', 'qa': 'QA' };
             tbody.innerHTML = onGoing.map(b => {
                 const calc = calculatePCT(b);
                 const statusLabel = statusMap[b.status] || b.status;
-                return `<tr><td><strong>${b.batchNumber}</strong></td><td>${calc.onGoing !== null ? calc.onGoing.toFixed(2) + ' hari' : '-'}</td><td><span class="status-badge progress">${statusLabel}</span></td><td>${b.tanggalTerimaSample ? formatDateTime(b.tanggalTerimaSample) : '-'}</td><td>${calc.targetRilis ? formatDateTime(calc.targetRilis) : '-'}</td></tr>`;
+                return `<tr><td><strong>${b.batchNumber}</strong></td><td>${b.kategori ? getKategoriBadge(b.kategori) : '-'}</td><td>${calc.onGoing !== null ? calc.onGoing.toFixed(2) + ' hari' : '-'}</td><td><span class="status-badge progress">${statusLabel}</span></td><td>${b.tanggalTerimaSample ? formatDateTime(b.tanggalTerimaSample) : '-'}</td><td>${calc.targetRilis ? formatDateTime(calc.targetRilis) : '-'}</td></tr>`;
             }).join('');
         }
 
@@ -1799,9 +1996,11 @@
             if (type === 'oral') {
                 document.getElementById('filterPeriodeOral').value = 'all';
                 document.getElementById('filterSearchOral').value = '';
+                document.getElementById('filterKategoriOral').value = 'all';
             } else {
                 document.getElementById('filterPeriodeInjeksi').value = 'all';
                 document.getElementById('filterSearchInjeksi').value = '';
+                document.getElementById('filterKategoriInjeksi').value = 'all';
             }
             renderDashboard();
         }
@@ -1819,6 +2018,8 @@
                     data.personil = parsed.personil || [];
                     data.products = parsed.products || [];
                     data.batches = parsed.batches || [];
+                    // Migrasi: pastikan batch lama punya field kategori
+                    data.batches.forEach(b => { if (!b.kategori) b.kategori = 'Rutin'; });
                 }
             } catch (e) { console.warn('Gagal load data:', e); }
         }
