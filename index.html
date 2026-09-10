@@ -39,6 +39,17 @@
             border-radius: 20px;
         }
 
+        .datetime-info {
+            font-size: 13px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 5px 15px;
+            border-radius: 20px;
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.3px;
+        }
+
         .btn-logout {
             background: rgba(255, 255, 255, 0.2);
             color: white;
@@ -313,6 +324,7 @@
             .score-card .header-info { flex-direction: column; align-items: flex-start; }
             .header-right { flex-wrap: wrap; }
             .total-ct { font-size: 12px; padding: 2px 10px; }
+            .datetime-info { font-size: 11px; padding: 4px 10px; }
         }
 
         .problem-text {
@@ -562,6 +574,7 @@
         <header class="header">
             <h1>📊 <span>PCT</span> Monitoring System</h1>
             <div class="header-right">
+                <span class="datetime-info" id="liveDateTime">📅 -</span>
                 <span class="user-info" id="userInfo">👤 Guest</span>
                 <button class="btn-logout" onclick="logout()">🚪 Logout</button>
             </div>
@@ -1024,6 +1037,23 @@
             'QC': ['qc'], 'QA': ['qa'], 'Management': ['management']
         };
 
+        // ==================== LIVE DATE TIME ====================
+        function updateLiveDateTime() {
+            const el = document.getElementById('liveDateTime');
+            if (!el) return;
+            const now = new Date();
+            const hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'][now.getDay()];
+            const tgl = String(now.getDate()).padStart(2, '0');
+            const bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'][now.getMonth()];
+            const tahun = now.getFullYear();
+            const jam = String(now.getHours()).padStart(2, '0');
+            const menit = String(now.getMinutes()).padStart(2, '0');
+            const detik = String(now.getSeconds()).padStart(2, '0');
+            el.textContent = `📅 ${hari}, ${tgl} ${bulan} ${tahun} • 🕐 ${jam}:${menit}:${detik}`;
+        }
+        setInterval(updateLiveDateTime, 1000);
+        updateLiveDateTime();
+
         function login() {
             const input = document.getElementById('loginInput').value.trim();
             const errorEl = document.getElementById('loginError');
@@ -1043,6 +1073,8 @@
             document.getElementById('loginPage').style.display = 'flex';
             document.getElementById('loginInput').value = '';
             document.getElementById('loginError').classList.remove('show');
+            const dt = document.getElementById('liveDateTime');
+            if (dt) dt.textContent = '📅 -';
         }
 
         function showMainApp() {
@@ -1052,6 +1084,7 @@
             if (currentUser.role === 'admin') userInfo.textContent = '👑 Admin';
             else if (currentUser.role === 'user') userInfo.textContent = `👤 ${currentUser.name} - ${currentUser.department}`;
             else userInfo.textContent = '👤 Guest';
+            updateLiveDateTime();
             updateNavigation();
             loadData();
             renderAll();
