@@ -8,15 +8,15 @@
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; color: #333; }
-.header { background: linear-gradient(135deg, #1a237e, #0d47a1); color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.3); position: sticky; top: 0; z-index: 1000; }
+.header { background: linear-gradient(135deg, #1a237e, #0d47a1); color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.3); position: sticky; top: 0; z-index: 1000; flex-wrap: wrap; gap: 10px; }
 .header h1 { font-size: 24px; font-weight: 300; }
 .header h1 span { font-weight: 700; }
-.header-right { display: flex; align-items: center; gap: 15px; }
+.header-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .user-info, .datetime-info { font-size: 13px; background: rgba(255,255,255,0.15); padding: 5px 15px; border-radius: 20px; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.btn-logout { background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 5px 15px; border-radius: 20px; cursor: pointer; font-size: 13px; transition: all 0.3s; }
+.btn-logout { background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 5px 15px; border-radius: 20px; cursor: pointer; font-size: 13px; }
 .btn-logout:hover { background: rgba(255,255,255,0.3); }
 .nav { background: white; padding: 0 20px; display: flex; gap: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: sticky; top: 70px; z-index: 999; flex-wrap: wrap; }
-.nav-btn { padding: 12px 20px; border: none; background: transparent; color: #555; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; border-bottom: 3px solid transparent; }
+.nav-btn { padding: 12px 20px; border: none; background: transparent; color: #555; font-size: 14px; font-weight: 600; cursor: pointer; border-bottom: 3px solid transparent; }
 .nav-btn:hover { color: #0d47a1; background: #f5f5f5; }
 .nav-btn.active { color: #0d47a1; border-bottom-color: #0d47a1; }
 .nav-btn.hidden { display: none; }
@@ -29,12 +29,11 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:
 .card h3 { color: #0d47a1; margin: 15px 0 10px 0; font-size: 16px; }
 .form-group { margin-bottom: 15px; }
 .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #555; font-size: 13px; }
-.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; transition: border-color 0.3s; }
+.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
 .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #0d47a1; box-shadow: 0 0 0 3px rgba(13,71,161,0.1); }
 .form-group textarea { resize: vertical; min-height: 60px; }
-.form-group input:disabled, .form-group textarea:disabled { background: #f0f0f0; color: #555; cursor: not-allowed; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-.btn { padding: 10px 25px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+.btn { padding: 10px 25px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-primary { background: #0d47a1; color: white; }
 .btn-primary:hover:not(:disabled) { background: #1a237e; }
@@ -52,13 +51,13 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:
 .grid-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
 .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
 .tabs { display: flex; gap: 5px; margin-bottom: 20px; border-bottom: 2px solid #e8eaf6; flex-wrap: wrap; }
-.tab-btn { padding: 10px 20px; border: none; background: transparent; font-weight: 600; color: #757575; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.3s; }
+.tab-btn { padding: 10px 20px; border: none; background: transparent; font-weight: 600; color: #757575; cursor: pointer; border-bottom: 3px solid transparent; }
 .tab-btn.active { color: #0d47a1; border-bottom-color: #0d47a1; }
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 .score-cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; align-items: start; }
 @media (max-width: 1199px) { .score-cards-grid { grid-template-columns: 1fr; } }
-.score-card { background: #f8f9fa; border-left: 4px solid #0d47a1; border-radius: 8px; padding: 15px 20px; transition: all 0.3s; display: flex; flex-direction: column; }
+.score-card { background: #f8f9fa; border-left: 4px solid #0d47a1; border-radius: 8px; padding: 15px 20px; display: flex; flex-direction: column; }
 .score-card:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
 .score-card .header-info { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
 .score-card .batch-info { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -81,7 +80,7 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:
 .badge-kategori.rutin { background: #e8eaf6; color: #1a237e; }
 .badge-kategori.validasi { background: #fff3e0; color: #e65100; }
 .badge-kategori.study { background: #f3e5f5; color: #6a1b9a; }
-.badge-over { background: #ffcdd2; color: #b71c1c; padding: 3px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; animation: pulse 1.5s infinite; }
+.badge-over { background: #ffcdd2; color: #b71c1c; padding: 3px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; animation: pulse 1.5s infinite; display: inline-block; }
 @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
 .badge-on-target { background: #c8e6c9; color: #1b5e20; padding: 3px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; }
 .step-indicator { display: flex; align-items: center; gap: 8px; padding: 10px 15px; background: #f5f5f5; border-radius: 6px; margin-bottom: 15px; flex-wrap: wrap; font-size: 11px; }
@@ -92,7 +91,7 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:
 .step-indicator .arrow { color: #999; }
 .personil-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: #f5f5f5; border-radius: 6px; margin-bottom: 8px; }
 .personil-item .delete-btn { color: #c62828; cursor: pointer; font-weight: 700; padding: 0 10px; }
-@media (max-width: 768px) { .header h1 { font-size: 18px; } .nav-btn { padding: 10px 12px; font-size: 12px; } .form-row { grid-template-columns: 1fr; } .grid-2 { grid-template-columns: 1fr; } .score-card .header-info { flex-direction: column; align-items: flex-start; } .header-right { flex-wrap: wrap; } }
+@media (max-width: 768px) { .header h1 { font-size: 18px; } .nav-btn { padding: 10px 12px; font-size: 12px; } .form-row { grid-template-columns: 1fr; } .grid-2 { grid-template-columns: 1fr; } .score-card .header-info { flex-direction: column; align-items: flex-start; } }
 .empty-state { text-align: center; padding: 40px 20px; color: #999; }
 .notification { padding: 15px 20px; border-radius: 6px; margin-bottom: 15px; display: none; }
 .notification.success { display: block; background: #c8e6c9; color: #1b5e20; border-left: 4px solid #2e7d32; }
@@ -100,13 +99,13 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:
 .notification.info { display: block; background: #e3f2fd; color: #0d47a1; border-left: 4px solid #0d47a1; }
 .jadwal-container { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 5px; }
 @media (max-width: 900px) { .jadwal-container { grid-template-columns: 1fr; } }
-.jadwal-item { display: flex; flex-direction: column; gap: 5px; padding: 8px; background: #fff; border-radius: 6px; border: 1px solid #e0e0e0; }
+.jadwal-container.two-col { grid-template-columns: 1fr 1fr; }
+.jadwal-item { display: flex; flex-direction: column; gap: 5px; padding: 10px; background: #fff; border-radius: 6px; border: 1px solid #e0e0e0; }
 .jadwal-item.saved { background: #e8f5e9; border-color: #a5d6a7; }
 .jadwal-item.over { background: #ffebee; border-color: #ef9a9a; }
-.jadwal-item label { font-size: 12px; font-weight: 700; color: #555; margin-bottom: 3px; }
+.jadwal-item label { font-size: 12px; font-weight: 700; color: #555; }
 .jadwal-item input { padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; width: 100%; }
 .jadwal-item .jadwal-value { padding: 6px 10px; background: #e8f5e9; border-radius: 4px; font-weight: 600; font-size: 12px; color: #1b5e20; }
-.jadwal-item .field-actions { display: flex; gap: 5px; margin-top: 5px; }
 .status-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; }
 .status-badge.ready { background: #c8e6c9; color: #1b5e20; }
 .status-badge.waiting { background: #fff3e0; color: #e65100; }
@@ -132,15 +131,6 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:
 .kpi-card.total { border-left: 4px solid #e65100; }
 .chart-card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 20px; }
 .chart-card h3 { font-size: 15px; color: #1a237e; margin-bottom: 15px; border-bottom: 2px solid #e8eaf6; padding-bottom: 10px; }
-.line-chart .line-area { display: flex; align-items: flex-end; height: 160px; gap: 8px; }
-.line-chart .line-point { display: flex; flex-direction: column; align-items: center; flex: 1; }
-.line-chart .line-point .dot-point { width: 10px; height: 10px; border-radius: 50%; margin-bottom: 5px; }
-.line-chart .line-point .label { font-size: 9px; color: #999; transform: rotate(-45deg); white-space: nowrap; }
-.bar-chart { height: 200px; display: flex; align-items: flex-end; gap: 12px; padding: 10px 0; }
-.bar-item { display: flex; flex-direction: column; align-items: center; flex: 1; }
-.bar-item .bar { width: 30px; border-radius: 4px 4px 0 0; min-height: 5px; }
-.bar-item .bar-label { font-size: 9px; color: #757575; margin-top: 5px; }
-.bar-item .bar-value { font-size: 10px; font-weight: 600; margin-bottom: 3px; }
 .table-container { overflow-x: auto; margin-top: 10px; }
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
 table thead { background: #f5f5f5; border-bottom: 2px solid #e0e0e0; }
@@ -159,15 +149,15 @@ table tr:hover { background: #fafafa; }
 .modal-box .form-group { margin-bottom: 15px; }
 .modal-box .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px; }
 .keterangan-wajib { background: #fff3e0; border-left: 3px solid #f57c00; padding: 10px 12px; border-radius: 6px; margin-top: 8px; }
-.keterangan-wajib label { color: #e65100 !important; font-weight: 700; }
-.keterangan-wajib textarea { border-color: #f57c00 !important; }
+.keterangan-wajib label { color: #e65100 !important; font-weight: 700 !important; font-size: 11px !important; }
+.keterangan-wajib textarea { border-color: #f57c00 !important; width: 100%; padding: 5px 8px; border-radius: 4px; font-size: 12px; resize: vertical; }
 .dash-tab-content { display: none; }
 .dash-tab-content.active { display: block; }
 .score-card-action { margin-top: 12px; padding-top: 12px; border-top: 1px dashed #ddd; }
-.section-title { font-size: 13px; font-weight: 700; color: #1a237e; padding: 6px 10px; background: #e8eaf6; border-radius: 6px; margin: 10px 0 8px 0; display: flex; align-items: center; gap: 6px; }
+.section-title { font-size: 13px; font-weight: 700; color: #1a237e; padding: 6px 10px; background: #e8eaf6; border-radius: 6px; margin: 10px 0 8px 0; }
 .section-title.over { background: #ffebee; color: #b71c1c; }
 .section-title.done { background: #e8f5e9; color: #1b5e20; }
-.edit-actions { display: flex; gap: 8px; margin-top: 12px; }
+.edit-actions { display: flex; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px dashed #ddd; }
 </style>
 </head>
 <body>
@@ -225,7 +215,7 @@ table tr:hover { background: #fafafa; }
 <div class="grid-4">
 <div class="kpi-card oral"><div class="kpi-value" id="kpiOralAvgDash">-</div><div class="kpi-label">📊 Rata-rata PCT Oral (hari)</div><div class="kpi-sub" id="kpiOralCountDash">0 Batch</div></div>
 <div class="kpi-card total"><div class="kpi-value" id="kpiOralTotal">0</div><div class="kpi-label">📦 Total Batch Oral</div><div class="kpi-sub" id="kpiOralOnGoing">On Going: 0</div></div>
-<div class="kpi-card" style="border-left-color:#2e7d32;"><div class="kpi-value" id="kpiOralDone">0</div><div class="kpi-label">✅ Selesai</div><div class="kpi-sub">Batch selesai</div></div>
+<div class="kpi-card" style="border-left-color:#2e7d32;"><div class="kpi-value" id="kpiOralDone">0</div><div class="kpi-label">✅ Selesai</div></div>
 <div class="kpi-card" style="border-left-color:#f57c00;"><div class="kpi-value" id="kpiOralTarget">-</div><div class="kpi-label">🎯 On Target Rate</div><div class="kpi-sub" id="kpiOralTargetDetail">0 / 0 batch</div></div>
 </div>
 <div class="chart-card" style="margin-top:20px;">
@@ -257,7 +247,7 @@ table tr:hover { background: #fafafa; }
 <div class="grid-4">
 <div class="kpi-card injeksi"><div class="kpi-value" id="kpiInjeksiAvgDash">-</div><div class="kpi-label">📊 Rata-rata PCT Injeksi (hari)</div><div class="kpi-sub" id="kpiInjeksiCountDash">0 Batch</div></div>
 <div class="kpi-card total"><div class="kpi-value" id="kpiInjeksiTotal">0</div><div class="kpi-label">📦 Total Batch Injeksi</div><div class="kpi-sub" id="kpiInjeksiOnGoing">On Going: 0</div></div>
-<div class="kpi-card" style="border-left-color:#2e7d32;"><div class="kpi-value" id="kpiInjeksiDone">0</div><div class="kpi-label">✅ Selesai</div><div class="kpi-sub">Batch selesai</div></div>
+<div class="kpi-card" style="border-left-color:#2e7d32;"><div class="kpi-value" id="kpiInjeksiDone">0</div><div class="kpi-label">✅ Selesai</div></div>
 <div class="kpi-card" style="border-left-color:#f57c00;"><div class="kpi-value" id="kpiInjeksiTarget">-</div><div class="kpi-label">🎯 On Target Rate</div><div class="kpi-sub" id="kpiInjeksiTargetDetail">0 / 0 batch</div></div>
 </div>
 <div class="chart-card" style="margin-top:20px;">
@@ -284,24 +274,15 @@ table tr:hover { background: #fafafa; }
 <button class="tab-btn" data-ppictab="upload">📁 Upload Excel</button>
 </div>
 <div id="ppic-manual" class="tab-content active">
-<div class="form-group">
-<label>Nomor Batch (5 Huruf + 5 Angka)</label>
-<input type="text" id="batchInput" placeholder="Contoh: TABCD12345" maxlength="10">
-</div>
-<div class="form-group">
-<label>Kategori</label>
-<select id="batchKategori"><option value="Rutin">Rutin</option><option value="Validasi">Validasi</option><option value="Study">Study</option></select>
-</div>
+<div class="form-group"><label>Nomor Batch (5 Huruf + 5 Angka)</label><input type="text" id="batchInput" placeholder="Contoh: TABCD12345" maxlength="10"></div>
+<div class="form-group"><label>Kategori</label><select id="batchKategori"><option value="Rutin">Rutin</option><option value="Validasi">Validasi</option><option value="Study">Study</option></select></div>
 <button class="btn btn-primary" onclick="addBatch()">➕ Tambah Batch</button>
 </div>
 <div id="ppic-upload" class="tab-content">
 <div style="background:#e3f2fd;padding:12px 15px;border-radius:6px;border-left:4px solid #0d47a1;margin-bottom:15px;color:#0d47a1;font-size:13px;">
 📌 Format Excel/CSV: <strong>Kolom A:</strong> Batch Number | <strong>Kolom B:</strong> Kategori
 </div>
-<div class="form-group">
-<label>Pilih File</label>
-<input type="file" id="batchFileInput" accept=".xlsx,.xls,.csv">
-</div>
+<div class="form-group"><label>Pilih File</label><input type="file" id="batchFileInput" accept=".xlsx,.xls,.csv"></div>
 <button class="btn btn-success" onclick="uploadBatchFile()">📤 Upload & Proses</button>
 <button class="btn btn-secondary" onclick="downloadTemplate()" style="margin-left:8px;">📥 Template</button>
 <div id="uploadResult" style="margin-top:15px;"></div>
@@ -420,7 +401,7 @@ table tr:hover { background: #fafafa; }
 </div>
 </div>
 
-<!-- MODAL KETERANGAN OVER -->
+<!-- MODAL KETERANGAN -->
 <div class="modal-overlay" id="keteranganModal">
 <div class="modal-box">
 <h3 id="keteranganModalTitle">💬 Keterangan</h3>
@@ -450,17 +431,67 @@ function updateLiveDateTime() {
 setInterval(updateLiveDateTime, 1000);
 updateLiveDateTime();
 
-// ============ AUDIT LOG ============
+// ============ UTILS ============
+function generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2,5); }
+function getBatchType(bn) { if (!bn) return 'unknown'; const fc = bn.charAt(0).toUpperCase(); return fc === 'V' ? 'injeksi' : (fc === 'T' ? 'oral' : 'unknown'); }
+function getProductCode(bn) { if (!bn || bn.length < 5) return null; return bn.substring(0,5).toUpperCase(); }
+function getStatusLabel(s) {
+    const l = { 'produksi': 'Produksi', 'raw_material': 'Raw Material', 'logistic_wadah': 'Logistic - Wadah', 'logistic_kemas': 'Logistic - Kemas', 'produksi_input': 'Produksi - Input', 'qc': 'QC', 'qa': 'QA', 'done': 'Selesai' };
+    return l[s] || s;
+}
+function getKategoriBadge(k) { if (!k) return ''; return `<span class="badge-kategori ${k.toLowerCase()}">${k}</span>`; }
+
+function showNotification(msg, type = 'info') {
+    const n = document.getElementById('notification');
+    if (!n) return;
+    n.className = 'notification ' + type;
+    n.textContent = msg;
+    setTimeout(() => { n.className = 'notification'; }, 4000);
+}
+
+function parseDate(str) {
+    if (!str) return null;
+    const d = new Date(str);
+    return isNaN(d.getTime()) ? null : d;
+}
+
+// Format raw ISO (YYYY-MM-DDTHH:mm) ke display (DD/MM/YYYY HH:mm)
+function displayDT(raw) {
+    if (!raw) return '-';
+    const d = new Date(raw);
+    if (isNaN(d.getTime())) return raw;
+    return d.toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric'}) + ' ' + d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+}
+
+// Ambil raw value untuk input datetime-local (YYYY-MM-DDTHH:mm)
+function rawDT(stored) {
+    if (!stored) return '';
+    // Kalau udah format ISO
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(stored)) return stored.slice(0,16);
+    // Kalau string display lama, coba parse
+    const d = new Date(stored);
+    if (isNaN(d.getTime())) return '';
+    const pad = n => String(n).padStart(2,'0');
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function diffHours(d1, d2) {
+    if (!d1 || !d2) return null;
+    const diff = (d2 - d1) / (1000*60*60);
+    return Math.round(diff*100)/100;
+}
+function jamKeHari(j) { if (j === null || j === undefined) return null; return Math.round((j/24)*100)/100; }
+function getStatusClass(a, t) { if (a === null || t === null || t === 0) return 'progress'; const r = a/t; if (r <= 1) return 'on-target'; if (r <= 1.2) return 'warning'; return 'over'; }
+function getStatusText(a, t) { if (a === null || t === null || t === 0) return '⏳ Menunggu'; const r = a/t; if (r <= 1) return '✅ On Target'; if (r <= 1.2) return '⚠️ Warning'; return '❌ Over'; }
+function getStatusBadge(a, t) { return `<span class="status-badge ${getStatusClass(a,t)}">${getStatusText(a,t)}</span>`; }
+
+// ============ AUDIT ============
 function addAudit(action, target, detail) {
     if (!currentUser) return;
     data.auditLog.unshift({
-        id: Date.now().toString(36) + Math.random().toString(36).substr(2,5),
-        timestamp: new Date().toISOString(),
-        user: currentUser.name,
-        role: currentUser.role,
-        action: action,
-        target: target,
-        detail: detail || ''
+        id: generateId(), timestamp: new Date().toISOString(),
+        user: currentUser.name, role: currentUser.role,
+        action, target, detail: detail || ''
     });
     if (data.auditLog.length > 500) data.auditLog = data.auditLog.slice(0, 500);
     saveData();
@@ -475,11 +506,11 @@ function renderAudit() {
     if (search) logs = logs.filter(l => (l.user+l.action+l.target+l.detail).toLowerCase().includes(search));
     if (filter !== 'all') logs = logs.filter(l => l.action === filter);
     if (logs.length === 0) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;padding:30px;">Tidak ada log</td></tr>'; return; }
-    const actionColor = { 'LOGIN': '#0d47a1', 'CREATE': '#2e7d32', 'UPDATE': '#f57c00', 'DELETE': '#c62828', 'UPLOAD': '#6a1b9a' };
+    const ac = { 'LOGIN': '#0d47a1', 'CREATE': '#2e7d32', 'UPDATE': '#f57c00', 'DELETE': '#c62828', 'UPLOAD': '#6a1b9a' };
     tbody.innerHTML = logs.slice(0, 200).map(l => `<tr>
-        <td style="font-size:12px;">${formatDateTime(l.timestamp)}</td>
+        <td style="font-size:12px;">${displayDT(l.timestamp)}</td>
         <td><strong>${l.user}</strong> <span class="text-muted">(${l.role})</span></td>
-        <td><span style="color:${actionColor[l.action]||'#333'};font-weight:700;">${l.action}</span></td>
+        <td><span style="color:${ac[l.action]||'#333'};font-weight:700;">${l.action}</span></td>
         <td>${l.target}</td>
         <td style="font-size:12px;color:#666;white-space:normal;max-width:400px;">${l.detail}</td>
     </tr>`).join('');
@@ -496,17 +527,15 @@ function clearAudit() {
 // ============ AUTH ============
 function login() {
     const input = document.getElementById('loginInput').value.trim();
-    const errorEl = document.getElementById('loginError');
-    if (!input) { errorEl.textContent = '⚠️ Masukkan Inisial!'; errorEl.classList.add('show'); return; }
+    const err = document.getElementById('loginError');
+    if (!input) { err.textContent = '⚠️ Masukkan Inisial!'; err.classList.add('show'); return; }
     if (input === 'admin123') { currentUser = { role: 'admin', name: 'Admin', department: null }; addAudit('LOGIN', 'System', 'Admin login'); showMainApp(); return; }
-    const personil = data.personil.find(p => p.name.toLowerCase() === input.toLowerCase());
-    if (personil) { currentUser = { role: 'user', name: personil.name, department: personil.department }; addAudit('LOGIN', 'System', `Login sebagai ${personil.department}`); showMainApp(); return; }
-    errorEl.textContent = '⚠️ Nama tidak ditemukan!';
-    errorEl.classList.add('show');
+    const p = data.personil.find(x => x.name.toLowerCase() === input.toLowerCase());
+    if (p) { currentUser = { role: 'user', name: p.name, department: p.department }; addAudit('LOGIN', 'System', `Login sebagai ${p.department}`); showMainApp(); return; }
+    err.textContent = '⚠️ Nama tidak ditemukan!';
+    err.classList.add('show');
 }
-
 function loginGuest() { currentUser = { role: 'guest', name: 'Guest', department: null }; showMainApp(); }
-
 function logout() {
     if (currentUser) addAudit('LOGIN', 'System', 'Logout');
     currentUser = null;
@@ -515,44 +544,36 @@ function logout() {
     document.getElementById('loginInput').value = '';
     document.getElementById('loginError').classList.remove('show');
 }
-
 function showMainApp() {
     document.getElementById('loginPage').style.display = 'none';
     document.getElementById('mainApp').style.display = 'block';
-    const userInfo = document.getElementById('userInfo');
-    if (currentUser.role === 'admin') userInfo.textContent = '👑 Admin';
-    else if (currentUser.role === 'user') userInfo.textContent = `👤 ${currentUser.name} - ${currentUser.department}`;
-    else userInfo.textContent = '👤 Guest';
+    const ui = document.getElementById('userInfo');
+    if (currentUser.role === 'admin') ui.textContent = '👑 Admin';
+    else if (currentUser.role === 'user') ui.textContent = `👤 ${currentUser.name} - ${currentUser.department}`;
+    else ui.textContent = '👤 Guest';
     updateNavigation();
     renderAll();
     showPage('dashboard');
 }
-
 function updateNavigation() {
-    const navBtns = document.querySelectorAll('.nav-btn');
-    const visiblePages = ['dashboard'];
-    if (currentUser.role === 'admin') {
-        navBtns.forEach(btn => btn.classList.remove('hidden'));
-        return;
-    }
+    const btns = document.querySelectorAll('.nav-btn');
+    const visible = ['dashboard'];
+    if (currentUser.role === 'admin') { btns.forEach(b => b.classList.remove('hidden')); return; }
     if (currentUser.role === 'user' && currentUser.department) {
-        const deptPages = DEPT_PAGES[currentUser.department] || [];
-        visiblePages.push(...deptPages);
+        const dp = DEPT_PAGES[currentUser.department] || [];
+        visible.push(...dp);
     }
-    navBtns.forEach(btn => {
-        if (btn.dataset.page === 'audit') { btn.classList.add('hidden'); return; }
-        if (visiblePages.includes(btn.dataset.page)) btn.classList.remove('hidden');
-        else btn.classList.add('hidden');
+    btns.forEach(b => {
+        if (b.dataset.page === 'audit') { b.classList.add('hidden'); return; }
+        if (visible.includes(b.dataset.page)) b.classList.remove('hidden');
+        else b.classList.add('hidden');
     });
 }
-
 function showPage(page) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    const target = document.getElementById('page-' + page);
-    if (target) target.classList.add('active');
+    document.getElementById('page-' + page)?.classList.add('active');
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    const navBtn = document.querySelector(`.nav-btn[data-page="${page}"]`);
-    if (navBtn) navBtn.classList.add('active');
+    document.querySelector(`.nav-btn[data-page="${page}"]`)?.classList.add('active');
 }
 
 document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -560,17 +581,16 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
         if (!this.classList.contains('hidden')) { showPage(this.dataset.page); renderAll(); }
     });
 });
-
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', function() {
         if (this.dataset.ppictab || this.dataset.logtab) return;
-        const dashtab = this.dataset.dashtab;
-        if (dashtab) {
+        const dt = this.dataset.dashtab;
+        if (dt) {
             document.querySelectorAll('.tab-btn[data-dashtab]').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
-            currentDashTab = dashtab;
+            currentDashTab = dt;
             document.querySelectorAll('.dash-tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById('dash-' + dashtab)?.classList.add('active');
+            document.getElementById('dash-' + dt)?.classList.add('active');
             renderDashboard();
             return;
         }
@@ -578,13 +598,11 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
         if (!parent) return;
         parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         this.classList.add('active');
-        const tab = this.dataset.tab;
         parent.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.getElementById('tab-' + tab)?.classList.add('active');
+        document.getElementById('tab-' + this.dataset.tab)?.classList.add('active');
         renderAll();
     });
 });
-
 document.querySelectorAll('.tab-btn[data-ppictab]').forEach(btn => {
     btn.addEventListener('click', function() {
         document.querySelectorAll('.tab-btn[data-ppictab]').forEach(b => b.classList.remove('active'));
@@ -593,7 +611,6 @@ document.querySelectorAll('.tab-btn[data-ppictab]').forEach(btn => {
         document.getElementById('ppic-' + this.dataset.ppictab)?.classList.add('active');
     });
 });
-
 document.querySelectorAll('.tab-btn[data-logtab]').forEach(btn => {
     btn.addEventListener('click', function() {
         document.querySelectorAll('.tab-btn[data-logtab]').forEach(b => b.classList.remove('active'));
@@ -604,49 +621,10 @@ document.querySelectorAll('.tab-btn[data-logtab]').forEach(btn => {
     });
 });
 
-// ============ UTILS ============
-function generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2,5); }
-function getBatchType(bn) { if (!bn) return 'unknown'; const fc = bn.charAt(0).toUpperCase(); return fc === 'V' ? 'injeksi' : (fc === 'T' ? 'oral' : 'unknown'); }
-function getProductCode(bn) { if (!bn || bn.length < 5) return null; return bn.substring(0,5).toUpperCase(); }
-function getStatusLabel(s) {
-    const labels = { 'produksi': 'Produksi', 'raw_material': 'Raw Material', 'logistic_wadah': 'Logistic - Wadah', 'logistic_kemas': 'Logistic - Kemas', 'produksi_input': 'Produksi - Input', 'qc': 'QC', 'qa': 'QA', 'done': 'Selesai' };
-    return labels[s] || s;
-}
-function getKategoriBadge(k) { if (!k) return ''; return `<span class="badge-kategori ${k.toLowerCase()}">${k}</span>`; }
-
-function showNotification(msg, type = 'info') {
-    const notif = document.getElementById('notification');
-    if (!notif) return;
-    notif.className = 'notification ' + type;
-    notif.textContent = msg;
-    setTimeout(() => { notif.className = 'notification'; }, 4000);
-}
-
-function formatDateTime(v) {
-    if (!v) return '-';
-    try { const d = new Date(v); return d.toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric'}) + ' ' + d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}); }
-    catch(e) { return v; }
-}
-function parseDate(str) { if (!str) return null; const d = new Date(str); return isNaN(d.getTime()) ? null : d; }
-function diffHours(d1, d2) { if (!d1 || !d2) return null; const diff = (d2 - d1) / (1000*60*60); return Math.round(diff*100)/100; }
-function jamKeHari(jam) { if (jam === null || jam === undefined) return null; return Math.round((jam/24)*100)/100; }
-function getStatusClass(a, t) { if (a === null || t === null || t === 0) return 'progress'; const r = a/t; if (r <= 1) return 'on-target'; if (r <= 1.2) return 'warning'; return 'over'; }
-function getStatusText(a, t) { if (a === null || t === null || t === 0) return '⏳ Menunggu'; const r = a/t; if (r <= 1) return '✅ On Target'; if (r <= 1.2) return '⚠️ Warning'; return '❌ Over'; }
-function getStatusBadge(a, t) { return `<span class="status-badge ${getStatusClass(a,t)}">${getStatusText(a,t)}</span>`; }
-
-// Cek apakah durasi melebihi target (dalam jam)
-function isOverTarget(startDate, endDate, targetHours) {
-    if (!startDate || !endDate || !targetHours) return { over: false, diff: 0 };
-    const jam = diffHours(parseDate(startDate), parseDate(endDate));
-    if (jam === null) return { over: false, diff: 0 };
-    const over = jam > targetHours;
-    return { over, diff: Math.round((jam - targetHours) * 100) / 100, jam };
-}
-
 // ============ MODALS ============
-function openKeteranganModal(stage, batchNumber, text) {
-    const emoji = { 'Logistik': '🚚', 'Produksi': '🏭', 'QC': '🔬', 'QA': '✅', 'Raw Material': '🧪' }[stage] || '📝';
-    document.getElementById('keteranganModalTitle').textContent = `💬 Keterangan ${emoji} ${stage} - ${batchNumber}`;
+function openKeteranganModal(stage, bn, text) {
+    const e = { 'Logistik': '🚚', 'Produksi': '🏭', 'QC': '🔬', 'QA': '✅', 'Raw Material': '🧪' }[stage] || '📝';
+    document.getElementById('keteranganModalTitle').textContent = `💬 Keterangan ${e} ${stage} - ${bn}`;
     document.getElementById('keteranganModalBody').textContent = text;
     document.getElementById('keteranganModal').classList.add('active');
 }
@@ -670,7 +648,7 @@ function deletePersonil(id) {
     const p = data.personil.find(x => x.id === id);
     data.personil = data.personil.filter(x => x.id !== id);
     addAudit('DELETE', 'Personil', `Hapus ${p?.name}`);
-    saveData(); renderPersonilList(); showNotification('Dihapus!', 'info');
+    saveData(); renderPersonilList();
 }
 function renderPersonilList() {
     const c = document.getElementById('personilList');
@@ -699,7 +677,7 @@ function deleteProduct(id) {
     const p = data.products.find(x => x.id === id);
     data.products = data.products.filter(x => x.id !== id);
     addAudit('DELETE', 'Produk', `Hapus ${p?.code}`);
-    saveData(); renderProductList(); showNotification('Dihapus!', 'info');
+    saveData(); renderProductList();
 }
 function renderProductList() {
     const c = document.getElementById('productList');
@@ -716,11 +694,11 @@ function createBatchObject(input, kategori, product) {
         createdAt: new Date().toISOString(),
         targetTimbang: product.targetTimbang, targetProduksi: product.targetProduksi,
         targetAnalisa: product.targetAnalisa, targetPerilisan: product.targetPerilisan,
-        // Jadwal Permintaan (diisi Produksi)
+        // Jadwal Permintaan (Produksi)
         jadwalRawMaterial: '', jadwalWadah: '', jadwalKemas: '',
-        // Keterangan over-target
+        // Keterangan over-target jadwal
         ket_jadwalRawMaterial: '', ket_jadwalWadah: '', ket_jadwalKemas: '',
-        // Raw Material (diisi Logistic)
+        // Raw Material
         tanggalTimbang: '', tanggalSerahTerima: '', ket_rawMaterial: '',
         // Wadah
         wadahReady: false, tanggalSerahTerimaWadah: '', ket_wadah: '',
@@ -732,32 +710,31 @@ function createBatchObject(input, kategori, product) {
         tanggalTerimaSample: '', estimasiLWS: '', tanggalSelesaiKimia: '', tanggalSelesaiMikro: '', ket_qc: '',
         // QA
         tanggalRilis: '', ket_qa: '',
-        // Log unlock (field yang lagi diedit)
+        // Unlock
         unlockedFields: []
     };
 }
 
 function addBatch() {
     const input = document.getElementById('batchInput').value.trim().toUpperCase();
-    const kategori = document.getElementById('batchKategori').value;
-    if (!input || input.length !== 10) { showNotification('Nomor batch harus 10 karakter!', 'error'); return; }
-    const type = getBatchType(input);
-    if (type === 'unknown') { showNotification('Harus diawali V/T!', 'error'); return; }
-    const productCode = getProductCode(input);
-    const product = data.products.find(p => p.code === productCode);
-    if (!product) { showNotification(`Kode "${productCode}" tidak ditemukan!`, 'error'); return; }
+    const kat = document.getElementById('batchKategori').value;
+    if (!input || input.length !== 10) { showNotification('Batch harus 10 karakter!', 'error'); return; }
+    if (getBatchType(input) === 'unknown') { showNotification('Harus diawali V/T!', 'error'); return; }
+    const pc = getProductCode(input);
+    const prod = data.products.find(p => p.code === pc);
+    if (!prod) { showNotification(`Kode "${pc}" tidak ditemukan!`, 'error'); return; }
     if (data.batches.some(b => b.batchNumber === input)) { showNotification('Batch sudah ada!', 'error'); return; }
-    data.batches.push(createBatchObject(input, kategori, product));
+    data.batches.push(createBatchObject(input, kat, prod));
     document.getElementById('batchInput').value = '';
-    addAudit('CREATE', 'Batch', `Tambah ${input} (${kategori})`);
+    addAudit('CREATE', 'Batch', `Tambah ${input} (${kat})`);
     showNotification(`✅ Batch ${input} ditambahkan!`, 'success');
     saveData(); renderAll();
 }
 
 function uploadBatchFile() {
-    const fileInput = document.getElementById('batchFileInput');
-    const resultEl = document.getElementById('uploadResult');
-    if (!fileInput.files || fileInput.files.length === 0) { showNotification('Pilih file!', 'error'); return; }
+    const fi = document.getElementById('batchFileInput');
+    const re = document.getElementById('uploadResult');
+    if (!fi.files || !fi.files.length) { showNotification('Pilih file!', 'error'); return; }
     const reader = new FileReader();
     reader.onload = function(e) {
         try {
@@ -765,31 +742,31 @@ function uploadBatchFile() {
             const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, defval: '' });
             if (rows.length < 2) { showNotification('File kosong!', 'error'); return; }
             const valid = ['Rutin','Validasi','Study'];
-            let ok = 0, gagal = 0, errList = [];
+            let ok = 0, gagal = 0, errs = [];
             for (let i = 1; i < rows.length; i++) {
                 const bn = String(rows[i][0] || '').trim().toUpperCase();
                 const kr = String(rows[i][1] || '').trim();
                 const kat = kr.charAt(0).toUpperCase() + kr.slice(1).toLowerCase();
                 if (!bn && !kr) continue;
-                if (bn.length !== 10) { gagal++; errList.push(`Baris ${i+1}: "${bn}" bukan 10 karakter`); continue; }
-                if (getBatchType(bn) === 'unknown') { gagal++; errList.push(`Baris ${i+1}: "${bn}" harus V/T`); continue; }
+                if (bn.length !== 10) { gagal++; errs.push(`Baris ${i+1}: "${bn}" bukan 10 karakter`); continue; }
+                if (getBatchType(bn) === 'unknown') { gagal++; errs.push(`Baris ${i+1}: "${bn}" harus V/T`); continue; }
                 const pc = getProductCode(bn);
                 const prod = data.products.find(p => p.code === pc);
-                if (!prod) { gagal++; errList.push(`Baris ${i+1}: kode "${pc}" tidak terdaftar`); continue; }
-                if (data.batches.some(b => b.batchNumber === bn)) { gagal++; errList.push(`Baris ${i+1}: "${bn}" duplikat`); continue; }
-                if (!valid.includes(kat)) { gagal++; errList.push(`Baris ${i+1}: kategori "${kr}" invalid`); continue; }
+                if (!prod) { gagal++; errs.push(`Baris ${i+1}: kode "${pc}" tidak terdaftar`); continue; }
+                if (data.batches.some(b => b.batchNumber === bn)) { gagal++; errs.push(`Baris ${i+1}: "${bn}" duplikat`); continue; }
+                if (!valid.includes(kat)) { gagal++; errs.push(`Baris ${i+1}: kategori "${kr}" invalid`); continue; }
                 data.batches.push(createBatchObject(bn, kat, prod));
                 ok++;
             }
-            addAudit('UPLOAD', 'Batch File', `Upload ${fileInput.files[0].name}: ${ok} berhasil, ${gagal} gagal`);
+            addAudit('UPLOAD', 'Batch File', `Upload ${fi.files[0].name}: ${ok} ok, ${gagal} gagal`);
             saveData(); renderAll();
             let html = `<div class="notification success" style="display:block;margin-bottom:10px;">✅ Berhasil: <strong>${ok}</strong> | ❌ Gagal: <strong>${gagal}</strong></div>`;
-            if (errList.length) html += `<div style="max-height:200px;overflow-y:auto;background:#ffcdd2;padding:10px 15px;border-radius:6px;border-left:4px solid #c62828;font-size:12px;color:#b71c1c;"><strong>Error:</strong><br>${errList.join('<br>')}</div>`;
-            resultEl.innerHTML = html;
-            fileInput.value = '';
+            if (errs.length) html += `<div style="max-height:200px;overflow-y:auto;background:#ffcdd2;padding:10px 15px;border-radius:6px;border-left:4px solid #c62828;font-size:12px;color:#b71c1c;"><strong>Error:</strong><br>${errs.join('<br>')}</div>`;
+            re.innerHTML = html;
+            fi.value = '';
         } catch (err) { showNotification('Gagal baca file: ' + err.message, 'error'); }
     };
-    reader.readAsArrayBuffer(fileInput.files[0]);
+    reader.readAsArrayBuffer(fi.files[0]);
 }
 
 function downloadTemplate() {
@@ -814,263 +791,132 @@ document.getElementById('editBatchModal').addEventListener('click', function(e) 
 function saveEditBatch() {
     const b = data.batches.find(x => x.id === editingBatchId);
     if (!b) return;
-    const newBn = document.getElementById('editBatchNumber').value.trim().toUpperCase();
-    const newKat = document.getElementById('editBatchKategori').value;
-    if (newBn.length !== 10) { showNotification('Batch harus 10 karakter!', 'error'); return; }
-    if (getBatchType(newBn) === 'unknown') { showNotification('Harus V/T!', 'error'); return; }
-    if (newBn !== b.batchNumber && data.batches.some(x => x.batchNumber === newBn)) { showNotification('Batch sudah ada!', 'error'); return; }
-    const oldBn = b.batchNumber;
-    b.batchNumber = newBn;
-    b.productCode = getProductCode(newBn);
-    b.type = getBatchType(newBn);
-    b.kategori = newKat;
-    addAudit('UPDATE', 'Batch', `Edit ${oldBn} → ${newBn} (${newKat})`);
+    const nBn = document.getElementById('editBatchNumber').value.trim().toUpperCase();
+    const nKat = document.getElementById('editBatchKategori').value;
+    if (nBn.length !== 10) { showNotification('Batch harus 10 karakter!', 'error'); return; }
+    if (getBatchType(nBn) === 'unknown') { showNotification('Harus V/T!', 'error'); return; }
+    if (nBn !== b.batchNumber && data.batches.some(x => x.batchNumber === nBn)) { showNotification('Batch sudah ada!', 'error'); return; }
+    const old = b.batchNumber;
+    b.batchNumber = nBn;
+    b.productCode = getProductCode(nBn);
+    b.type = getBatchType(nBn);
+    b.kategori = nKat;
+    addAudit('UPDATE', 'Batch', `Edit ${old} → ${nBn} (${nKat})`);
     showNotification('✅ Batch diupdate!', 'success');
     closeEditBatchModal();
     saveData(); renderAll();
 }
-
 function deleteBatch(id) {
     const b = data.batches.find(x => x.id === id);
-    if (!b) return;
-    if (!confirm(`Hapus batch ${b.batchNumber}?`)) return;
+    if (!b || !confirm(`Hapus batch ${b.batchNumber}?`)) return;
     data.batches = data.batches.filter(x => x.id !== id);
     addAudit('DELETE', 'Batch', `Hapus ${b.batchNumber}`);
     showNotification('Batch dihapus!', 'info');
     saveData(); renderAll();
 }
 
-// ============ UNLOCK FIELD ============
-function unlockField(batchId, fieldName) {
-    const b = data.batches.find(x => x.id === batchId);
+// ============ UNLOCK ============
+function unlockField(bid, f) {
+    const b = data.batches.find(x => x.id === bid);
     if (!b) return;
     if (!b.unlockedFields) b.unlockedFields = [];
-    if (!b.unlockedFields.includes(fieldName)) b.unlockedFields.push(fieldName);
+    if (!b.unlockedFields.includes(f)) b.unlockedFields.push(f);
     saveData(); renderAll();
 }
 function isUnlocked(b, f) { return (b.unlockedFields || []).includes(f); }
 
-// ============ SAVE FIELD (INCREMENTAL) ============
-function saveFieldGeneric(batchId, field, value, targetStage) {
-    const b = data.batches.find(x => x.id === batchId);
-    if (!b) return;
-    const oldVal = b[field];
-    b[field] = value;
-    // Log
-    addAudit('UPDATE', 'Batch', `${b.batchNumber}: ${field} = ${value}`);
-    // Auto remove dari unlocked
-    if (b.unlockedFields) b.unlockedFields = b.unlockedFields.filter(f => f !== field);
-    // Cek auto-advance
-    checkAutoAdvance(b);
-    saveData(); renderAll();
-    showNotification(`✅ ${field} tersimpan`, 'success');
+// ============ OVER-TARGET PREVIEW (real-time) ============
+function checkOverPreview(bid, field, inputId, ketField, startRaw, targetHours) {
+    const input = document.getElementById(inputId);
+    const ketBox = document.getElementById('ketbox_' + field + '_' + bid);
+    if (!ketBox) return;
+    if (!input || !input.value || !startRaw || !targetHours) { ketBox.innerHTML = ''; return; }
+    const dur = diffHours(parseDate(startRaw), parseDate(input.value));
+    if (dur === null || dur <= targetHours) { ketBox.innerHTML = ''; return; }
+    ketBox.innerHTML = `<div class="keterangan-wajib">
+        <label>📝 Keterangan WAJIB — Over +${(dur-targetHours).toFixed(1)} jam</label>
+        <textarea id="ket_${field}_${bid}" rows="2" placeholder="Jelaskan alasan over target..."></textarea>
+    </div>`;
 }
 
+// ============ SAVE FIELD GENERIC ============
+function doSaveField(bid, field, ketField, startRaw, targetHours, inputId, nextStage) {
+    const input = document.getElementById(inputId);
+    if (!input || !input.value) { showNotification('Isi field terlebih dahulu!', 'error'); return false; }
+    const b = data.batches.find(x => x.id === bid);
+    if (!b) return false;
+
+    // Validasi over-target
+    let ket = '';
+    if (startRaw && targetHours) {
+        const dur = diffHours(parseDate(startRaw), parseDate(input.value));
+        if (dur !== null && dur > targetHours) {
+            const ketInput = document.getElementById('ket_' + field + '_' + bid);
+            if (!ketInput || !ketInput.value.trim()) {
+                showNotification(`⚠️ Over target +${(dur-targetHours).toFixed(1)} jam! Isi keterangan wajib dulu.`, 'error');
+                return false;
+            }
+            ket = ketInput.value.trim();
+        }
+    }
+
+    b[field] = input.value; // SIMPAN RAW
+    if (ket) b[ketField] = ket;
+    b.unlockedFields = (b.unlockedFields || []).filter(f => f !== field);
+    addAudit('UPDATE', 'Batch', `${b.batchNumber}: ${field} = ${displayDT(input.value)}`);
+    checkAutoAdvance(b);
+    saveData(); renderAll();
+    showNotification('✅ Tersimpan', 'success');
+    return true;
+}
+
+// ============ AUTO ADVANCE ============
 function checkAutoAdvance(b) {
     if (b.status === 'produksi') {
         if (b.jadwalRawMaterial && b.jadwalWadah && b.jadwalKemas) {
             b.status = 'raw_material';
-            addAudit('UPDATE', 'Batch', `${b.batchNumber}: masuk tahap Raw Material`);
+            addAudit('UPDATE', 'Batch', `${b.batchNumber}: → Raw Material`);
         }
     } else if (b.status === 'raw_material') {
         if (b.tanggalTimbang && b.tanggalSerahTerima) {
             b.status = 'logistic_wadah';
-            addAudit('UPDATE', 'Batch', `${b.batchNumber}: masuk tahap Wadah`);
+            addAudit('UPDATE', 'Batch', `${b.batchNumber}: → Wadah`);
         }
     } else if (b.status === 'logistic_wadah') {
         if (b.wadahReady && b.tanggalSerahTerimaWadah) {
             b.status = 'logistic_kemas';
-            addAudit('UPDATE', 'Batch', `${b.batchNumber}: masuk tahap Kemas`);
+            addAudit('UPDATE', 'Batch', `${b.batchNumber}: → Kemas`);
         }
     } else if (b.status === 'logistic_kemas') {
         if (b.kemasReady && b.tanggalSerahTerimaKemas) {
             b.status = 'produksi_input';
-            addAudit('UPDATE', 'Batch', `${b.batchNumber}: masuk tahap Input Produksi`);
+            addAudit('UPDATE', 'Batch', `${b.batchNumber}: → Input Produksi`);
         }
     } else if (b.status === 'produksi_input') {
         if (b.tanggalBPP && b.tanggalKirimDokumen) {
             b.status = 'qc';
-            addAudit('UPDATE', 'Batch', `${b.batchNumber}: masuk tahap QC`);
+            addAudit('UPDATE', 'Batch', `${b.batchNumber}: → QC`);
         }
     } else if (b.status === 'qc') {
         if (b.tanggalTerimaSample && b.estimasiLWS && b.tanggalSelesaiKimia && b.tanggalSelesaiMikro) {
             b.status = 'qa';
-            addAudit('UPDATE', 'Batch', `${b.batchNumber}: masuk tahap QA`);
+            addAudit('UPDATE', 'Batch', `${b.batchNumber}: → QA`);
         }
     }
+    // QA → done saat tanggalRilis diisi (di saveQA)
 }
 
-// Handler save individual fields
-function saveJadwalField(batchId, field, inputId) {
-    const input = document.getElementById(inputId);
-    if (!input || !input.value) { showNotification('Isi dulu field ini!', 'error'); return; }
-    const b = data.batches.find(x => x.id === batchId);
-    if (!b) return;
-    // Cek over-target
-    const target = { jadwalRawMaterial: b.targetTimbang, jadwalWadah: b.targetTimbang, jadwalKemas: b.targetTimbang }[field] || 0;
-    const createdAt = parseDate(b.createdAt);
-    const inputDate = parseDate(input.value);
-    let ketField = null;
-    if (target > 0 && createdAt && inputDate) {
-        const dur = diffHours(createdAt, inputDate);
-        if (dur > target) {
-            // Cek field keterangan
-            const ketMap = { jadwalRawMaterial: 'ket_jadwalRawMaterial', jadwalWadah: 'ket_jadwalWadah', jadwalKemas: 'ket_jadwalKemas' };
-            ketField = ketMap[field];
-            const ketInput = document.getElementById('ket_' + field + '_' + batchId);
-            if (!ketInput || !ketInput.value.trim()) {
-                showNotification(`⚠️ Melebihi target (+${(dur-target).toFixed(1)} jam)! Isi keterangan wajib dulu.`, 'error');
-                return;
-            }
-            b[ketField] = ketInput.value.trim();
-        }
-    }
-    b[field] = formatDateTime(input.value);
-    b.unlockedFields = (b.unlockedFields || []).filter(f => f !== field);
-    addAudit('UPDATE', 'Batch', `${b.batchNumber}: ${field} = ${b[field]}`);
-    checkAutoAdvance(b);
-    saveData(); renderAll();
-    showNotification(`✅ ${field.replace(/([A-Z])/g,' $1').trim()} tersimpan`, 'success');
-}
-
-function saveRawMaterialField(batchId, field, inputId) {
-    const input = document.getElementById(inputId);
-    if (!input || !input.value) { showNotification('Isi dulu!', 'error'); return; }
-    const b = data.batches.find(x => x.id === batchId);
-    if (!b) return;
-    // Cek over target timbang
-    if (field === 'tanggalSerahTerima' && b.tanggalTimbang && b.targetTimbang) {
-        const dur = diffHours(parseDate(b.tanggalTimbang), parseDate(input.value));
-        if (dur !== null && dur > b.targetTimbang) {
-            const ketInput = document.getElementById('ket_tanggalSerahTerima_' + batchId);
-            if (!ketInput || !ketInput.value.trim()) {
-                showNotification(`⚠️ Melebihi target timbang (+${(dur-b.targetTimbang).toFixed(1)} jam)! Isi keterangan.`, 'error');
-                return;
-            }
-            b.ket_rawMaterial = ketInput.value.trim();
-        }
-    }
-    b[field] = formatDateTime(input.value);
-    b.unlockedFields = (b.unlockedFields || []).filter(f => f !== field);
-    addAudit('UPDATE', 'Batch', `${b.batchNumber}: ${field} = ${b[field]}`);
-    checkAutoAdvance(b);
-    saveData(); renderAll();
-    showNotification(`✅ Tersimpan`, 'success');
-}
-
-function saveCheckboxField(batchId, field, checked, targetField) {
-    const b = data.batches.find(x => x.id === batchId);
+// ============ CHECKBOX ============
+function saveCheckbox(bid, field, checked) {
+    const b = data.batches.find(x => x.id === bid);
     if (!b) return;
     b[field] = checked;
     addAudit('UPDATE', 'Batch', `${b.batchNumber}: ${field} = ${checked}`);
-    saveData(); renderAll();
-}
-
-function saveSerahTerimaField(batchId, field, inputId, startField, targetHours, ketField) {
-    const input = document.getElementById(inputId);
-    if (!input || !input.value) { showNotification('Isi dulu!', 'error'); return; }
-    const b = data.batches.find(x => x.id === batchId);
-    if (!b) return;
-    if (startField && b[startField] && targetHours) {
-        const dur = diffHours(parseDate(b[startField]), parseDate(input.value));
-        if (dur !== null && dur > targetHours) {
-            const ketInput = document.getElementById('ket_st_' + batchId);
-            if (!ketInput || !ketInput.value.trim()) {
-                showNotification(`⚠️ Over target (+${(dur-targetHours).toFixed(1)} jam)! Isi keterangan.`, 'error');
-                return;
-            }
-            b[ketField] = ketInput.value.trim();
-        }
-    }
-    b[field] = formatDateTime(input.value);
-    b.unlockedFields = (b.unlockedFields || []).filter(f => f !== field);
-    addAudit('UPDATE', 'Batch', `${b.batchNumber}: ${field} = ${b[field]}`);
     checkAutoAdvance(b);
     saveData(); renderAll();
-    showNotification(`✅ Tersimpan`, 'success');
 }
 
-// ============ SAVE PRODUKSI INPUT ============
-function saveProduksiField(batchId, field, inputId, targetHours, ketField) {
-    const input = document.getElementById(inputId);
-    if (!input || !input.value) { showNotification('Isi dulu!', 'error'); return; }
-    const b = data.batches.find(x => x.id === batchId);
-    if (!b) return;
-    // Over-target check pakai tanggalSerahTerimaWadah atau Kemas sebagai start
-    const startDate = b.tanggalSerahTerimaKemas || b.tanggalSerahTerimaWadah || b.tanggalSerahTerima;
-    if (startDate && targetHours) {
-        const dur = diffHours(parseDate(startDate), parseDate(input.value));
-        if (dur !== null && dur > targetHours) {
-            const ketInput = document.getElementById('ket_prod_' + batchId);
-            if (!ketInput || !ketInput.value.trim()) {
-                showNotification(`⚠️ Over target produksi (+${(dur-targetHours).toFixed(1)} jam)! Isi keterangan.`, 'error');
-                return;
-            }
-            b[ketField] = ketInput.value.trim();
-        }
-    }
-    b[field] = formatDateTime(input.value);
-    b.unlockedFields = (b.unlockedFields || []).filter(f => f !== field);
-    addAudit('UPDATE', 'Batch', `${b.batchNumber}: ${field} = ${b[field]}`);
-    checkAutoAdvance(b);
-    saveData(); renderAll();
-    showNotification(`✅ Tersimpan`, 'success');
-}
-
-function saveQCField(batchId, field, inputId, targetHours, ketField) {
-    const input = document.getElementById(inputId);
-    if (!input || !input.value) { showNotification('Isi dulu!', 'error'); return; }
-    const b = data.batches.find(x => x.id === batchId);
-    if (!b) return;
-    // Over-target check: dari sample ke mikro (untuk analisa)
-    if (field === 'tanggalSelesaiMikro' && b.tanggalTerimaSample && targetHours) {
-        const dur = diffHours(parseDate(b.tanggalTerimaSample), parseDate(input.value));
-        if (dur !== null && dur > targetHours) {
-            const ketInput = document.getElementById('ket_qc_' + batchId);
-            if (!ketInput || !ketInput.value.trim()) {
-                showNotification(`⚠️ Over target analisa (+${(dur-targetHours).toFixed(1)} jam)! Isi keterangan.`, 'error');
-                return;
-            }
-            b[ketField] = ketInput.value.trim();
-        }
-    }
-    b[field] = formatDateTime(input.value);
-    b.unlockedFields = (b.unlockedFields || []).filter(f => f !== field);
-    addAudit('UPDATE', 'Batch', `${b.batchNumber}: ${field} = ${b[field]}`);
-    checkAutoAdvance(b);
-    saveData(); renderAll();
-    showNotification(`✅ Tersimpan`, 'success');
-}
-
-function saveQAField(batchId, field, inputId, targetHours, ketField) {
-    const input = document.getElementById(inputId);
-    if (!input || !input.value) { showNotification('Isi dulu!', 'error'); return; }
-    const b = data.batches.find(x => x.id === batchId);
-    if (!b) return;
-    // Over target dari tanggal selesai mikro
-    if (b.tanggalSelesaiMikro && targetHours) {
-        const dur = diffHours(parseDate(b.tanggalSelesaiMikro), parseDate(input.value));
-        if (dur !== null && dur > targetHours) {
-            const ketInput = document.getElementById('ket_qa_' + batchId);
-            if (!ketInput || !ketInput.value.trim()) {
-                showNotification(`⚠️ Over target perilisan (+${(dur-targetHours).toFixed(1)} jam)! Isi keterangan.`, 'error');
-                return;
-            }
-            b[ketField] = ketInput.value.trim();
-        }
-    }
-    b[field] = formatDateTime(input.value);
-    b.unlockedFields = (b.unlockedFields || []).filter(f => f !== field);
-    addAudit('UPDATE', 'Batch', `${b.batchNumber}: ${field} = ${b[field]}`);
-    if (b.tanggalRilis) {
-        b.status = 'done';
-        addAudit('UPDATE', 'Batch', `${b.batchNumber}: SELESAI / RILIS`);
-    }
-    saveData(); renderAll();
-    showNotification(`✅ Tersimpan`, 'success');
-}
-
-// ============ CALCULATE PCT ============
+// ============ CALCULATE ============
 function calculatePCT(b) {
     const tT = parseDate(b.tanggalTimbang);
     const tS = parseDate(b.tanggalSerahTerima);
@@ -1080,71 +926,25 @@ function calculatePCT(b) {
     const tMk = parseDate(b.tanggalSelesaiMikro);
     const tR = parseDate(b.tanggalRilis);
 
-    const pctInclude = jamKeHari(diffHours(tT, tR));
-    const mikroHari = jamKeHari(diffHours(tKm, tMk));
-    let pctExclude = null;
-    if (pctInclude !== null && mikroHari !== null) pctExclude = Math.round((pctInclude - mikroHari) * 100) / 100;
+    const pctInc = jamKeHari(diffHours(tT, tR));
+    const mH = jamKeHari(diffHours(tKm, tMk));
+    let pctExc = null;
+    if (pctInc !== null && mH !== null) pctExc = Math.round((pctInc - mH)*100)/100;
 
-    const logistik = jamKeHari(diffHours(tT, tS));
-    const produksi = jamKeHari(diffHours(tS, tK));
+    const log = jamKeHari(diffHours(tT, tS));
+    const prod = jamKeHari(diffHours(tS, tK));
     const qc = jamKeHari(diffHours(tSmp, tMk));
-    let latest = null;
-    if (tK && tMk) latest = tK > tMk ? tK : tMk;
-    else if (tK) latest = tK; else if (tMk) latest = tMk;
-    const qa = jamKeHari(diffHours(latest, tR));
+    let lt = null;
+    if (tK && tMk) lt = tK > tMk ? tK : tMk; else if (tK) lt = tK; else if (tMk) lt = tMk;
+    const qa = jamKeHari(diffHours(lt, tR));
 
     const now = new Date();
-    const onGoing = jamKeHari(diffHours(tT, now));
+    const og = jamKeHari(diffHours(tT, now));
 
-    const totalTargetJam = b.targetTimbang + b.targetProduksi + b.targetAnalisa + b.targetPerilisan;
-    let targetRilis = null;
-    if (tT) { targetRilis = new Date(tT); targetRilis.setHours(targetRilis.getHours() + totalTargetJam); }
-
-    return { pctInclude, pctExclude, logistik, produksi, qc, qa, onGoing, targetRilis, totalTargetJam };
-}
-
-// ============ HELPER: render field dengan save incremental ============
-function renderField(config) {
-    // config: { batch, field, label, icon, getValue, getTarget, targetLabel, ketField, saveFn, startField }
-    const { batch, field, label, icon, value, targetHours, ketField, saveFn, startField, overCheck } = config;
-    const saved = !!value;
-    const unlocked = isUnlocked(batch, field);
-    const inputId = `field_${field}_${batch.id}`;
-
-    // Hitung over-target
-    let overInfo = null;
-    if (overCheck) overInfo = overCheck();
-
-    let overBadge = '';
-    let ketHtml = '';
-    if (overInfo && overInfo.over) {
-        overBadge = `<span class="badge-over" style="margin-left:6px;">⚠️ Over +${overInfo.diff.toFixed(1)}j</span>`;
-        const savedKet = batch[ketField] || '';
-        if (!saved) {
-            ketHtml = `<div class="keterangan-wajib">
-                <label>📝 Keterangan Wajib (Over Target)</label>
-                <textarea id="ket_${field}_${batch.id}" rows="2" placeholder="Jelaskan alasan over target...">${savedKet}</textarea>
-            </div>`;
-        } else {
-            ketHtml = `<div style="margin-top:5px;font-size:11px;color:#e65100;">📝 Ket: ${savedKet}</div>`;
-        }
-    }
-
-    let inner = '';
-    if (saved && !unlocked) {
-        inner = `<div class="jadwal-value">✅ ${value}</div>
-            <button class="btn btn-warning btn-sm" style="margin-top:5px;padding:3px 8px;font-size:11px;" onclick="unlockField('${batch.id}', '${field}')">🔓 Edit</button>`;
-    } else {
-        const valAttr = value ? '' : '';
-        inner = `<input type="datetime-local" id="${inputId}" ${valAttr}>
-            <button class="btn btn-success btn-sm" style="margin-top:5px;padding:3px 8px;font-size:11px;" onclick="${saveFn}('${batch.id}','${field}','${inputId}')">💾 Simpan</button>`;
-    }
-
-    return `<div class="jadwal-item ${saved && !unlocked ? 'saved' : ''} ${overInfo?.over ? 'over' : ''}">
-        <label>${icon} ${label}${overBadge}</label>
-        ${inner}
-        ${ketHtml}
-    </div>`;
+    const tTg = b.targetTimbang + b.targetProduksi + b.targetAnalisa + b.targetPerilisan;
+    let tRil = null;
+    if (tT) { tRil = new Date(tT); tRil.setHours(tRil.getHours() + tTg); }
+    return { pctInclude: pctInc, pctExclude: pctExc, logistik: log, produksi: prod, qc, qa, onGoing: og, targetRilis: tRil, totalTargetJam: tTg };
 }
 
 // ============ RENDER SCORE CARD ============
@@ -1153,69 +953,66 @@ function renderScoreCard(b, actionHtml = '', showEditDelete = false) {
     const tT = parseDate(b.tanggalTimbang);
     const tR = parseDate(b.tanggalRilis);
     const now = new Date();
-    const totalTargetJam = b.targetTimbang + b.targetProduksi + b.targetAnalisa + b.targetPerilisan;
-    const totalTargetHari = jamKeHari(totalTargetJam);
+    const tTg = b.targetTimbang + b.targetProduksi + b.targetAnalisa + b.targetPerilisan;
+    const tTh = jamKeHari(tTg);
 
-    let totalCT = null, ctClass = 'default', ctDisplay = '-';
+    let totalCT = null, ctClass = 'default', ctDisp = '-';
     if (tR) {
         totalCT = jamKeHari(diffHours(tT, tR));
-        ctClass = (totalCT !== null && totalCT <= totalTargetHari) ? 'on-target' : 'over';
-        ctDisplay = totalCT !== null ? totalCT.toFixed(1) + ' hari' : '-';
+        ctClass = (totalCT !== null && totalCT <= tTh) ? 'on-target' : 'over';
+        ctDisp = totalCT !== null ? totalCT.toFixed(1) + ' hari' : '-';
     } else if (tT) {
         totalCT = jamKeHari(diffHours(tT, now));
-        ctClass = (totalCT !== null && totalCT <= totalTargetHari) ? 'on-going' : 'over';
-        ctDisplay = totalCT !== null ? totalCT.toFixed(1) + ' hari' : '-';
+        ctClass = (totalCT !== null && totalCT <= tTh) ? 'on-going' : 'over';
+        ctDisp = totalCT !== null ? totalCT.toFixed(1) + ' hari' : '-';
     }
 
-    // Steps
     const steps = [
-        { key: 'produksi', label: 'Produksi' },
-        { key: 'raw_material', label: 'Raw Material' },
-        { key: 'logistic_wadah', label: 'Wadah' },
-        { key: 'logistic_kemas', label: 'Kemas' },
-        { key: 'produksi_input', label: 'Input Prod' },
-        { key: 'qc', label: 'QC' },
-        { key: 'qa', label: 'QA' },
-        { key: 'done', label: 'Rilis' }
+        { key: 'produksi', l: 'Produksi' },
+        { key: 'raw_material', l: 'Raw Material' },
+        { key: 'logistic_wadah', l: 'Wadah' },
+        { key: 'logistic_kemas', l: 'Kemas' },
+        { key: 'produksi_input', l: 'Input Prod' },
+        { key: 'qc', l: 'QC' },
+        { key: 'qa', l: 'QA' },
+        { key: 'done', l: 'Rilis' }
     ];
-    const stepIdx = steps.findIndex(s => s.key === b.status);
+    const si = steps.findIndex(s => s.key === b.status);
     let stepHtml = `<div class="step-indicator">`;
     steps.forEach((s, i) => {
         if (i > 0) stepHtml += `<span class="arrow">›</span>`;
         let cls = 'pending';
-        if (i < stepIdx) cls = 'done';
-        else if (i === stepIdx) cls = 'active';
-        stepHtml += `<span class="step ${cls}">${s.label}</span>`;
+        if (i < si) cls = 'done'; else if (i === si) cls = 'active';
+        stepHtml += `<span class="step ${cls}">${s.l}</span>`;
     });
     stepHtml += `</div>`;
 
-    // Details
     let detailsHtml = '';
-    const detailFields = [
-        { l: 'Raw Material', v: b.jadwalRawMaterial },
-        { l: 'Jadwal Wadah', v: b.jadwalWadah },
-        { l: 'Jadwal Kemas', v: b.jadwalKemas },
-        { l: 'Tgl Timbang', v: formatDateTime(b.tanggalTimbang) },
-        { l: 'Serah Terima RM', v: formatDateTime(b.tanggalSerahTerima) },
+    const df = [
+        { l: 'Jadwal RM', v: displayDT(b.jadwalRawMaterial) },
+        { l: 'Jadwal Wadah', v: displayDT(b.jadwalWadah) },
+        { l: 'Jadwal Kemas', v: displayDT(b.jadwalKemas) },
+        { l: 'Tgl Timbang', v: displayDT(b.tanggalTimbang) },
+        { l: 'Serah Terima RM', v: displayDT(b.tanggalSerahTerima) },
         { l: 'Wadah Siap', v: b.wadahReady ? '✅ Siap' : '' },
-        { l: 'Serah Terima Wadah', v: formatDateTime(b.tanggalSerahTerimaWadah) },
+        { l: 'Serah Terima Wadah', v: displayDT(b.tanggalSerahTerimaWadah) },
         { l: 'Kemas Siap', v: b.kemasReady ? '✅ Siap' : '' },
-        { l: 'Serah Terima Kemas', v: formatDateTime(b.tanggalSerahTerimaKemas) },
-        { l: 'Tgl BPP', v: formatDateTime(b.tanggalBPP) },
-        { l: 'Kirim Dokumen', v: formatDateTime(b.tanggalKirimDokumen) },
-        { l: 'Terima Sample', v: formatDateTime(b.tanggalTerimaSample) },
-        { l: 'Estimasi LWS', v: formatDateTime(b.estimasiLWS) },
-        { l: 'Selesai Kimia', v: formatDateTime(b.tanggalSelesaiKimia) },
-        { l: 'Selesai Mikro', v: formatDateTime(b.tanggalSelesaiMikro) },
-        { l: 'Rilis', v: formatDateTime(b.tanggalRilis) }
+        { l: 'Serah Terima Kemas', v: displayDT(b.tanggalSerahTerimaKemas) },
+        { l: 'Tgl BPP', v: displayDT(b.tanggalBPP) },
+        { l: 'Kirim Dokumen', v: displayDT(b.tanggalKirimDokumen) },
+        { l: 'Terima Sample', v: displayDT(b.tanggalTerimaSample) },
+        { l: 'Estimasi LWS', v: displayDT(b.estimasiLWS) },
+        { l: 'Selesai Kimia', v: displayDT(b.tanggalSelesaiKimia) },
+        { l: 'Selesai Mikro', v: displayDT(b.tanggalSelesaiMikro) },
+        { l: 'Rilis', v: displayDT(b.tanggalRilis) }
     ];
-    detailFields.forEach(f => { if (f.v && f.v !== '-') detailsHtml += `<div><span style="color:#757575;">${f.l}:</span> <strong>${f.v}</strong></div>`; });
+    df.forEach(f => { if (f.v && f.v !== '-') detailsHtml += `<div><span style="color:#757575;">${f.l}:</span> <strong>${f.v}</strong></div>`; });
 
-    const kategoriHtml = b.kategori ? getKategoriBadge(b.kategori) : '';
+    const kb = b.kategori ? getKategoriBadge(b.kategori) : '';
 
-    let editDeleteHtml = '';
+    let editDel = '';
     if (showEditDelete && (currentUser.role === 'admin' || currentUser.department === 'PPIC')) {
-        editDeleteHtml = `<div class="edit-actions">
+        editDel = `<div class="edit-actions">
             <button class="btn btn-warning btn-sm" onclick="openEditBatch('${b.id}')">✏️ Edit</button>
             <button class="btn btn-danger btn-sm" onclick="deleteBatch('${b.id}')">🗑️ Hapus</button>
         </div>`;
@@ -1226,432 +1023,328 @@ function renderScoreCard(b, actionHtml = '', showEditDelete = false) {
             <div class="batch-info">
                 <span class="batch-number">${b.batchNumber}</span>
                 <span class="status ${b.status}">${getStatusLabel(b.status)}</span>
-                ${kategoriHtml}
+                ${kb}
             </div>
-            <div><span class="total-ct ${ctClass}">⏱️ ${ctDisplay}</span></div>
+            <div><span class="total-ct ${ctClass}">⏱️ ${ctDisp}</span></div>
         </div>
         ${stepHtml}
         ${detailsHtml ? `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px;font-size:12px;margin-top:10px;">${detailsHtml}</div>` : ''}
         ${actionHtml ? `<div class="score-card-action">${actionHtml}</div>` : ''}
-        ${editDeleteHtml}
+        ${editDel}
     </div>`;
 }
 
-// ============ RENDER KANBAN PRODUKSI ============
+// ============ RENDER FIELD HELPER ============
+// config: { b, field, label, icon, ketField, startField, targetHours, nextLabel }
+function renderEditableField(cfg) {
+    const { b, field, label, icon, ketField, startField, targetHours } = cfg;
+    const saved = !!b[field];
+    const unlocked = isUnlocked(b, field);
+    const inputId = `in_${field}_${b.id}`;
+    const ketBoxId = `ketbox_${field}_${b.id}`;
+
+    // Cek over
+    let overInfo = null;
+    const startRaw = startField ? b[startField] : null;
+    if (saved && startRaw && targetHours) {
+        const dur = diffHours(parseDate(startRaw), parseDate(b[field]));
+        if (dur !== null && dur > targetHours) overInfo = { over: true, diff: dur - targetHours };
+    }
+
+    let overBadge = overInfo ? `<span class="badge-over" style="margin-left:6px;">⚠️ Over +${overInfo.diff.toFixed(1)}j</span>` : '';
+    let ketDisplay = '';
+    if (overInfo && b[ketField]) {
+        ketDisplay = `<div style="margin-top:5px;font-size:11px;color:#e65100;background:#fff3e0;padding:4px 8px;border-radius:4px;">📝 ${b[ketField]}</div>`;
+    }
+
+    let inner = '';
+    if (saved && !unlocked) {
+        inner = `<div class="jadwal-value">✅ ${displayDT(b[field])}</div>
+            <button class="btn btn-warning btn-sm" style="margin-top:5px;padding:3px 8px;font-size:11px;" onclick="unlockField('${b.id}','${field}')">🔓 Edit</button>`;
+    } else {
+        inner = `<input type="datetime-local" id="${inputId}" value="${rawDT(b[field])}"
+            oninput="checkOverPreview('${b.id}','${field}','${inputId}','${ketField}','${startRaw||''}',${targetHours||0})">
+            <div id="${ketBoxId}"></div>
+            <button class="btn btn-success btn-sm" style="margin-top:5px;padding:3px 8px;font-size:11px;"
+                onclick="saveFieldWrapper('${b.id}','${field}','${ketField}','${startRaw||''}',${targetHours||0},'${inputId}')">💾 Simpan</button>`;
+    }
+
+    return `<div class="jadwal-item ${saved && !unlocked ? 'saved' : ''} ${overInfo ? 'over' : ''}">
+        <label>${icon} ${label}${overBadge}</label>
+        ${inner}
+        ${ketDisplay}
+    </div>`;
+}
+
+// Wrapper untuk save field generic — hitung nextStage otomatis
+function saveFieldWrapper(bid, field, ketField, startRaw, targetHours, inputId) {
+    doSaveField(bid, field, ketField, startRaw, targetHours, inputId);
+}
+
+// Wrapper khusus produk (pakai startRaw dari serah terima kemas/wadah)
+function saveProduksiField(bid, field, ketField, startField, targetHours, inputId) {
+    const b = data.batches.find(x => x.id === bid);
+    if (!b) return;
+    const startRaw = b[startField] || b.tanggalSerahTerimaKemas || b.tanggalSerahTerimaWadah || b.tanggalSerahTerima;
+    doSaveField(bid, field, ketField, startRaw, targetHours, inputId);
+}
+
+// Wrapper QC — target analisa dari terima sample ke selesai mikro
+function saveQCFieldWrapper(bid, field, ketField, targetHours, inputId) {
+    const b = data.batches.find(x => x.id === bid);
+    if (!b) return;
+    // Over-target check hanya untuk tanggalSelesaiMikro (durasi analisa)
+    let startRaw = null, tgt = 0;
+    if (field === 'tanggalSelesaiMikro') {
+        startRaw = b.tanggalTerimaSample;
+        tgt = targetHours;
+    }
+    doSaveField(bid, field, ketField, startRaw, tgt, inputId);
+}
+
+// Wrapper QA
+function saveQAFieldWrapper(bid, field, ketField, targetHours, inputId) {
+    const b = data.batches.find(x => x.id === bid);
+    if (!b) return;
+    const startRaw = b.tanggalSelesaiMikro;
+    doSaveField(bid, field, ketField, startRaw, targetHours, inputId);
+    // Setelah simpan, cek rilis
+    if (b.tanggalRilis) {
+        b.status = 'done';
+        addAudit('UPDATE', 'Batch', `${b.batchNumber}: RILIS / SELESAI`);
+        saveData(); renderAll();
+    }
+}
+
+// ============ KANBAN PRODUKSI ============
 function renderKanbanProduksi() {
     const c = document.getElementById('kanbanProduksi');
     if (!c) return;
     const batches = data.batches.filter(b => b.status === 'produksi');
-    if (batches.length === 0) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch di tahap Produksi</p></div>'; return; }
+    if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch di tahap Produksi</p></div>'; return; }
 
     c.innerHTML = batches.map(b => {
-        const createdAt = parseDate(b.createdAt);
-        const now = new Date();
-
-        // Helper untuk render tiap field jadwal
-        const renderJadwalField = (field, label, icon, ketField, targetHours, overCheck) => {
-            const saved = !!b[field];
-            const unlocked = isUnlocked(b, field);
-            const inputId = `jf_${field}_${b.id}`;
-            const overInfo = overCheck ? overCheck() : null;
-            let overBadge = '';
-            let ketHtml = '';
-
-            if (overInfo && overInfo.over) {
-                overBadge = `<span class="badge-over" style="margin-left:6px;">⚠️ Over +${overInfo.diff.toFixed(1)}j</span>`;
-                const savedKet = b[ketField] || '';
-                if (!saved) {
-                    ketHtml = `<div class="keterangan-wajib">
-                        <label>📝 Keterangan Wajib</label>
-                        <textarea id="ket_${field}_${b.id}" rows="2" placeholder="Alasan over target...">${savedKet}</textarea>
-                    </div>`;
-                } else {
-                    ketHtml = `<div style="margin-top:5px;font-size:11px;color:#e65100;">📝 ${savedKet}</div>`;
-                }
-            }
-
-            let inner;
-            if (saved && !unlocked) {
-                inner = `<div class="jadwal-value">✅ ${b[field]}</div>
-                    <button class="btn btn-warning btn-sm" style="margin-top:5px;padding:3px 8px;font-size:11px;" onclick="unlockField('${b.id}','${field}')">🔓 Edit</button>`;
-            } else {
-                inner = `<input type="datetime-local" id="${inputId}">
-                    <button class="btn btn-success btn-sm" style="margin-top:5px;padding:3px 8px;font-size:11px;" onclick="saveJadwalField('${b.id}','${field}','${inputId}')">💾 Simpan</button>`;
-            }
-
-            return `<div class="jadwal-item ${saved && !unlocked ? 'saved' : ''} ${overInfo?.over ? 'over' : ''}">
-                <label>${icon} ${label}${overBadge}</label>
-                ${inner}
-                ${ketHtml}
-            </div>`;
-        };
-
         const actionHtml = `
             <div class="section-title">📅 Jadwal Permintaan</div>
             <div class="jadwal-container">
-                ${renderJadwalField('jadwalRawMaterial', 'Permintaan Raw Material', '🧪', 'ket_jadwalRawMaterial', b.targetTimbang, () => {
-                    if (!b.jadwalRawMaterial || !createdAt || !b.targetTimbang) return null;
-                    const d = diffHours(createdAt, parseDate(b.jadwalRawMaterial));
-                    return d !== null && d > b.targetTimbang ? { over: true, diff: d - b.targetTimbang } : null;
-                })}
-                ${renderJadwalField('jadwalWadah', 'Permintaan Wadah', '📦', 'ket_jadwalWadah', b.targetTimbang, () => {
-                    if (!b.jadwalWadah || !createdAt || !b.targetTimbang) return null;
-                    const d = diffHours(createdAt, parseDate(b.jadwalWadah));
-                    return d !== null && d > b.targetTimbang ? { over: true, diff: d - b.targetTimbang } : null;
-                })}
-                ${renderJadwalField('jadwalKemas', 'Permintaan Kemas', '📦', 'ket_jadwalKemas', b.targetTimbang, () => {
-                    if (!b.jadwalKemas || !createdAt || !b.targetTimbang) return null;
-                    const d = diffHours(createdAt, parseDate(b.jadwalKemas));
-                    return d !== null && d > b.targetTimbang ? { over: true, diff: d - b.targetTimbang } : null;
-                })}
+                ${renderEditableField({ b, field: 'jadwalRawMaterial', label: 'Permintaan Raw Material', icon: '🧪', ketField: 'ket_jadwalRawMaterial', startField: 'createdAt', targetHours: b.targetTimbang })}
+                ${renderEditableField({ b, field: 'jadwalWadah', label: 'Permintaan Wadah', icon: '📦', ketField: 'ket_jadwalWadah', startField: 'createdAt', targetHours: b.targetTimbang })}
+                ${renderEditableField({ b, field: 'jadwalKemas', label: 'Permintaan Kemas', icon: '📦', ketField: 'ket_jadwalKemas', startField: 'createdAt', targetHours: b.targetTimbang })}
             </div>
         `;
         return renderScoreCard(b, actionHtml);
     }).join('');
 }
 
-// ============ RENDER RAW MATERIAL (LOGISTIC) ============
+// ============ LOGISTIC RAW MATERIAL ============
 function renderLogisticRawMaterial() {
     const c = document.getElementById('logisticRawMaterial');
     if (!c) return;
     const batches = data.batches.filter(b => b.status === 'raw_material');
-    if (batches.length === 0) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch di tahap Raw Material</p></div>'; return; }
+    if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch di tahap Raw Material</p></div>'; return; }
 
     c.innerHTML = batches.map(b => {
-        const renderRM = (field, label, icon, inputId, overCheck, ketField) => {
-            const saved = !!b[field];
-            const unlocked = isUnlocked(b, field);
-            const overInfo = overCheck ? overCheck() : null;
-            let overBadge = '', ketHtml = '';
-            if (overInfo?.over) {
-                overBadge = `<span class="badge-over" style="margin-left:6px;">⚠️ Over +${overInfo.diff.toFixed(1)}j</span>`;
-                const savedKet = b[ketField] || '';
-                if (!saved) {
-                    ketHtml = `<div class="keterangan-wajib"><label>📝 Keterangan Wajib</label>
-                        <textarea id="ket_${field}_${b.id}" rows="2" placeholder="Alasan over target...">${savedKet}</textarea></div>`;
-                } else {
-                    ketHtml = `<div style="margin-top:5px;font-size:11px;color:#e65100;">📝 ${savedKet}</div>`;
-                }
-            }
-            let inner;
-            if (saved && !unlocked) {
-                inner = `<div class="jadwal-value">✅ ${b[field]}</div>
-                    <button class="btn btn-warning btn-sm" style="margin-top:5px;padding:3px 8px;font-size:11px;" onclick="unlockField('${b.id}','${field}')">🔓 Edit</button>`;
-            } else {
-                inner = `<input type="datetime-local" id="${inputId}">
-                    <button class="btn btn-success btn-sm" style="margin-top:5px;padding:3px 8px;font-size:11px;" onclick="saveRawMaterialField('${b.id}','${field}','${inputId}')">💾 Simpan</button>`;
-            }
-            return `<div class="jadwal-item ${saved && !unlocked ? 'saved' : ''} ${overInfo?.over ? 'over' : ''}">
-                <label>${icon} ${label}${overBadge}</label>${inner}${ketHtml}</div>`;
-        };
-
         const actionHtml = `
             <div class="section-title">🧪 Raw Material</div>
-            <div class="jadwal-container" style="grid-template-columns:1fr 1fr;">
-                ${renderRM('tanggalTimbang', 'Jadwal Timbang', '⚖️', `rm1_${b.id}`, null, 'ket_rawMaterial')}
-                ${renderRM('tanggalSerahTerima', 'Jadwal Serah Terima', '📤', `rm2_${b.id}`, () => {
-                    if (!b.tanggalTimbang || !b.targetTimbang) return null;
-                    const d = diffHours(parseDate(b.tanggalTimbang), new Date());
-                    return null;
-                }, 'ket_rawMaterial')}
+            <div class="jadwal-container two-col">
+                ${renderEditableField({ b, field: 'tanggalTimbang', label: 'Jadwal Timbang', icon: '⚖️', ketField: 'ket_rawMaterial', startField: null, targetHours: 0 })}
+                ${renderEditableField({ b, field: 'tanggalSerahTerima', label: 'Jadwal Serah Terima', icon: '📤', ketField: 'ket_rawMaterial', startField: 'tanggalTimbang', targetHours: b.targetTimbang })}
             </div>
         `;
         return renderScoreCard(b, actionHtml);
     }).join('');
 }
 
-// ============ RENDER WADAH ============
+// ============ LOGISTIC WADAH ============
 function renderLogisticWadah() {
     const c = document.getElementById('logisticWadah');
     if (!c) return;
     const batches = data.batches.filter(b => b.status === 'logistic_wadah');
-    if (batches.length === 0) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch di tahap Wadah</p></div>'; return; }
+    if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch di tahap Wadah</p></div>'; return; }
 
     c.innerHTML = batches.map(b => {
-        const savedChecked = b.wadahReady;
-        const savedDate = b.tanggalSerahTerimaWadah;
-        const unlockedDate = isUnlocked(b, 'tanggalSerahTerimaWadah');
-
-        let checkboxHtml = `<div class="form-group" style="margin-bottom:8px;">
+        const cbHtml = `<div class="form-group" style="margin-bottom:8px;">
             <div style="display:flex;align-items:center;gap:8px;">
-                <input type="checkbox" id="wd_${b.id}" ${savedChecked ? 'checked disabled' : ''} onchange="saveCheckboxField('${b.id}','wadahReady',this.checked)" style="width:20px;height:20px;cursor:pointer;">
-                <label for="wd_${b.id}" style="margin:0;cursor:pointer;">✅ Wadah sudah siap</label>
+                <input type="checkbox" id="cb_${b.id}" ${b.wadahReady ? 'checked disabled' : ''}
+                    onchange="saveCheckbox('${b.id}','wadahReady',this.checked)"
+                    style="width:20px;height:20px;cursor:pointer;">
+                <label for="cb_${b.id}" style="margin:0;cursor:pointer;font-weight:600;">✅ Wadah sudah siap</label>
             </div>
         </div>`;
-
-        let dateHtml;
-        if (savedDate && !unlockedDate) {
-            dateHtml = `<div class="jadwal-value">✅ ${savedDate}</div>
-                <button class="btn btn-warning btn-sm" style="margin-top:5px;padding:3px 8px;font-size:11px;" onclick="unlockField('${b.id}','tanggalSerahTerimaWadah')">🔓 Edit</button>`;
-        } else {
-            dateHtml = `<input type="datetime-local" id="wd_date_${b.id}">
-                <button class="btn btn-success btn-sm" style="margin-top:5px;padding:3px 8px;font-size:11px;" onclick="saveSerahTerimaField('${b.id}','tanggalSerahTerimaWadah','wd_date_${b.id}','tanggalSerahTerima',b.targetTimbang,'ket_wadah')">💾 Simpan</button>`;
-        }
-
         const actionHtml = `
             <div class="section-title">📦 Wadah</div>
-            ${checkboxHtml}
-            <div class="jadwal-item ${savedDate && !unlockedDate ? 'saved' : ''}">
-                <label>📅 Jadwal Serah Terima Wadah</label>
-                ${dateHtml}
-            </div>
+            ${cbHtml}
+            ${renderEditableField({ b, field: 'tanggalSerahTerimaWadah', label: 'Jadwal Serah Terima Wadah', icon: '📅', ketField: 'ket_wadah', startField: 'tanggalSerahTerima', targetHours: b.targetTimbang })}
         `;
         return renderScoreCard(b, actionHtml);
     }).join('');
 }
 
-// ============ RENDER KEMAS ============
+// ============ LOGISTIC KEMAS ============
 function renderLogisticKemas() {
     const c = document.getElementById('logisticKemas');
     if (!c) return;
     const batches = data.batches.filter(b => b.status === 'logistic_kemas');
-    if (batches.length === 0) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch di tahap Kemas</p></div>'; return; }
+    if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch di tahap Kemas</p></div>'; return; }
 
     c.innerHTML = batches.map(b => {
-        const savedChecked = b.kemasReady;
-        const savedDate = b.tanggalSerahTerimaKemas;
-        const unlockedDate = isUnlocked(b, 'tanggalSerahTerimaKemas');
-
-        let checkboxHtml = `<div class="form-group" style="margin-bottom:8px;">
+        const cbHtml = `<div class="form-group" style="margin-bottom:8px;">
             <div style="display:flex;align-items:center;gap:8px;">
-                <input type="checkbox" id="km_${b.id}" ${savedChecked ? 'checked disabled' : ''} onchange="saveCheckboxField('${b.id}','kemasReady',this.checked)" style="width:20px;height:20px;cursor:pointer;">
-                <label for="km_${b.id}" style="margin:0;cursor:pointer;">✅ Kemas sudah siap</label>
+                <input type="checkbox" id="cb_${b.id}" ${b.kemasReady ? 'checked disabled' : ''}
+                    onchange="saveCheckbox('${b.id}','kemasReady',this.checked)"
+                    style="width:20px;height:20px;cursor:pointer;">
+                <label for="cb_${b.id}" style="margin:0;cursor:pointer;font-weight:600;">✅ Kemas sudah siap</label>
             </div>
         </div>`;
-
-        let dateHtml;
-        if (savedDate && !unlockedDate) {
-            dateHtml = `<div class="jadwal-value">✅ ${savedDate}</div>
-                <button class="btn btn-warning btn-sm" style="margin-top:5px;padding:3px 8px;font-size:11px;" onclick="unlockField('${b.id}','tanggalSerahTerimaKemas')">🔓 Edit</button>`;
-        } else {
-            dateHtml = `<input type="datetime-local" id="km_date_${b.id}">
-                <button class="btn btn-success btn-sm" style="margin-top:5px;padding:3px 8px;font-size:11px;" onclick="saveSerahTerimaField('${b.id}','tanggalSerahTerimaKemas','km_date_${b.id}','tanggalSerahTerimaWadah',b.targetTimbang,'ket_kemas')">💾 Simpan</button>`;
-        }
-
         const actionHtml = `
             <div class="section-title">📦 Kemas</div>
-            ${checkboxHtml}
-            <div class="jadwal-item ${savedDate && !unlockedDate ? 'saved' : ''}">
-                <label>📅 Jadwal Serah Terima Kemas</label>
-                ${dateHtml}
-            </div>
+            ${cbHtml}
+            ${renderEditableField({ b, field: 'tanggalSerahTerimaKemas', label: 'Jadwal Serah Terima Kemas', icon: '📅', ketField: 'ket_kemas', startField: 'tanggalSerahTerimaWadah', targetHours: b.targetTimbang })}
         `;
         return renderScoreCard(b, actionHtml);
     }).join('');
 }
 
-// ============ RENDER INPUT PRODUKSI ============
+// ============ INPUT PRODUKSI ============
 function renderInputProduksi() {
     const c = document.getElementById('inputProduksi');
     if (!c) return;
     const batches = data.batches.filter(b => b.status === 'produksi_input');
-    if (batches.length === 0) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch siap input produksi</p></div>'; return; }
+    if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch siap input produksi</p></div>'; return; }
 
     c.innerHTML = batches.map(b => {
-        const renderProdField = (field, label, icon, inputId, ketField) => {
-            const saved = !!b[field];
-            const unlocked = isUnlocked(b, field);
-            let overBadge = '', ketHtml = '';
-            // Over target check: dari serah terima kemas/wadah ke input
-            const startDate = b.tanggalSerahTerimaKemas || b.tanggalSerahTerimaWadah || b.tanggalSerahTerima;
-            if (saved && startDate && b.targetProduksi) {
-                const dur = diffHours(parseDate(startDate), parseDate(b[field]));
-                if (dur !== null && dur > b.targetProduksi) {
-                    overBadge = `<span class="badge-over" style="margin-left:6px;">⚠️ Over +${(dur-b.targetProduksi).toFixed(1)}j</span>`;
-                    if (b[ketField]) ketHtml = `<div style="margin-top:5px;font-size:11px;color:#e65100;">📝 ${b[ketField]}</div>`;
-                }
-            }
-            let inner;
-            if (saved && !unlocked) {
-                inner = `<div class="jadwal-value">✅ ${b[field]}</div>
-                    <button class="btn btn-warning btn-sm" style="margin-top:5px;padding:3px 8px;font-size:11px;" onclick="unlockField('${b.id}','${field}')">🔓 Edit</button>`;
-            } else {
-                inner = `<input type="datetime-local" id="${inputId}">
-                    <button class="btn btn-success btn-sm" style="margin-top:5px;padding:3px 8px;font-size:11px;" onclick="saveProduksiField('${b.id}','${field}','${inputId}',${b.targetProduksi},'${ketField}')">💾 Simpan</button>`;
-            }
-            // Keterangan wajib jika over
-            if (saved && startDate && !b[ketField]) {
-                const dur = diffHours(parseDate(startDate), parseDate(b[field]));
-                if (dur !== null && dur > b.targetProduksi) {
-                    ketHtml = `<div class="keterangan-wajib"><label>📝 Keterangan Wajib</label>
-                        <textarea id="ket_${field}_${b.id}" rows="2" placeholder="Alasan over target..."></textarea></div>`;
-                }
-            }
-            return `<div class="jadwal-item ${saved && !unlocked ? 'saved' : ''}">
-                <label>${icon} ${label}${overBadge}</label>${inner}${ketHtml}</div>`;
-        };
-
         const actionHtml = `
-            <div class="jadwal-container" style="grid-template-columns:1fr 1fr;">
-                ${renderProdField('tanggalBPP', 'Tanggal BPP', '📅', `pr1_${b.id}`, 'ket_produksi')}
-                ${renderProdField('tanggalKirimDokumen', 'Kirim Dokumen', '📤', `pr2_${b.id}`, 'ket_produksi')}
+            <div class="section-title">🏭 Input Produksi</div>
+            <div class="jadwal-container two-col">
+                ${renderEditableField({ b, field: 'tanggalBPP', label: 'Tanggal BPP', icon: '📅', ketField: 'ket_produksi', startField: 'tanggalSerahTerimaKemas', targetHours: b.targetProduksi })}
+                ${renderEditableField({ b, field: 'tanggalKirimDokumen', label: 'Kirim Dokumen', icon: '📤', ketField: 'ket_produksi', startField: 'tanggalBPP', targetHours: b.targetProduksi })}
             </div>
         `;
         return renderScoreCard(b, actionHtml);
     }).join('');
 }
 
-// ============ RENDER QC ============
+// ============ QC ============
 function renderQC() {
     const c = document.getElementById('qcList');
     if (!c) return;
     const batches = data.batches.filter(b => b.status === 'qc' || b.status === 'qa');
-    if (batches.length === 0) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch di QC</p></div>'; return; }
+    if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch di QC</p></div>'; return; }
 
     c.innerHTML = batches.map(b => {
         if (b.status !== 'qc') return renderScoreCard(b);
-        const renderQCField = (field, label, icon, inputId, ketField) => {
-            const saved = !!b[field];
-            const unlocked = isUnlocked(b, field);
-            let overBadge = '', ketHtml = '';
-            if (saved && field === 'tanggalSelesaiMikro' && b.tanggalTerimaSample && b.targetAnalisa) {
-                const dur = diffHours(parseDate(b.tanggalTerimaSample), parseDate(b[field]));
-                if (dur !== null && dur > b.targetAnalisa) {
-                    overBadge = `<span class="badge-over" style="margin-left:6px;">⚠️ Over +${(dur-b.targetAnalisa).toFixed(1)}j</span>`;
-                    if (b[ketField]) ketHtml = `<div style="margin-top:5px;font-size:11px;color:#e65100;">📝 ${b[ketField]}</div>`;
-                }
-            }
-            let inner;
-            if (saved && !unlocked) {
-                inner = `<div class="jadwal-value">✅ ${b[field]}</div>
-                    <button class="btn btn-warning btn-sm" style="margin-top:5px;padding:3px 8px;font-size:11px;" onclick="unlockField('${b.id}','${field}')">🔓 Edit</button>`;
-            } else {
-                inner = `<input type="datetime-local" id="${inputId}">
-                    <button class="btn btn-success btn-sm" style="margin-top:5px;padding:3px 8px;font-size:11px;" onclick="saveQCField('${b.id}','${field}','${inputId}',${b.targetAnalisa},'${ketField}')">💾 Simpan</button>`;
-            }
-            if (saved && field === 'tanggalSelesaiMikro' && b.tanggalTerimaSample && !b[ketField]) {
-                const dur = diffHours(parseDate(b.tanggalTerimaSample), parseDate(b[field]));
-                if (dur !== null && dur > b.targetAnalisa) {
-                    ketHtml = `<div class="keterangan-wajib"><label>📝 Keterangan Wajib</label>
-                        <textarea id="ket_${field}_${b.id}" rows="2" placeholder="Alasan over target..."></textarea></div>`;
-                }
-            }
-            return `<div class="jadwal-item ${saved && !unlocked ? 'saved' : ''}">
-                <label>${icon} ${label}${overBadge}</label>${inner}${ketHtml}</div>`;
-        };
-
         const actionHtml = `
-            <div class="jadwal-container" style="grid-template-columns:1fr 1fr;">
-                ${renderQCField('tanggalTerimaSample', 'Terima Sample', '📥', `qc1_${b.id}`, 'ket_qc')}
-                ${renderQCField('estimasiLWS', 'Estimasi LWS', '⏳', `qc2_${b.id}`, 'ket_qc')}
-                ${renderQCField('tanggalSelesaiKimia', 'Selesai Kimia', '🧪', `qc3_${b.id}`, 'ket_qc')}
-                ${renderQCField('tanggalSelesaiMikro', 'Selesai Mikro', '🔬', `qc4_${b.id}`, 'ket_qc')}
+            <div class="section-title">🔬 Quality Control</div>
+            <div class="jadwal-container two-col">
+                ${renderEditableField({ b, field: 'tanggalTerimaSample', label: 'Terima Sample', icon: '📥', ketField: 'ket_qc', startField: null, targetHours: 0 })}
+                ${renderEditableField({ b, field: 'estimasiLWS', label: 'Estimasi LWS', icon: '⏳', ketField: 'ket_qc', startField: null, targetHours: 0 })}
+                ${renderEditableField({ b, field: 'tanggalSelesaiKimia', label: 'Selesai Kimia', icon: '🧪', ketField: 'ket_qc', startField: null, targetHours: 0 })}
+                ${renderEditableField({ b, field: 'tanggalSelesaiMikro', label: 'Selesai Mikro', icon: '🔬', ketField: 'ket_qc', startField: 'tanggalTerimaSample', targetHours: b.targetAnalisa })}
             </div>
         `;
         return renderScoreCard(b, actionHtml);
     }).join('');
 }
 
-// ============ RENDER QA ============
+// Override save untuk QC (karena butuh start dari tanggalTerimaSample, bukan dari startField langsung)
+function saveFieldQC(bid, field, ketField, targetHours, inputId) {
+    const b = data.batches.find(x => x.id === bid);
+    if (!b) return;
+    let startRaw = null, tgt = 0;
+    if (field === 'tanggalSelesaiMikro') {
+        startRaw = b.tanggalTerimaSample;
+        tgt = targetHours;
+    }
+    doSaveField(bid, field, ketField, startRaw, tgt, inputId);
+}
+
+// ============ QA ============
 function renderQA() {
     const c = document.getElementById('qaList');
     if (!c) return;
     const batches = data.batches.filter(b => b.status === 'qa');
-    if (batches.length === 0) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch di QA</p></div>'; return; }
+    if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch di QA</p></div>'; return; }
 
     c.innerHTML = batches.map(b => {
-        const renderQAField = () => {
-            const saved = !!b.tanggalRilis;
-            const unlocked = isUnlocked(b, 'tanggalRilis');
-            let overBadge = '', ketHtml = '';
-            if (saved && b.tanggalSelesaiMikro && b.targetPerilisan) {
-                const dur = diffHours(parseDate(b.tanggalSelesaiMikro), parseDate(b.tanggalRilis));
-                if (dur !== null && dur > b.targetPerilisan) {
-                    overBadge = `<span class="badge-over" style="margin-left:6px;">⚠️ Over +${(dur-b.targetPerilisan).toFixed(1)}j</span>`;
-                    if (b.ket_qa) ketHtml = `<div style="margin-top:5px;font-size:11px;color:#e65100;">📝 ${b.ket_qa}</div>`;
-                }
-            }
-            let inner;
-            if (saved && !unlocked) {
-                inner = `<div class="jadwal-value">✅ ${b.tanggalRilis}</div>
-                    <button class="btn btn-warning btn-sm" style="margin-top:5px;padding:3px 8px;font-size:11px;" onclick="unlockField('${b.id}','tanggalRilis')">🔓 Edit</button>`;
-            } else {
-                inner = `<input type="datetime-local" id="qa1_${b.id}">
-                    <button class="btn btn-success btn-sm" style="margin-top:5px;padding:3px 8px;font-size:11px;" onclick="saveQAField('${b.id}','tanggalRilis','qa1_${b.id}',${b.targetPerilisan},'ket_qa')">💾 Simpan & Rilis</button>`;
-            }
-            if (saved && b.tanggalSelesaiMikro && !b.ket_qa) {
-                const dur = diffHours(parseDate(b.tanggalSelesaiMikro), parseDate(b.tanggalRilis));
-                if (dur !== null && dur > b.targetPerilisan) {
-                    ketHtml = `<div class="keterangan-wajib"><label>📝 Keterangan Wajib</label>
-                        <textarea id="ket_tanggalRilis_${b.id}" rows="2" placeholder="Alasan over target..."></textarea></div>`;
-                }
-            }
-            return `<div class="jadwal-item ${saved && !unlocked ? 'saved' : ''}">
-                <label>📅 Tanggal Rilis${overBadge}</label>${inner}${ketHtml}</div>`;
-        };
-        return renderScoreCard(b, `<div class="jadwal-container" style="grid-template-columns:1fr;">${renderQAField()}</div>`);
+        const actionHtml = `
+            <div class="section-title">✅ Quality Assurance</div>
+            <div class="jadwal-container">
+                ${renderEditableField({ b, field: 'tanggalRilis', label: 'Tanggal Rilis', icon: '🎉', ketField: 'ket_qa', startField: 'tanggalSelesaiMikro', targetHours: b.targetPerilisan })}
+            </div>
+        `;
+        return renderScoreCard(b, actionHtml);
     }).join('');
 }
 
-// ============ RENDER PPIC ============
+// ============ PPIC ============
 function renderPPIC() {
     const c = document.getElementById('ppicScoreCards');
     if (!c) return;
-    if (data.batches.length === 0) { c.innerHTML = '<div class="empty-state"><p>Belum ada batch</p></div>'; return; }
+    if (!data.batches.length) { c.innerHTML = '<div class="empty-state"><p>Belum ada batch</p></div>'; return; }
     c.innerHTML = data.batches.map(b => renderScoreCard(b, '', true)).join('');
 }
 
 // ============ DASHBOARD ============
 function renderDashboard() {
-    const type = currentDashTab;
-    const pEl = document.getElementById(type === 'oral' ? 'filterPeriodeOral' : 'filterPeriodeInjeksi');
-    const sEl = document.getElementById(type === 'oral' ? 'filterSearchOral' : 'filterSearchInjeksi');
-    const kEl = document.getElementById(type === 'oral' ? 'filterKategoriOral' : 'filterKategoriInjeksi');
+    const t = currentDashTab;
+    const pEl = document.getElementById(t === 'oral' ? 'filterPeriodeOral' : 'filterPeriodeInjeksi');
+    const sEl = document.getElementById(t === 'oral' ? 'filterSearchOral' : 'filterSearchInjeksi');
+    const kEl = document.getElementById(t === 'oral' ? 'filterKategoriOral' : 'filterKategoriInjeksi');
     const periode = pEl?.value || 'all';
     const search = (sEl?.value || '').toLowerCase();
     const kat = kEl?.value || 'all';
 
-    let batches = data.batches.filter(b => b.type === type);
+    let batches = data.batches.filter(b => b.type === t);
     if (search) batches = batches.filter(b => b.batchNumber.toLowerCase().includes(search));
     if (kat !== 'all') batches = batches.filter(b => (b.kategori || '') === kat);
     if (periode !== 'all') {
-        const days = parseInt(periode);
-        const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - days);
-        batches = batches.filter(b => { const d = parseDate(b.createdAt); return d && d >= cutoff; });
+        const d = parseInt(periode);
+        const co = new Date(); co.setDate(co.getDate() - d);
+        batches = batches.filter(b => { const x = parseDate(b.createdAt); return x && x >= co; });
     }
-    updateKPIDash(type, batches);
-    renderDetailTableDash(type, batches);
-    if (type === 'oral') renderOnGoingTableDash(type, batches);
+    updateKPIDash(t, batches);
+    renderDetailTableDash(t, batches);
+    if (t === 'oral') renderOnGoingTableDash(t, batches);
 }
 
-function updateKPIDash(type, batches) {
+function updateKPIDash(t, batches) {
     const done = batches.filter(b => b.status === 'done');
-    const onGoing = batches.filter(b => b.status !== 'done').length;
+    const og = batches.filter(b => b.status !== 'done').length;
     let avg = '-', count = 0;
-    if (done.length > 0) {
-        const totals = done.map(b => calculatePCT(b).pctInclude).filter(v => v !== null);
-        if (totals.length) { avg = (totals.reduce((a,b) => a+b,0) / totals.length).toFixed(2); count = totals.length; }
+    if (done.length) {
+        const tot = done.map(b => calculatePCT(b).pctInclude).filter(v => v !== null);
+        if (tot.length) { avg = (tot.reduce((a,b)=>a+b,0) / tot.length).toFixed(2); count = tot.length; }
     }
-    let onTarget = 0, totalDone = 0;
+    let ot = 0, td = 0;
     done.forEach(b => {
-        const calc = calculatePCT(b);
+        const c = calculatePCT(b);
         const tH = jamKeHari(b.targetTimbang + b.targetProduksi + b.targetAnalisa + b.targetPerilisan);
-        if (calc.pctInclude !== null && tH !== null) { totalDone++; if (calc.pctInclude <= tH) onTarget++; }
+        if (c.pctInclude !== null && tH !== null) { td++; if (c.pctInclude <= tH) ot++; }
     });
-    const rate = totalDone > 0 ? Math.round((onTarget/totalDone)*100) : 0;
-    const pre = type === 'oral' ? 'Oral' : 'Injeksi';
-    document.getElementById(`kpi${pre}AvgDash`).textContent = avg;
-    document.getElementById(`kpi${pre}CountDash`).textContent = count + ' Batch';
-    document.getElementById(`kpi${pre}Total`).textContent = batches.length;
-    document.getElementById(`kpi${pre}OnGoing`).textContent = 'On Going: ' + onGoing;
-    document.getElementById(`kpi${pre}Done`).textContent = done.length;
-    document.getElementById(`kpi${pre}Target`).textContent = rate + '%';
-    document.getElementById(`kpi${pre}TargetDetail`).textContent = onTarget + ' / ' + totalDone + ' batch';
+    const rate = td > 0 ? Math.round((ot/td)*100) : 0;
+    const p = t === 'oral' ? 'Oral' : 'Injeksi';
+    document.getElementById(`kpi${p}AvgDash`).textContent = avg;
+    document.getElementById(`kpi${p}CountDash`).textContent = count + ' Batch';
+    document.getElementById(`kpi${p}Total`).textContent = batches.length;
+    document.getElementById(`kpi${p}OnGoing`).textContent = 'On Going: ' + og;
+    document.getElementById(`kpi${p}Done`).textContent = done.length;
+    document.getElementById(`kpi${p}Target`).textContent = rate + '%';
+    document.getElementById(`kpi${p}TargetDetail`).textContent = ot + ' / ' + td + ' batch';
 }
 
-function renderDetailTableDash(type, batches) {
-    const tbody = document.getElementById(type === 'oral' ? 'detailTableBodyOral' : 'detailTableBodyInjeksi');
-    if (!tbody) return;
+function renderDetailTableDash(t, batches) {
+    const tb = document.getElementById(t === 'oral' ? 'detailTableBodyOral' : 'detailTableBodyInjeksi');
+    if (!tb) return;
     const doneB = batches.filter(b => b.status === 'done');
-    if (doneB.length === 0) { tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:#999;padding:30px;">Belum ada data</td></tr>'; return; }
+    if (!doneB.length) { tb.innerHTML = '<tr><td colspan="11" style="text-align:center;color:#999;padding:30px;">Belum ada data</td></tr>'; return; }
     doneB.sort((a,b) => new Date(b.tanggalRilis) - new Date(a.tanggalRilis));
-    tbody.innerHTML = doneB.map(b => {
+    tb.innerHTML = doneB.map(b => {
         const c = calculatePCT(b);
         return `<tr>
             <td><strong>${b.batchNumber}</strong></td>
             <td><span class="text-muted">${b.productCode}</span></td>
             <td>${b.kategori ? getKategoriBadge(b.kategori) : '-'}</td>
-            <td>${formatDateTime(b.tanggalRilis)}</td>
+            <td>${displayDT(b.tanggalRilis)}</td>
             <td><strong>${c.pctInclude !== null ? c.pctInclude.toFixed(2) : '-'}</strong></td>
             <td>${c.pctExclude !== null ? c.pctExclude.toFixed(2) : '-'}</td>
             <td>${c.logistik !== null ? c.logistik.toFixed(2) : '-'}</td>
@@ -1663,19 +1356,19 @@ function renderDetailTableDash(type, batches) {
     }).join('');
 }
 
-function renderOnGoingTableDash(type, batches) {
-    const tbody = document.getElementById('onGoingTableBodyOral');
-    if (!tbody) return;
+function renderOnGoingTableDash(t, batches) {
+    const tb = document.getElementById('onGoingTableBodyOral');
+    if (!tb) return;
     const og = batches.filter(b => b.status !== 'done');
-    if (og.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;padding:30px;">Tidak ada batch On Going</td></tr>'; return; }
-    tbody.innerHTML = og.map(b => {
+    if (!og.length) { tb.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;padding:30px;">Tidak ada batch On Going</td></tr>'; return; }
+    tb.innerHTML = og.map(b => {
         const c = calculatePCT(b);
-        return `<tr><td><strong>${b.batchNumber}</strong></td><td>${b.kategori ? getKategoriBadge(b.kategori) : '-'}</td><td>${c.onGoing !== null ? c.onGoing.toFixed(2) + ' hari' : '-'}</td><td><span class="status-badge progress">${getStatusLabel(b.status)}</span></td><td>${b.tanggalTerimaSample ? formatDateTime(b.tanggalTerimaSample) : '-'}</td><td>${c.targetRilis ? formatDateTime(c.targetRilis) : '-'}</td></tr>`;
+        return `<tr><td><strong>${b.batchNumber}</strong></td><td>${b.kategori ? getKategoriBadge(b.kategori) : '-'}</td><td>${c.onGoing !== null ? c.onGoing.toFixed(2) + ' hari' : '-'}</td><td><span class="status-badge progress">${getStatusLabel(b.status)}</span></td><td>${b.tanggalTerimaSample ? displayDT(b.tanggalTerimaSample) : '-'}</td><td>${c.targetRilis ? displayDT(c.targetRilis) : '-'}</td></tr>`;
     }).join('');
 }
 
-function resetFilter(type) {
-    if (type === 'oral') {
+function resetFilter(t) {
+    if (t === 'oral') {
         document.getElementById('filterPeriodeOral').value = 'all';
         document.getElementById('filterSearchOral').value = '';
         document.getElementById('filterKategoriOral').value = 'all';
@@ -1701,10 +1394,29 @@ function loadData() {
             data.products = p.products || [];
             data.batches = p.batches || [];
             data.auditLog = p.auditLog || [];
-            // Migrasi
+            // Migrasi: pastikan field baru ada
+            const dateFields = ['jadwalRawMaterial','jadwalWadah','jadwalKemas','tanggalTimbang','tanggalSerahTerima','tanggalSerahTerimaWadah','tanggalSerahTerimaKemas','tanggalBPP','tanggalKirimDokumen','tanggalTerimaSample','estimasiLWS','tanggalSelesaiKimia','tanggalSelesaiMikro','tanggalRilis'];
             data.batches.forEach(b => {
                 if (!b.kategori) b.kategori = 'Rutin';
                 if (!b.unlockedFields) b.unlockedFields = [];
+                if (b.wadahReady === undefined) b.wadahReady = false;
+                if (b.kemasReady === undefined) b.kemasReady = false;
+                if (!b.ket_jadwalRawMaterial) b.ket_jadwalRawMaterial = '';
+                if (!b.ket_jadwalWadah) b.ket_jadwalWadah = '';
+                if (!b.ket_jadwalKemas) b.ket_jadwalKemas = '';
+                if (!b.ket_rawMaterial) b.ket_rawMaterial = '';
+                if (!b.ket_wadah) b.ket_wadah = '';
+                if (!b.ket_kemas) b.ket_kemas = '';
+                if (!b.ket_produksi) b.ket_produksi = '';
+                if (!b.ket_qc) b.ket_qc = '';
+                if (!b.ket_qa) b.ket_qa = '';
+                // Konversi string display lama ke raw
+                dateFields.forEach(f => {
+                    if (b[f] && !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(b[f])) {
+                        const conv = rawDT(b[f]);
+                        if (conv) b[f] = conv;
+                    }
+                });
             });
         }
     } catch(e) { console.warn('Gagal load:', e); }
