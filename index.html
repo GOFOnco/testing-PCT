@@ -330,19 +330,36 @@
             display: block;
         }
 
+        /* ==================== SCORE CARDS GRID - RESPONSIVE ==================== */
+        .score-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 2 kolom di desktop */
+            gap: 15px;
+            align-items: start;
+        }
+
+        /* Tablet & Mobile: 1 kolom */
+        @media (max-width: 1199px) {
+            .score-cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .score-card {
             background: #f8f9fa;
             border-left: 4px solid #0d47a1;
             border-radius: 8px;
             padding: 15px 20px;
-            margin-bottom: 15px;
             transition: all 0.3s;
             position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .score-card:hover {
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transform: translateX(5px);
+            transform: translateY(-3px);
         }
 
         .score-card .header-info {
@@ -413,9 +430,10 @@
         .score-card .details {
             margin-top: 10px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 10px;
             font-size: 13px;
+            flex-grow: 1;
         }
 
         .score-card .details .field {
@@ -922,7 +940,6 @@
             background: #fafafa;
         }
 
-        /* Klik-able cell untuk keterangan */
         .cell-keterangan {
             cursor: pointer;
             position: relative;
@@ -1067,7 +1084,6 @@
             color: #333;
         }
 
-        /* Dashboard tab pages (sub-page) */
         .dash-tab-content {
             display: none;
         }
@@ -1123,7 +1139,6 @@
 
             <!-- DASHBOARD -->
             <div id="page-dashboard" class="page active">
-                <!-- Sub-tabs untuk Oral dan Injeksi -->
                 <div class="tabs" style="margin-bottom:20px;">
                     <button class="tab-btn active" data-dashtab="oral">💊 Oral</button>
                     <button class="tab-btn" data-dashtab="injeksi">💉 Injeksi</button>
@@ -1352,7 +1367,7 @@
                 </div>
                 <div class="card">
                     <h2>📋 Daftar Score Card</h2>
-                    <div id="ppicScoreCards"></div>
+                    <div id="ppicScoreCards" class="score-cards-grid"></div>
                 </div>
             </div>
 
@@ -1365,13 +1380,13 @@
                 <div id="tab-kanban-produksi" class="tab-content active">
                     <div class="card">
                         <h2>📋 Kanban Produksi</h2>
-                        <div id="kanbanProduksi"></div>
+                        <div id="kanbanProduksi" class="score-cards-grid"></div>
                     </div>
                 </div>
                 <div id="tab-input-produksi" class="tab-content">
                     <div class="card">
                         <h2>✏️ Input Produksi</h2>
-                        <div id="inputProduksi"></div>
+                        <div id="inputProduksi" class="score-cards-grid"></div>
                     </div>
                 </div>
             </div>
@@ -1385,13 +1400,13 @@
                 <div id="tab-wadah" class="tab-content active">
                     <div class="card">
                         <h2>📦 Logistic - Wadah</h2>
-                        <div id="logisticWadah"></div>
+                        <div id="logisticWadah" class="score-cards-grid"></div>
                     </div>
                 </div>
                 <div id="tab-kemas" class="tab-content">
                     <div class="card">
                         <h2>📦 Logistic - Kemas</h2>
-                        <div id="logisticKemas"></div>
+                        <div id="logisticKemas" class="score-cards-grid"></div>
                     </div>
                 </div>
             </div>
@@ -1400,7 +1415,7 @@
             <div id="page-qc" class="page">
                 <div class="card">
                     <h2>🔬 Quality Control</h2>
-                    <div id="qcList"></div>
+                    <div id="qcList" class="score-cards-grid"></div>
                 </div>
             </div>
 
@@ -1408,7 +1423,7 @@
             <div id="page-qa" class="page">
                 <div class="card">
                     <h2>✅ Quality Assurance</h2>
-                    <div id="qaList"></div>
+                    <div id="qaList" class="score-cards-grid"></div>
                 </div>
             </div>
 
@@ -1624,7 +1639,6 @@
             if (navBtn) navBtn.classList.add('active');
         }
 
-        // Navigation click
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const page = this.dataset.page;
@@ -1635,12 +1649,10 @@
             });
         });
 
-        // Sub-tabs (Untuk Produksi, Logistic, dan Dashboard Oral/Injeksi)
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const dashtab = this.dataset.dashtab;
                 if (dashtab) {
-                    // Dashboard sub-tab
                     document.querySelectorAll('.tab-btn[data-dashtab]').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     currentDashTab = dashtab;
@@ -1650,7 +1662,6 @@
                     renderDashboard();
                     return;
                 }
-                // Regular sub-tab
                 const parent = this.closest('.page');
                 if (!parent) return;
                 parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -2030,7 +2041,6 @@
         function renderScoreCard(batch) {
             if (!batch) return '';
 
-            // ==================== TOTAL CT ====================
             const tglTimbang = parseDate(batch.tanggalTimbang);
             const tglRilis = parseDate(batch.tanggalRilis);
             const now = new Date();
@@ -2060,7 +2070,6 @@
                 ctDisplay = totalCT !== null ? totalCT.toFixed(1) + ' hari' : '-';
             }
 
-            // ==================== DETAILS ====================
             let detailsHtml = '';
             const fields = [
                 { label: 'Jadwal Wadah', value: batch.jadwalWadah },
@@ -2086,7 +2095,6 @@
                 }
             });
 
-            // ==================== STEP INDICATOR ====================
             const steps = [
                 { key: 'produksi', label: 'Kanban Produksi' },
                 { key: 'logistic_wadah', label: 'Logistic - Wadah' },
@@ -2115,7 +2123,6 @@
             });
             stepHtml += `</div>`;
 
-            // ==================== LOGISTIC STATUS ====================
             let logisticStatusHtml = '';
             if (batch.status === 'logistic_wadah' || batch.status === 'logistic_kemas' || batch.status === 'problem') {
                 if (batch.logisticReady) {
@@ -2602,8 +2609,7 @@
 
         // ==================== DASHBOARD ====================
         function renderDashboard() {
-            // Get values berdasarkan current dash tab
-            const type = currentDashTab; // 'oral' atau 'injeksi'
+            const type = currentDashTab;
             const periodeId = type === 'oral' ? 'filterPeriodeOral' : 'filterPeriodeInjeksi';
             const searchId = type === 'oral' ? 'filterSearchOral' : 'filterSearchInjeksi';
 
@@ -2624,19 +2630,11 @@
                 });
             }
 
-            // Update KPI
             updateKPIDash(type, batches);
-
-            // Render line chart
             renderLineChart(type, batches);
-
-            // Render bar chart
             renderBarChartDash(type, batches);
-
-            // Render detail table
             renderDetailTableDash(type, batches);
 
-            // Render on going table (khusus oral)
             if (type === 'oral') {
                 renderOnGoingTableDash(type, batches);
             }
@@ -2748,9 +2746,8 @@
             doneBatches.sort((a, b) => new Date(b.tanggalRilis) - new Date(a.tanggalRilis));
             tbody.innerHTML = doneBatches.map(b => {
                 const calc = calculatePCT(b);
-                const statusBadge = getStatusBadge(calc.pctInclude, jamKeHari(calc.totalTargetBM));
+                const statusBadge = getStatusBadge(calc.pctInclude, jamKeHari(calc.totalTargetJam));
 
-                // Cek keterangan
                 const hasKetLogistik = b.keterangan_logistik && b.keterangan_logistik.trim() !== '';
                 const hasKetProduksi = b.keterangan_produksi && b.keterangan_produksi.trim() !== '';
                 const hasKetQC = b.keterangan_qc && b.keterangan_qc.trim() !== '';
