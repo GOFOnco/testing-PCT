@@ -188,7 +188,6 @@ table tr:hover { background: #fafafa; }
 .chart-tooltip.show { display: block; }
 .chart-tooltip.warning { background: #c62828; }
 
-/* CELL TOOLTIP */
 .cell-tooltip { position: relative; }
 .cell-tooltip.has-ket {
     cursor: pointer;
@@ -421,7 +420,19 @@ table tr:hover { background: #fafafa; }
 <button class="tab-btn" data-tab="input-produksi">✏️ Input Produksi</button>
 </div>
 <div id="tab-kanban-produksi" class="tab-content active">
-<div class="card"><h2>📋 Kanban Produksi</h2><div id="kanbanProduksi" class="score-cards-grid"></div></div>
+<div class="card">
+<h2>📋 Kanban Produksi</h2>
+<div class="filter-bar" style="margin-bottom:15px;background:#f8f9fa;">
+<div style="flex:1;min-width:280px;">
+<label style="display:block;margin-bottom:5px;font-weight:600;font-size:13px;color:#555;">🔍 Pilih Batch Number</label>
+<select id="kanbanBatchSelect" onchange="renderKanbanProduksi()" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:6px;font-size:14px;background:white;font-weight:600;color:#1a237e;">
+<option value="">-- Pilih Batch --</option>
+</select>
+</div>
+<button class="btn btn-secondary btn-sm" onclick="document.getElementById('kanbanBatchSelect').value='';renderKanbanProduksi();" style="align-self:flex-end;margin-top:20px;">🔄 Reset</button>
+</div>
+<div id="kanbanProduksi" class="score-cards-grid"></div>
+</div>
 </div>
 <div id="tab-input-produksi" class="tab-content">
 <div class="card"><h2>✏️ Input Produksi</h2><div id="inputProduksi" class="score-cards-grid"></div></div>
@@ -622,7 +633,6 @@ function getQALatestStart(b) {
 }
 
 // ============ HELPER: OVER-TARGET (threshold > 1 jam) ============
-// Return {over: bool, diff: hours}
 function hitungOverTarget(b, field, startField, targetHours, dynamicStart) {
     if (!b[field] || !targetHours) return { over: false, diff: 0 };
     let startRaw = null;
@@ -632,7 +642,6 @@ function hitungOverTarget(b, field, startField, targetHours, dynamicStart) {
     const dur = diffHours(parseDate(startRaw), parseDate(b[field]));
     if (dur === null) return { over: false, diff: 0 };
     const diff = dur - targetHours;
-    // Over hanya kalau selisih > 1 jam
     return { over: diff > 1, diff: Math.round(diff * 100) / 100 };
 }
 
@@ -1031,7 +1040,6 @@ function checkOverPreview(bid, field, inputId, ketField, startRaw, targetHours) 
     const dur = diffHours(parseDate(startRaw), parseDate(input.value));
     if (dur === null) { ketBox.innerHTML = ''; return; }
     const diff = dur - targetHours;
-    // Over hanya kalau selisih > 1 jam
     if (diff <= 1) { ketBox.innerHTML = ''; return; }
     ketBox.innerHTML = `<div class="keterangan-wajib">
         <label>📝 Keterangan WAJIB — Over +${diff.toFixed(1)} jam</label>
@@ -1050,7 +1058,6 @@ function doSaveField(bid, field, ketField, startRaw, targetHours, inputId) {
         const dur = diffHours(parseDate(startRaw), parseDate(input.value));
         if (dur !== null) {
             const diff = dur - targetHours;
-            // Hanya wajib keterangan kalau selisih > 1 jam
             if (diff > 1) {
                 const ketInput = document.getElementById('ket_' + field + '_' + bid);
                 if (!ketInput || !ketInput.value.trim()) {
@@ -1188,7 +1195,6 @@ function renderScoreCard(b, actionHtml = '', showEditDelete = false) {
 
     const kb = b.kategori ? getKategoriBadge(b.kategori) : '';
 
-    // BADGE GANDA: kalau jadwal belum lengkap tapi udah lanjut tahap
     let jadwalWarning = '';
     if (!jadwalLengkap(b) && status !== 'produksi' && status !== 'done') {
         const belumJadwal = [];
@@ -1235,7 +1241,6 @@ function renderEditableField(cfg) {
     if (dynamicStart) startRaw = dynamicStart(b);
     else if (startField) startRaw = b[startField] || null;
 
-    // Over-target: pakai helper dengan threshold > 1 jam
     const overInfo = hitungOverTarget(b, field, startField, targetHours, dynamicStart);
 
     let overBadge = overInfo.over ? `<span class="badge-over" style="margin-left:6px;">⚠️ Over +${overInfo.diff.toFixed(1)}j</span>` : '';
@@ -1264,15 +1269,48 @@ function renderEditableField(cfg) {
     </div>`;
 }
 
-// ============ KANBAN PRODUKSI ============
-// Fix: batch tetap muncul sampai 3 jadwal lengkap
+// ============ KANBAN PRODUKSI (DROPDOWN) ============
 function renderKanbanProduksi() {
     const c = document.getElementById('kanbanProduksi');
+    const sel = document.getElementById('kanbanBatchSelect');
     if (!c) return;
-    const batches = data.batches.filter(b => !jadwalLengkap(b));
-    if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch di Kanban Produksi</p></div>'; return; }
 
-    c.innerHTML = batches.map(b => {
+    const batches = data.batches.filter(b => !jadwalLengkap(b));
+
+    // Update dropdown options
+    if (sel) {
+        const currentVal = sel.value;
+        sel.innerHTML = '<option value="">-- Pilih Batch --</option>' + 
+            batches.map(b => `<option value="${b.id}">${b.batchNumber} (${b.kategori || 'Rutin'})</option>`).join('');
+        if (currentVal && batches.some(b => b.id === currentVal)) {
+            sel.value = currentVal;
+        } else {
+            sel.value = '';
+        }
+    }
+
+    if (!batches.length) {
+        c.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><p>Tidak ada batch di Kanban Produksi</p></div>';
+        return;
+    }
+
+    const selectedId = sel?.value;
+    if (!selectedId) {
+        c.innerHTML = `<div class="empty-state" style="grid-column:1/-1;background:#f8f9fa;border-radius:8px;padding:40px 20px;">
+            <div style="font-size:48px;margin-bottom:12px;">👆</div>
+            <p style="font-size:16px;color:#555;font-weight:600;">Pilih Batch Number di atas</p>
+            <p style="font-size:13px;color:#999;margin-top:8px;">${batches.length} batch menunggu di Kanban Produksi</p>
+        </div>`;
+        return;
+    }
+
+    const selected = batches.filter(b => b.id === selectedId);
+    if (!selected.length) {
+        c.innerHTML = '<div class="empty-state"><p>Batch yang dipilih sudah tidak ada di Kanban</p></div>';
+        return;
+    }
+
+    c.innerHTML = selected.map(b => {
         let statusInfo = '';
         const status = hitungStatus(b);
         if (rmLengkap(b) && status !== 'produksi' && !allLogisticLengkap(b)) {
