@@ -473,7 +473,6 @@ function rawDT(stored) {
 function diffHours(d1, d2) { if (!d1 || !d2) return null; const diff = (d2 - d1) / (1000*60*60); return Math.round(diff*100)/100; }
 function jamKeHari(j) { if (j === null || j === undefined) return null; return Math.round((j/24)*100)/100; }
 
-// Badge status dengan target dalam HARI
 function getStatusClass(actual, target) {
     if (actual === null || target === null || target === 0) return 'progress';
     const r = actual/target;
@@ -490,6 +489,17 @@ function getStatusText(actual, target) {
 }
 function getStatusBadge(actual, target) {
     return `<span class="status-badge ${getStatusClass(actual, target)}">${getStatusText(actual, target)}</span>`;
+}
+
+// ============ HELPER: HITUNG START untuk OVER-CHECK ============
+// Khusus QA: MAX(tanggalSelesaiMikro, tanggalKirimDokumen)
+function getQALatestStart(b) {
+    const tMk = parseDate(b.tanggalSelesaiMikro);
+    const tKirim = parseDate(b.tanggalKirimDokumen);
+    if (tMk && tKirim) return tMk > tKirim ? b.tanggalSelesaiMikro : b.tanggalKirimDokumen;
+    if (tMk) return b.tanggalSelesaiMikro;
+    if (tKirim) return b.tanggalKirimDokumen;
+    return null;
 }
 
 // ============ CHECK TAHAP LENGKAP ============
@@ -925,26 +935,18 @@ function calculatePCT(b) {
     const tMk = parseDate(b.tanggalSelesaiMikro);
     const tR = parseDate(b.tanggalRilis);
 
-    // 1. Logistik: serah terima - timbang
     const log = jamKeHari(diffHours(tT, tS));
-
-    // 2. Produksi: kirim dokumen - BPP (RUMUS BARU)
     const prod = jamKeHari(diffHours(tBPP, tKirim));
-
-    // 3. QC: selesai mikro - terima sample
     const qc = jamKeHari(diffHours(tSmp, tMk));
 
-    // 4. QA: rilis - MAX(selesai mikro, kirim dokumen)
     let latestQA = null;
     if (tMk && tKirim) latestQA = tMk > tKirim ? tMk : tKirim;
     else if (tMk) latestQA = tMk;
     else if (tKirim) latestQA = tKirim;
     const qa = jamKeHari(diffHours(latestQA, tR));
 
-    // 5. PCT Include: rilis - timbang
     const pctInc = jamKeHari(diffHours(tT, tR));
 
-    // 6. PCT Exclude: PCT Inc - (selesai mikro - selesai kimia)
     const mikroDurasi = jamKeHari(diffHours(tKm, tMk));
     let pctExc = null;
     if (pctInc !== null && mikroDurasi !== null) {
@@ -964,12 +966,8 @@ function calculatePCT(b) {
 // ============ RENDER SCORE CARD ============
 function renderScoreCard(b, actionHtml = '', showEditDelete = false) {
     if (!b) return '';
-    const tT = parseDate(b.tanggalTimbang);
-    const tR = parseDate(b.tanggalRilis);
-    const now = new Date();
     const status = hitungStatus(b);
 
-    // PCT Exc vs Target PCT per tipe (untuk badge On-Target)
     const c = calculatePCT(b);
     const targetPCT = getTargetPCT(b);
     const ctClass = (c.pctExclude !== null && targetPCT !== null) ? (c.pctExclude <= targetPCT ? 'on-target' : 'over') : 'default';
@@ -1048,15 +1046,24 @@ function renderScoreCard(b, actionHtml = '', showEditDelete = false) {
 }
 
 // ============ RENDER FIELD ============
+// Field yang punya over-check: SerahTerima RM, KirimDokumen, SelesaiMikro, TanggalRilis
 function renderEditableField(cfg) {
-    const { b, field, label, icon, ketField, startField, targetHours, optional } = cfg;
+    const { b, field, label, icon, ketField, startField, targetHours, optional, dynamicStart } = cfg;
     const saved = !!b[field];
     const unlocked = isUnlocked(b, field);
     const inputId = `in_${field}_${b.id}`;
     const ketBoxId = `ketbox_${field}_${b.id}`;
 
+    // Hitung start raw — bisa static (dari field) atau dynamic (fungsi)
+    let startRaw = null;
+    if (dynamicStart) {
+        startRaw = dynamicStart(b);
+    } else if (startField) {
+        startRaw = b[startField] || null;
+    }
+
+    // AUTO-RECALCULATE: setiap render cek over-target
     let overInfo = null;
-    const startRaw = startField ? b[startField] : null;
     if (saved && startRaw && targetHours) {
         const dur = diffHours(parseDate(startRaw), parseDate(b[field]));
         if (dur !== null && dur > targetHours) overInfo = { over: true, diff: dur - targetHours };
@@ -1089,6 +1096,7 @@ function renderEditableField(cfg) {
 }
 
 // ============ KANBAN PRODUKSI ============
+// ⚠️ Jadwal Permintaan: TIDAK ada over-check
 function renderKanbanProduksi() {
     const c = document.getElementById('kanbanProduksi');
     if (!c) return;
@@ -1123,6 +1131,7 @@ function renderKanbanProduksi() {
 }
 
 // ============ LOGISTIC RAW MATERIAL ============
+// ✅ Over-check HANYA di SerahTerima RM (start: Timbang, target: targetTimbang)
 function renderLogisticRawMaterial() {
     const c = document.getElementById('logisticRawMaterial');
     if (!c) return;
@@ -1143,6 +1152,7 @@ function renderLogisticRawMaterial() {
 }
 
 // ============ LOGISTIC WADAH ============
+// ❌ Tidak ada over-check
 function renderLogisticWadah() {
     const c = document.getElementById('logisticWadah');
     if (!c) return;
@@ -1169,6 +1179,7 @@ function renderLogisticWadah() {
 }
 
 // ============ LOGISTIC KEMAS ============
+// ❌ Tidak ada over-check
 function renderLogisticKemas() {
     const c = document.getElementById('logisticKemas');
     if (!c) return;
@@ -1195,6 +1206,7 @@ function renderLogisticKemas() {
 }
 
 // ============ INPUT PRODUKSI ============
+// ✅ Over-check HANYA di KirimDokumen (start: BPP, target: targetProduksi)
 function renderInputProduksi() {
     const c = document.getElementById('inputProduksi');
     if (!c) return;
@@ -1215,7 +1227,7 @@ function renderInputProduksi() {
             ${infoLogistic}
             <div class="section-title">🏭 Input Produksi</div>
             <div class="jadwal-container two-col">
-                ${renderEditableField({ b, field: 'tanggalBPP', label: 'Tanggal BPP', icon: '📅', ketField: 'ket_produksi', startField: 'tanggalSerahTerima', targetHours: b.targetProduksi })}
+                ${renderEditableField({ b, field: 'tanggalBPP', label: 'Tanggal BPP', icon: '📅', ketField: 'ket_produksi', startField: null, targetHours: 0 })}
                 ${renderEditableField({ b, field: 'tanggalKirimDokumen', label: 'Kirim Dokumen', icon: '📤', ketField: 'ket_produksi', startField: 'tanggalBPP', targetHours: b.targetProduksi })}
             </div>
         `;
@@ -1224,6 +1236,7 @@ function renderInputProduksi() {
 }
 
 // ============ QC ============
+// ✅ Over-check HANYA di SelesaiMikro (start: TerimaSample, target: targetAnalisa)
 function renderQC() {
     const c = document.getElementById('qcList');
     if (!c) return;
@@ -1247,6 +1260,7 @@ function renderQC() {
 }
 
 // ============ QA ============
+// ✅ Over-check di TanggalRilis (start: MAX(Mikro, KirimDok), target: targetPerilisan)
 function renderQA() {
     const c = document.getElementById('qaList');
     if (!c) return;
@@ -1277,7 +1291,15 @@ function renderQA() {
                 ${warningHtml}
                 <div class="section-title">✅ Quality Assurance</div>
                 <div class="jadwal-container">
-                    ${renderEditableField({ b, field: 'tanggalRilis', label: 'Tanggal Rilis', icon: '🎉', ketField: 'ket_qa', startField: 'tanggalSelesaiMikro', targetHours: b.targetPerilisan })}
+                    ${renderEditableField({ 
+                        b, 
+                        field: 'tanggalRilis', 
+                        label: 'Tanggal Rilis', 
+                        icon: '🎉', 
+                        ketField: 'ket_qa', 
+                        dynamicStart: getQALatestStart,
+                        targetHours: b.targetPerilisan 
+                    })}
                 </div>
             `;
         } else {
