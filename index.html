@@ -84,6 +84,9 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:
 @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
 .badge-optional { background: #e3f2fd; color: #0d47a1; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; }
 .badge-wajib { background: #ffcdd2; color: #b71c1c; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; }
+.badge-target { background: #e8eaf6; color: #1a237e; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.badge-target.injeksi { background: #e3f2fd; color: #0d47a1; }
+.badge-target.oral { background: #f3e5f5; color: #6a1b9a; }
 .step-indicator { display: flex; align-items: center; gap: 8px; padding: 10px 15px; background: #f5f5f5; border-radius: 6px; margin-bottom: 15px; flex-wrap: wrap; font-size: 11px; }
 .step-indicator .step { padding: 3px 10px; border-radius: 12px; font-weight: 600; }
 .step-indicator .step.done { background: #c8e6c9; color: #1b5e20; }
@@ -206,8 +209,8 @@ table tr:hover { background: #fafafa; }
 <!-- DASHBOARD -->
 <div id="page-dashboard" class="page active">
 <div class="tabs" style="margin-bottom:20px;">
-<button class="tab-btn active" data-dashtab="oral">💊 Oral</button>
-<button class="tab-btn" data-dashtab="injeksi">💉 Injeksi</button>
+<button class="tab-btn active" data-dashtab="oral">💊 Oral (Target 6.8 hari)</button>
+<button class="tab-btn" data-dashtab="injeksi">💉 Injeksi (Target 16 hari)</button>
 </div>
 <div id="dash-oral" class="dash-tab-content active">
 <div class="filter-bar">
@@ -217,17 +220,17 @@ table tr:hover { background: #fafafa; }
 <button class="btn btn-primary btn-sm" onclick="resetFilter('oral')">Reset</button>
 </div>
 <div class="grid-4">
-<div class="kpi-card oral"><div class="kpi-value" id="kpiOralAvgDash">-</div><div class="kpi-label">📊 Rata-rata PCT Oral (hari)</div><div class="kpi-sub" id="kpiOralCountDash">0 Batch</div></div>
+<div class="kpi-card oral"><div class="kpi-value" id="kpiOralAvgDash">-</div><div class="kpi-label">📊 Rata-rata PCT Exc Oral (hari)</div><div class="kpi-sub" id="kpiOralCountDash">0 Batch</div></div>
 <div class="kpi-card total"><div class="kpi-value" id="kpiOralTotal">0</div><div class="kpi-label">📦 Total Batch Oral</div><div class="kpi-sub" id="kpiOralOnGoing">On Going: 0</div></div>
-<div class="kpi-card" style="border-left-color:#2e7d32;"><div class="kpi-value" id="kpiOralDone">0</div><div class="kpi-label">✅ Selesai</div></div>
+<div class="kpi-card" style="border-left-color:#2e7d32;"><div class="kpi-value" id="kpiOralDone">0</div><div class="kpi-label">✅ Selesai</div><div class="kpi-sub">Target: 6.8 hari</div></div>
 <div class="kpi-card" style="border-left-color:#f57c00;"><div class="kpi-value" id="kpiOralTarget">-</div><div class="kpi-label">🎯 On Target Rate</div><div class="kpi-sub" id="kpiOralTargetDetail">0 / 0 batch</div></div>
 </div>
 <div class="chart-card" style="margin-top:20px;">
-<h3>📋 Detail PCT per Batch - Oral</h3>
+<h3>📋 Detail PCT per Batch - Oral (Target PCT Exc: 6.8 hari)</h3>
 <div class="table-container">
 <table>
-<thead><tr><th>BATCH</th><th>Kode</th><th>Kategori</th><th>Rilis</th><th>PCT inc</th><th>PCT exc</th><th>Logistik</th><th>Produksi</th><th>QC</th><th>QA</th><th>Status</th></tr></thead>
-<tbody id="detailTableBodyOral"><tr><td colspan="11" style="text-align:center;color:#999;padding:30px;">Belum ada data</td></tr></tbody>
+<thead><tr><th>BATCH</th><th>Kode</th><th>Kategori</th><th>Rilis</th><th>PCT inc</th><th>PCT exc</th><th>Target</th><th>Logistik</th><th>Produksi</th><th>QC</th><th>QA</th><th>Status</th></tr></thead>
+<tbody id="detailTableBodyOral"><tr><td colspan="12" style="text-align:center;color:#999;padding:30px;">Belum ada data</td></tr></tbody>
 </table>
 </div>
 </div>
@@ -249,17 +252,17 @@ table tr:hover { background: #fafafa; }
 <button class="btn btn-primary btn-sm" onclick="resetFilter('injeksi')">Reset</button>
 </div>
 <div class="grid-4">
-<div class="kpi-card injeksi"><div class="kpi-value" id="kpiInjeksiAvgDash">-</div><div class="kpi-label">📊 Rata-rata PCT Injeksi (hari)</div><div class="kpi-sub" id="kpiInjeksiCountDash">0 Batch</div></div>
+<div class="kpi-card injeksi"><div class="kpi-value" id="kpiInjeksiAvgDash">-</div><div class="kpi-label">📊 Rata-rata PCT Exc Injeksi (hari)</div><div class="kpi-sub" id="kpiInjeksiCountDash">0 Batch</div></div>
 <div class="kpi-card total"><div class="kpi-value" id="kpiInjeksiTotal">0</div><div class="kpi-label">📦 Total Batch Injeksi</div><div class="kpi-sub" id="kpiInjeksiOnGoing">On Going: 0</div></div>
-<div class="kpi-card" style="border-left-color:#2e7d32;"><div class="kpi-value" id="kpiInjeksiDone">0</div><div class="kpi-label">✅ Selesai</div></div>
+<div class="kpi-card" style="border-left-color:#2e7d32;"><div class="kpi-value" id="kpiInjeksiDone">0</div><div class="kpi-label">✅ Selesai</div><div class="kpi-sub">Target: 16 hari</div></div>
 <div class="kpi-card" style="border-left-color:#f57c00;"><div class="kpi-value" id="kpiInjeksiTarget">-</div><div class="kpi-label">🎯 On Target Rate</div><div class="kpi-sub" id="kpiInjeksiTargetDetail">0 / 0 batch</div></div>
 </div>
 <div class="chart-card" style="margin-top:20px;">
-<h3>📋 Detail PCT per Batch - Injeksi</h3>
+<h3>📋 Detail PCT per Batch - Injeksi (Target PCT Exc: 16 hari)</h3>
 <div class="table-container">
 <table>
-<thead><tr><th>BATCH</th><th>Kode</th><th>Kategori</th><th>Rilis</th><th>PCT inc</th><th>PCT exc</th><th>Logistik</th><th>Produksi</th><th>QC</th><th>QA</th><th>Status</th></tr></thead>
-<tbody id="detailTableBodyInjeksi"><tr><td colspan="11" style="text-align:center;color:#999;padding:30px;">Belum ada data</td></tr></tbody>
+<thead><tr><th>BATCH</th><th>Kode</th><th>Kategori</th><th>Rilis</th><th>PCT inc</th><th>PCT exc</th><th>Target</th><th>Logistik</th><th>Produksi</th><th>QC</th><th>QA</th><th>Status</th></tr></thead>
+<tbody id="detailTableBodyInjeksi"><tr><td colspan="12" style="text-align:center;color:#999;padding:30px;">Belum ada data</td></tr></tbody>
 </table>
 </div>
 </div>
@@ -413,6 +416,15 @@ let editingBatchId = null;
 
 const DEPT_PAGES = { 'PPIC': ['ppic'], 'Produksi': ['produksi'], 'Logistic': ['logistic'], 'QC': ['qc'], 'QA': ['qa'], 'Management': ['management'] };
 
+// ============ TARGET PCT PER TIPE (dalam hari) ============
+const TARGET_PCT_PER_TIPE = {
+    'injeksi': 16,     // 16 hari = 384 jam
+    'oral': 6.8        // 6.8 hari = 163.2 jam
+};
+function getTargetPCT(b) {
+    return TARGET_PCT_PER_TIPE[b.type] || null;
+}
+
 // ============ LIVE DATE ============
 function updateLiveDateTime() {
     const el = document.getElementById('liveDateTime');
@@ -460,9 +472,25 @@ function rawDT(stored) {
 
 function diffHours(d1, d2) { if (!d1 || !d2) return null; const diff = (d2 - d1) / (1000*60*60); return Math.round(diff*100)/100; }
 function jamKeHari(j) { if (j === null || j === undefined) return null; return Math.round((j/24)*100)/100; }
-function getStatusClass(a, t) { if (a === null || t === null || t === 0) return 'progress'; const r = a/t; if (r <= 1) return 'on-target'; if (r <= 1.2) return 'warning'; return 'over'; }
-function getStatusText(a, t) { if (a === null || t === null || t === 0) return '⏳ Menunggu'; const r = a/t; if (r <= 1) return '✅ On Target'; if (r <= 1.2) return '⚠️ Warning'; return '❌ Over'; }
-function getStatusBadge(a, t) { return `<span class="status-badge ${getStatusClass(a,t)}">${getStatusText(a,t)}</span>`; }
+
+// Badge status dengan target dalam HARI
+function getStatusClass(actual, target) {
+    if (actual === null || target === null || target === 0) return 'progress';
+    const r = actual/target;
+    if (r <= 1) return 'on-target';
+    if (r <= 1.2) return 'warning';
+    return 'over';
+}
+function getStatusText(actual, target) {
+    if (actual === null || target === null || target === 0) return '⏳ Menunggu';
+    const r = actual/target;
+    if (r <= 1) return '✅ On Target';
+    if (r <= 1.2) return '⚠️ Warning';
+    return '❌ Over';
+}
+function getStatusBadge(actual, target) {
+    return `<span class="status-badge ${getStatusClass(actual, target)}">${getStatusText(actual, target)}</span>`;
+}
 
 // ============ CHECK TAHAP LENGKAP ============
 function rmLengkap(b) { return !!(b.tanggalTimbang && b.tanggalSerahTerima); }
@@ -476,23 +504,17 @@ function qaLengkap(b) { return !!b.tanggalRilis; }
 // ============ CEK KELENGKAPAN SEBELUM RILIS ============
 function cekKelengkapan(b) {
     const belum = [];
-    // Kanban Produksi
     if (!b.jadwalRawMaterial) belum.push('📅 Jadwal Permintaan Raw Material (Kanban Produksi)');
     if (!b.jadwalWadah) belum.push('📅 Jadwal Permintaan Wadah (Kanban Produksi)');
     if (!b.jadwalKemas) belum.push('📅 Jadwal Permintaan Kemas (Kanban Produksi)');
-    // Logistic RM
     if (!b.tanggalTimbang) belum.push('⚖️ Tanggal Timbang (Logistic → Raw Material)');
     if (!b.tanggalSerahTerima) belum.push('📤 Tanggal Serah Terima RM (Logistic → Raw Material)');
-    // Logistic Wadah
     if (!b.wadahReady) belum.push('✅ Checkbox Wadah Siap (Logistic → Wadah)');
     if (!b.tanggalSerahTerimaWadah) belum.push('📅 Tanggal Serah Terima Wadah (Logistic → Wadah)');
-    // Logistic Kemas
     if (!b.kemasReady) belum.push('✅ Checkbox Kemas Siap (Logistic → Kemas)');
     if (!b.tanggalSerahTerimaKemas) belum.push('📅 Tanggal Serah Terima Kemas (Logistic → Kemas)');
-    // Input Produksi
     if (!b.tanggalBPP) belum.push('📅 Tanggal BPP (Input Produksi)');
     if (!b.tanggalKirimDokumen) belum.push('📤 Tanggal Kirim Dokumen (Input Produksi)');
-    // QC
     if (!b.tanggalTerimaSample) belum.push('📥 Tanggal Terima Sample (QC)');
     if (!b.estimasiLWS) belum.push('⏳ Estimasi LWS (QC)');
     if (!b.tanggalSelesaiKimia) belum.push('🧪 Selesai Analisa Kimia (QC)');
@@ -500,11 +522,10 @@ function cekKelengkapan(b) {
     return belum;
 }
 
-// ============ HITUNG STATUS BATCH (untuk display) ============
+// ============ HITUNG STATUS BATCH ============
 function hitungStatus(b) {
     if (qaLengkap(b)) return 'done';
     if (qcLengkap(b)) {
-        // Cek kelengkapan sebelum rilis
         const belum = cekKelengkapan(b);
         if (belum.length > 0) return 'qa_locked';
         return 'qa';
@@ -893,27 +914,42 @@ function saveCheckbox(bid, field, checked) {
     saveData(); renderAll();
 }
 
-// ============ CALCULATE ============
+// ============ CALCULATE PCT (RUMUS BARU) ============
 function calculatePCT(b) {
     const tT = parseDate(b.tanggalTimbang);
     const tS = parseDate(b.tanggalSerahTerima);
-    const tK = parseDate(b.tanggalKirimDokumen);
+    const tBPP = parseDate(b.tanggalBPP);
+    const tKirim = parseDate(b.tanggalKirimDokumen);
     const tSmp = parseDate(b.tanggalTerimaSample);
     const tKm = parseDate(b.tanggalSelesaiKimia);
     const tMk = parseDate(b.tanggalSelesaiMikro);
     const tR = parseDate(b.tanggalRilis);
 
-    const pctInc = jamKeHari(diffHours(tT, tR));
-    const mH = jamKeHari(diffHours(tKm, tMk));
-    let pctExc = null;
-    if (pctInc !== null && mH !== null) pctExc = Math.round((pctInc - mH)*100)/100;
-
+    // 1. Logistik: serah terima - timbang
     const log = jamKeHari(diffHours(tT, tS));
-    const prod = jamKeHari(diffHours(tS, tK));
+
+    // 2. Produksi: kirim dokumen - BPP (RUMUS BARU)
+    const prod = jamKeHari(diffHours(tBPP, tKirim));
+
+    // 3. QC: selesai mikro - terima sample
     const qc = jamKeHari(diffHours(tSmp, tMk));
-    let lt = null;
-    if (tK && tMk) lt = tK > tMk ? tK : tMk; else if (tK) lt = tK; else if (tMk) lt = tMk;
-    const qa = jamKeHari(diffHours(lt, tR));
+
+    // 4. QA: rilis - MAX(selesai mikro, kirim dokumen)
+    let latestQA = null;
+    if (tMk && tKirim) latestQA = tMk > tKirim ? tMk : tKirim;
+    else if (tMk) latestQA = tMk;
+    else if (tKirim) latestQA = tKirim;
+    const qa = jamKeHari(diffHours(latestQA, tR));
+
+    // 5. PCT Include: rilis - timbang
+    const pctInc = jamKeHari(diffHours(tT, tR));
+
+    // 6. PCT Exclude: PCT Inc - (selesai mikro - selesai kimia)
+    const mikroDurasi = jamKeHari(diffHours(tKm, tMk));
+    let pctExc = null;
+    if (pctInc !== null && mikroDurasi !== null) {
+        pctExc = Math.round((pctInc - mikroDurasi) * 100) / 100;
+    }
 
     const now = new Date();
     const og = jamKeHari(diffHours(tT, now));
@@ -921,6 +957,7 @@ function calculatePCT(b) {
     const tTg = b.targetTimbang + b.targetProduksi + b.targetAnalisa + b.targetPerilisan;
     let tRil = null;
     if (tT) { tRil = new Date(tT); tRil.setHours(tRil.getHours() + tTg); }
+
     return { pctInclude: pctInc, pctExclude: pctExc, logistik: log, produksi: prod, qc, qa, onGoing: og, targetRilis: tRil, totalTargetJam: tTg };
 }
 
@@ -930,20 +967,13 @@ function renderScoreCard(b, actionHtml = '', showEditDelete = false) {
     const tT = parseDate(b.tanggalTimbang);
     const tR = parseDate(b.tanggalRilis);
     const now = new Date();
-    const tTg = b.targetTimbang + b.targetProduksi + b.targetAnalisa + b.targetPerilisan;
-    const tTh = jamKeHari(tTg);
     const status = hitungStatus(b);
 
-    let totalCT = null, ctClass = 'default', ctDisp = '-';
-    if (tR) {
-        totalCT = jamKeHari(diffHours(tT, tR));
-        ctClass = (totalCT !== null && totalCT <= tTh) ? 'on-target' : 'over';
-        ctDisp = totalCT !== null ? totalCT.toFixed(1) + ' hari' : '-';
-    } else if (tT) {
-        totalCT = jamKeHari(diffHours(tT, now));
-        ctClass = (totalCT !== null && totalCT <= tTh) ? 'on-going' : 'over';
-        ctDisp = totalCT !== null ? totalCT.toFixed(1) + ' hari' : '-';
-    }
+    // PCT Exc vs Target PCT per tipe (untuk badge On-Target)
+    const c = calculatePCT(b);
+    const targetPCT = getTargetPCT(b);
+    const ctClass = (c.pctExclude !== null && targetPCT !== null) ? (c.pctExclude <= targetPCT ? 'on-target' : 'over') : 'default';
+    const ctDisp = c.pctExclude !== null ? c.pctExclude.toFixed(2) + ' hari' : (c.onGoing !== null ? c.onGoing.toFixed(2) + ' hari (on going)' : '-');
 
     const steps = [
         { key: 'produksi', l: 'Kanban' },
@@ -1008,7 +1038,7 @@ function renderScoreCard(b, actionHtml = '', showEditDelete = false) {
                 <span class="status ${status}">${getStatusLabel(status)}</span>
                 ${kb}
             </div>
-            <div><span class="total-ct ${ctClass}">⏱️ ${ctDisp}</span></div>
+            <div><span class="total-ct ${ctClass}">⏱️ PCT Exc: ${ctDisp}</span></div>
         </div>
         ${stepHtml}
         ${detailsHtml ? `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px;font-size:12px;margin-top:10px;">${detailsHtml}</div>` : ''}
@@ -1063,10 +1093,7 @@ function renderKanbanProduksi() {
     const c = document.getElementById('kanbanProduksi');
     if (!c) return;
     const batches = data.batches.filter(b =>
-        !allLogisticLengkap(b) &&
-        !inputProdLengkap(b) &&
-        !qcLengkap(b) &&
-        !qaLengkap(b)
+        !allLogisticLengkap(b) && !inputProdLengkap(b) && !qcLengkap(b) && !qaLengkap(b)
     );
     if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch aktif di Kanban Produksi</p></div>'; return; }
 
@@ -1172,10 +1199,7 @@ function renderInputProduksi() {
     const c = document.getElementById('inputProduksi');
     if (!c) return;
     const batches = data.batches.filter(b =>
-        rmLengkap(b) &&
-        !inputProdLengkap(b) &&
-        !qcLengkap(b) &&
-        !qaLengkap(b)
+        rmLengkap(b) && !inputProdLengkap(b) && !qcLengkap(b) && !qaLengkap(b)
     );
     if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch siap input produksi. Menunggu Raw Material selesai.</p></div>'; return; }
 
@@ -1204,9 +1228,7 @@ function renderQC() {
     const c = document.getElementById('qcList');
     if (!c) return;
     const batches = data.batches.filter(b =>
-        inputProdLengkap(b) &&
-        !qcLengkap(b) &&
-        !qaLengkap(b)
+        inputProdLengkap(b) && !qcLengkap(b) && !qaLengkap(b)
     );
     if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch di QC.</p></div>'; return; }
 
@@ -1311,14 +1333,17 @@ function updateKPIDash(t, batches) {
     const og = batches.filter(b => !qaLengkap(b)).length;
     let avg = '-', count = 0;
     if (done.length) {
-        const tot = done.map(b => calculatePCT(b).pctInclude).filter(v => v !== null);
+        const tot = done.map(b => calculatePCT(b).pctExclude).filter(v => v !== null);
         if (tot.length) { avg = (tot.reduce((a,b)=>a+b,0) / tot.length).toFixed(2); count = tot.length; }
     }
     let ot = 0, td = 0;
     done.forEach(b => {
         const c = calculatePCT(b);
-        const tH = jamKeHari(b.targetTimbang + b.targetProduksi + b.targetAnalisa + b.targetPerilisan);
-        if (c.pctInclude !== null && tH !== null) { td++; if (c.pctInclude <= tH) ot++; }
+        const targetHari = getTargetPCT(b);
+        if (c.pctExclude !== null && targetHari !== null) {
+            td++;
+            if (c.pctExclude <= targetHari) ot++;
+        }
     });
     const rate = td > 0 ? Math.round((ot/td)*100) : 0;
     const p = t === 'oral' ? 'Oral' : 'Injeksi';
@@ -1335,22 +1360,26 @@ function renderDetailTableDash(t, batches) {
     const tb = document.getElementById(t === 'oral' ? 'detailTableBodyOral' : 'detailTableBodyInjeksi');
     if (!tb) return;
     const doneB = batches.filter(b => qaLengkap(b));
-    if (!doneB.length) { tb.innerHTML = '<tr><td colspan="11" style="text-align:center;color:#999;padding:30px;">Belum ada data</td></tr>'; return; }
+    if (!doneB.length) { tb.innerHTML = '<tr><td colspan="12" style="text-align:center;color:#999;padding:30px;">Belum ada data</td></tr>'; return; }
     doneB.sort((a,b) => new Date(b.tanggalRilis) - new Date(a.tanggalRilis));
     tb.innerHTML = doneB.map(b => {
         const c = calculatePCT(b);
+        const targetHari = getTargetPCT(b);
+        const targetLabel = t === 'oral' ? '6.8 hari' : '16 hari';
+        const badge = getStatusBadge(c.pctExclude, targetHari);
         return `<tr>
             <td><strong>${b.batchNumber}</strong></td>
             <td><span class="text-muted">${b.productCode}</span></td>
             <td>${b.kategori ? getKategoriBadge(b.kategori) : '-'}</td>
             <td>${displayDT(b.tanggalRilis)}</td>
-            <td><strong>${c.pctInclude !== null ? c.pctInclude.toFixed(2) : '-'}</strong></td>
-            <td>${c.pctExclude !== null ? c.pctExclude.toFixed(2) : '-'}</td>
+            <td>${c.pctInclude !== null ? c.pctInclude.toFixed(2) : '-'}</td>
+            <td><strong>${c.pctExclude !== null ? c.pctExclude.toFixed(2) : '-'}</strong></td>
+            <td><span class="badge-target ${t}">${targetLabel}</span></td>
             <td>${c.logistik !== null ? c.logistik.toFixed(2) : '-'}</td>
             <td>${c.produksi !== null ? c.produksi.toFixed(2) : '-'}</td>
             <td>${c.qc !== null ? c.qc.toFixed(2) : '-'}</td>
             <td>${c.qa !== null ? c.qa.toFixed(2) : '-'}</td>
-            <td>${getStatusBadge(c.pctInclude, jamKeHari(c.totalTargetJam))}</td>
+            <td>${badge}</td>
         </tr>`;
     }).join('');
 }
