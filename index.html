@@ -82,12 +82,13 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:
 .badge-kategori.study { background: #f3e5f5; color: #6a1b9a; }
 .badge-over { background: #ffcdd2; color: #b71c1c; padding: 3px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; animation: pulse 1.5s infinite; display: inline-block; }
 @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
-.badge-on-target { background: #c8e6c9; color: #1b5e20; padding: 3px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.badge-optional { background: #e3f2fd; color: #0d47a1; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; }
 .step-indicator { display: flex; align-items: center; gap: 8px; padding: 10px 15px; background: #f5f5f5; border-radius: 6px; margin-bottom: 15px; flex-wrap: wrap; font-size: 11px; }
 .step-indicator .step { padding: 3px 10px; border-radius: 12px; font-weight: 600; }
 .step-indicator .step.done { background: #c8e6c9; color: #1b5e20; }
 .step-indicator .step.active { background: #0d47a1; color: white; }
 .step-indicator .step.pending { background: #e0e0e0; color: #757575; }
+.step-indicator .step.optional { background: #e3f2fd; color: #0d47a1; }
 .step-indicator .arrow { color: #999; }
 .personil-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: #f5f5f5; border-radius: 6px; margin-bottom: 8px; }
 .personil-item .delete-btn { color: #c62828; cursor: pointer; font-weight: 700; padding: 0 10px; }
@@ -155,9 +156,9 @@ table tr:hover { background: #fafafa; }
 .dash-tab-content.active { display: block; }
 .score-card-action { margin-top: 12px; padding-top: 12px; border-top: 1px dashed #ddd; }
 .section-title { font-size: 13px; font-weight: 700; color: #1a237e; padding: 6px 10px; background: #e8eaf6; border-radius: 6px; margin: 10px 0 8px 0; }
-.section-title.over { background: #ffebee; color: #b71c1c; }
-.section-title.done { background: #e8f5e9; color: #1b5e20; }
+.section-title.optional { background: #e3f2fd; color: #0d47a1; }
 .edit-actions { display: flex; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px dashed #ddd; }
+.info-banner { background: #e3f2fd; color: #0d47a1; padding: 8px 12px; border-radius: 6px; font-size: 12px; margin-bottom: 8px; border-left: 3px solid #0d47a1; }
 </style>
 </head>
 <body>
@@ -618,12 +619,6 @@ document.querySelectorAll('.tab-btn[data-logtab]').forEach(btn => {
 });
 
 // ============ MODALS ============
-function openKeteranganModal(stage, bn, text) {
-    const e = { 'Logistik': '🚚', 'Produksi': '🏭', 'QC': '🔬', 'QA': '✅', 'Raw Material': '🧪' }[stage] || '📝';
-    document.getElementById('keteranganModalTitle').textContent = `💬 Keterangan ${e} ${stage} - ${bn}`;
-    document.getElementById('keteranganModalBody').textContent = text;
-    document.getElementById('keteranganModal').classList.add('active');
-}
 function closeKeteranganModal() { document.getElementById('keteranganModal').classList.remove('active'); }
 document.getElementById('keteranganModal').addEventListener('click', function(e) { if (e.target === this) closeKeteranganModal(); });
 
@@ -690,14 +685,23 @@ function createBatchObject(input, kategori, product) {
         createdAt: new Date().toISOString(),
         targetTimbang: product.targetTimbang, targetProduksi: product.targetProduksi,
         targetAnalisa: product.targetAnalisa, targetPerilisan: product.targetPerilisan,
+        // Jadwal Permintaan (diisi Produksi)
         jadwalRawMaterial: '', jadwalWadah: '', jadwalKemas: '',
+        // Keterangan over-target jadwal
         ket_jadwalRawMaterial: '', ket_jadwalWadah: '', ket_jadwalKemas: '',
+        // Raw Material (Logistic)
         tanggalTimbang: '', tanggalSerahTerima: '', ket_rawMaterial: '',
+        // Wadah
         wadahReady: false, tanggalSerahTerimaWadah: '', ket_wadah: '',
+        // Kemas
         kemasReady: false, tanggalSerahTerimaKemas: '', ket_kemas: '',
+        // Produksi
         tanggalBPP: '', tanggalKirimDokumen: '', ket_produksi: '',
+        // QC
         tanggalTerimaSample: '', estimasiLWS: '', tanggalSelesaiKimia: '', tanggalSelesaiMikro: '', ket_qc: '',
+        // QA
         tanggalRilis: '', ket_qa: '',
+        // Unlock
         unlockedFields: []
     };
 }
@@ -714,7 +718,7 @@ function addBatch() {
     data.batches.push(createBatchObject(input, kat, prod));
     document.getElementById('batchInput').value = '';
     addAudit('CREATE', 'Batch', `Tambah ${input} (${kat})`);
-    showNotification(`✅ Batch ${input} ditambahkan!`, 'success');
+    showNotification(`✅ Batch ${input} ditambahkan! Muncul di Kanban Produksi`, 'success');
     saveData(); renderAll();
 }
 
@@ -817,7 +821,6 @@ function checkOverPreview(bid, field, inputId, ketField, startRaw, targetHours) 
     const input = document.getElementById(inputId);
     const ketBox = document.getElementById('ketbox_' + field + '_' + bid);
     if (!ketBox) return;
-    // Kalau targetHours = 0 → gak ada over check (misal Jadwal Permintaan)
     if (!input || !input.value || !startRaw || !targetHours) { ketBox.innerHTML = ''; return; }
     const dur = diffHours(parseDate(startRaw), parseDate(input.value));
     if (dur === null || dur <= targetHours) { ketBox.innerHTML = ''; return; }
@@ -834,7 +837,6 @@ function doSaveField(bid, field, ketField, startRaw, targetHours, inputId) {
     const b = data.batches.find(x => x.id === bid);
     if (!b) return false;
 
-    // Validasi over-target (skip kalau targetHours = 0)
     let ket = '';
     if (startRaw && targetHours) {
         const dur = diffHours(parseDate(startRaw), parseDate(input.value));
@@ -858,38 +860,39 @@ function doSaveField(bid, field, ketField, startRaw, targetHours, inputId) {
     return true;
 }
 
-// ============ AUTO ADVANCE ============
+// ============ AUTO ADVANCE (alur baru) ============
+// Alur: produksi → raw_material → produksi_input → qc → qa → done
+// Wadah & Kemas = paralel, gak nge-block
 function checkAutoAdvance(b) {
-    if (b.status === 'produksi') {
-        if (b.jadwalRawMaterial && b.jadwalWadah && b.jadwalKemas) {
-            b.status = 'raw_material';
-            addAudit('UPDATE', 'Batch', `${b.batchNumber}: → Raw Material`);
-        }
-    } else if (b.status === 'raw_material') {
-        if (b.tanggalTimbang && b.tanggalSerahTerima) {
-            b.status = 'logistic_wadah';
-            addAudit('UPDATE', 'Batch', `${b.batchNumber}: → Wadah`);
-        }
-    } else if (b.status === 'logistic_wadah') {
-        if (b.wadahReady && b.tanggalSerahTerimaWadah) {
-            b.status = 'logistic_kemas';
-            addAudit('UPDATE', 'Batch', `${b.batchNumber}: → Kemas`);
-        }
-    } else if (b.status === 'logistic_kemas') {
-        if (b.kemasReady && b.tanggalSerahTerimaKemas) {
-            b.status = 'produksi_input';
-            addAudit('UPDATE', 'Batch', `${b.batchNumber}: → Input Produksi`);
-        }
-    } else if (b.status === 'produksi_input') {
-        if (b.tanggalBPP && b.tanggalKirimDokumen) {
-            b.status = 'qc';
-            addAudit('UPDATE', 'Batch', `${b.batchNumber}: → QC`);
-        }
-    } else if (b.status === 'qc') {
-        if (b.tanggalTerimaSample && b.estimasiLWS && b.tanggalSelesaiKimia && b.tanggalSelesaiMikro) {
-            b.status = 'qa';
-            addAudit('UPDATE', 'Batch', `${b.batchNumber}: → QA`);
-        }
+    // Produksi isi Jadwal RM → muncul di Raw Material
+    if (b.status === 'produksi' && b.jadwalRawMaterial) {
+        b.status = 'raw_material';
+        addAudit('UPDATE', 'Batch', `${b.batchNumber}: → Raw Material`);
+        return;
+    }
+    // RM lengkap (timbang + serah terima) → muncul di Input Produksi
+    if (b.status === 'raw_material' && b.tanggalTimbang && b.tanggalSerahTerima) {
+        b.status = 'produksi_input';
+        addAudit('UPDATE', 'Batch', `${b.batchNumber}: → Input Produksi`);
+        return;
+    }
+    // Input Produksi lengkap → QC
+    if (b.status === 'produksi_input' && b.tanggalBPP && b.tanggalKirimDokumen) {
+        b.status = 'qc';
+        addAudit('UPDATE', 'Batch', `${b.batchNumber}: → QC`);
+        return;
+    }
+    // QC lengkap → QA
+    if (b.status === 'qc' && b.tanggalTerimaSample && b.estimasiLWS && b.tanggalSelesaiKimia && b.tanggalSelesaiMikro) {
+        b.status = 'qa';
+        addAudit('UPDATE', 'Batch', `${b.batchNumber}: → QA`);
+        return;
+    }
+    // QA rilis → done
+    if (b.status === 'qa' && b.tanggalRilis) {
+        b.status = 'done';
+        addAudit('UPDATE', 'Batch', `${b.batchNumber}: RILIS / SELESAI`);
+        return;
     }
 }
 
@@ -899,7 +902,6 @@ function saveCheckbox(bid, field, checked) {
     if (!b) return;
     b[field] = checked;
     addAudit('UPDATE', 'Batch', `${b.batchNumber}: ${field} = ${checked}`);
-    checkAutoAdvance(b);
     saveData(); renderAll();
 }
 
@@ -954,11 +956,10 @@ function renderScoreCard(b, actionHtml = '', showEditDelete = false) {
         ctDisp = totalCT !== null ? totalCT.toFixed(1) + ' hari' : '-';
     }
 
+    // Step indicator sesuai alur utama
     const steps = [
         { key: 'produksi', l: 'Produksi' },
         { key: 'raw_material', l: 'Raw Material' },
-        { key: 'logistic_wadah', l: 'Wadah' },
-        { key: 'logistic_kemas', l: 'Kemas' },
         { key: 'produksi_input', l: 'Input Prod' },
         { key: 'qc', l: 'QC' },
         { key: 'qa', l: 'QA' },
@@ -1023,7 +1024,7 @@ function renderScoreCard(b, actionHtml = '', showEditDelete = false) {
 
 // ============ RENDER FIELD HELPER ============
 function renderEditableField(cfg) {
-    const { b, field, label, icon, ketField, startField, targetHours } = cfg;
+    const { b, field, label, icon, ketField, startField, targetHours, optional } = cfg;
     const saved = !!b[field];
     const unlocked = isUnlocked(b, field);
     const inputId = `in_${field}_${b.id}`;
@@ -1037,6 +1038,7 @@ function renderEditableField(cfg) {
     }
 
     let overBadge = overInfo ? `<span class="badge-over" style="margin-left:6px;">⚠️ Over +${overInfo.diff.toFixed(1)}j</span>` : '';
+    let optionalBadge = optional ? `<span class="badge-optional" style="margin-left:6px;">OPSIONAL</span>` : '';
     let ketDisplay = '';
     if (overInfo && b[ketField]) {
         ketDisplay = `<div style="margin-top:5px;font-size:11px;color:#e65100;background:#fff3e0;padding:4px 8px;border-radius:4px;">📝 ${b[ketField]}</div>`;
@@ -1055,7 +1057,7 @@ function renderEditableField(cfg) {
     }
 
     return `<div class="jadwal-item ${saved && !unlocked ? 'saved' : ''} ${overInfo ? 'over' : ''}">
-        <label>${icon} ${label}${overBadge}</label>
+        <label>${icon} ${label}${overBadge}${optionalBadge}</label>
         ${inner}
         ${ketDisplay}
     </div>`;
@@ -1065,20 +1067,26 @@ function saveFieldWrapper(bid, field, ketField, startRaw, targetHours, inputId) 
     doSaveField(bid, field, ketField, startRaw, targetHours, inputId);
 }
 
-// ============ KANBAN PRODUKSI (FIX: jadwal permintaan tidak ada over-check) ============
+// ============ KANBAN PRODUKSI ============
+// Muncul: batch status 'produksi' (belum isi Jadwal RM)
+// Isi: Jadwal RM (wajib) + Jadwal Wadah/Kemas (opsional)
 function renderKanbanProduksi() {
     const c = document.getElementById('kanbanProduksi');
     if (!c) return;
     const batches = data.batches.filter(b => b.status === 'produksi');
-    if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch di tahap Produksi</p></div>'; return; }
+    if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch baru. Input batch di PPIC.</p></div>'; return; }
 
     c.innerHTML = batches.map(b => {
         const actionHtml = `
-            <div class="section-title">📅 Jadwal Permintaan</div>
-            <div class="jadwal-container">
-                ${renderEditableField({ b, field: 'jadwalRawMaterial', label: 'Permintaan Raw Material', icon: '🧪', ketField: 'ket_jadwalRawMaterial', startField: null, targetHours: 0 })}
-                ${renderEditableField({ b, field: 'jadwalWadah', label: 'Permintaan Wadah', icon: '📦', ketField: 'ket_jadwalWadah', startField: null, targetHours: 0 })}
-                ${renderEditableField({ b, field: 'jadwalKemas', label: 'Permintaan Kemas', icon: '📦', ketField: 'ket_jadwalKemas', startField: null, targetHours: 0 })}
+            <div class="section-title">📅 Jadwal Permintaan Raw Material <span class="badge-optional" style="background:#ffcdd2;color:#b71c1c;">WAJIB</span></div>
+            <div class="jadwal-container" style="grid-template-columns:1fr;">
+                ${renderEditableField({ b, field: 'jadwalRawMaterial', label: 'Jadwal Permintaan Raw Material', icon: '🧪', ketField: 'ket_jadwalRawMaterial', startField: null, targetHours: 0 })}
+            </div>
+            <div class="section-title optional" style="margin-top:15px;">📅 Jadwal Permintaan Wadah & Kemas <span class="badge-optional">OPSIONAL</span></div>
+            <div class="info-banner">💡 Boleh diisi sekarang atau menyusul kapan saja</div>
+            <div class="jadwal-container two-col">
+                ${renderEditableField({ b, field: 'jadwalWadah', label: 'Jadwal Permintaan Wadah', icon: '📦', ketField: 'ket_jadwalWadah', startField: null, targetHours: 0, optional: true })}
+                ${renderEditableField({ b, field: 'jadwalKemas', label: 'Jadwal Permintaan Kemas', icon: '📦', ketField: 'ket_jadwalKemas', startField: null, targetHours: 0, optional: true })}
             </div>
         `;
         return renderScoreCard(b, actionHtml);
@@ -1086,11 +1094,12 @@ function renderKanbanProduksi() {
 }
 
 // ============ LOGISTIC RAW MATERIAL ============
+// Muncul: batch status 'raw_material' (Produksi sudah isi Jadwal RM)
 function renderLogisticRawMaterial() {
     const c = document.getElementById('logisticRawMaterial');
     if (!c) return;
     const batches = data.batches.filter(b => b.status === 'raw_material');
-    if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch di tahap Raw Material</p></div>'; return; }
+    if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch di Raw Material. Menunggu jadwal permintaan dari Produksi.</p></div>'; return; }
 
     c.innerHTML = batches.map(b => {
         const actionHtml = `
@@ -1105,11 +1114,15 @@ function renderLogisticRawMaterial() {
 }
 
 // ============ LOGISTIC WADAH ============
+// Muncul: batch dengan jadwalWadah terisi (setelah Produksi isi jadwal wadah)
+// Tidak nge-block alur utama
 function renderLogisticWadah() {
     const c = document.getElementById('logisticWadah');
     if (!c) return;
-    const batches = data.batches.filter(b => b.status === 'logistic_wadah');
-    if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch di tahap Wadah</p></div>'; return; }
+    const batches = data.batches.filter(b =>
+        b.jadwalWadah && !(b.wadahReady && b.tanggalSerahTerimaWadah)
+    );
+    if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch dengan jadwal permintaan Wadah.</p></div>'; return; }
 
     c.innerHTML = batches.map(b => {
         const cbHtml = `<div class="form-group" style="margin-bottom:8px;">
@@ -1122,8 +1135,9 @@ function renderLogisticWadah() {
         </div>`;
         const actionHtml = `
             <div class="section-title">📦 Wadah</div>
+            <div class="info-banner">📅 Jadwal Permintaan: ${displayDT(b.jadwalWadah)}</div>
             ${cbHtml}
-            ${renderEditableField({ b, field: 'tanggalSerahTerimaWadah', label: 'Jadwal Serah Terima Wadah', icon: '📅', ketField: 'ket_wadah', startField: 'tanggalSerahTerima', targetHours: b.targetTimbang })}
+            ${renderEditableField({ b, field: 'tanggalSerahTerimaWadah', label: 'Jadwal Serah Terima Wadah', icon: '📅', ketField: 'ket_wadah', startField: null, targetHours: 0 })}
         `;
         return renderScoreCard(b, actionHtml);
     }).join('');
@@ -1133,8 +1147,10 @@ function renderLogisticWadah() {
 function renderLogisticKemas() {
     const c = document.getElementById('logisticKemas');
     if (!c) return;
-    const batches = data.batches.filter(b => b.status === 'logistic_kemas');
-    if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch di tahap Kemas</p></div>'; return; }
+    const batches = data.batches.filter(b =>
+        b.jadwalKemas && !(b.kemasReady && b.tanggalSerahTerimaKemas)
+    );
+    if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch dengan jadwal permintaan Kemas.</p></div>'; return; }
 
     c.innerHTML = batches.map(b => {
         const cbHtml = `<div class="form-group" style="margin-bottom:8px;">
@@ -1147,25 +1163,27 @@ function renderLogisticKemas() {
         </div>`;
         const actionHtml = `
             <div class="section-title">📦 Kemas</div>
+            <div class="info-banner">📅 Jadwal Permintaan: ${displayDT(b.jadwalKemas)}</div>
             ${cbHtml}
-            ${renderEditableField({ b, field: 'tanggalSerahTerimaKemas', label: 'Jadwal Serah Terima Kemas', icon: '📅', ketField: 'ket_kemas', startField: 'tanggalSerahTerimaWadah', targetHours: b.targetTimbang })}
+            ${renderEditableField({ b, field: 'tanggalSerahTerimaKemas', label: 'Jadwal Serah Terima Kemas', icon: '📅', ketField: 'ket_kemas', startField: null, targetHours: 0 })}
         `;
         return renderScoreCard(b, actionHtml);
     }).join('');
 }
 
 // ============ INPUT PRODUKSI ============
+// Muncul: batch status 'produksi_input' (RM sudah lengkap)
 function renderInputProduksi() {
     const c = document.getElementById('inputProduksi');
     if (!c) return;
     const batches = data.batches.filter(b => b.status === 'produksi_input');
-    if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch siap input produksi</p></div>'; return; }
+    if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch siap input produksi. Menunggu Raw Material selesai.</p></div>'; return; }
 
     c.innerHTML = batches.map(b => {
         const actionHtml = `
             <div class="section-title">🏭 Input Produksi</div>
             <div class="jadwal-container two-col">
-                ${renderEditableField({ b, field: 'tanggalBPP', label: 'Tanggal BPP', icon: '📅', ketField: 'ket_produksi', startField: 'tanggalSerahTerimaKemas', targetHours: b.targetProduksi })}
+                ${renderEditableField({ b, field: 'tanggalBPP', label: 'Tanggal BPP', icon: '📅', ketField: 'ket_produksi', startField: 'tanggalSerahTerima', targetHours: b.targetProduksi })}
                 ${renderEditableField({ b, field: 'tanggalKirimDokumen', label: 'Kirim Dokumen', icon: '📤', ketField: 'ket_produksi', startField: 'tanggalBPP', targetHours: b.targetProduksi })}
             </div>
         `;
@@ -1178,7 +1196,7 @@ function renderQC() {
     const c = document.getElementById('qcList');
     if (!c) return;
     const batches = data.batches.filter(b => b.status === 'qc' || b.status === 'qa');
-    if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch di QC</p></div>'; return; }
+    if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch di QC.</p></div>'; return; }
 
     c.innerHTML = batches.map(b => {
         if (b.status !== 'qc') return renderScoreCard(b);
@@ -1200,7 +1218,7 @@ function renderQA() {
     const c = document.getElementById('qaList');
     if (!c) return;
     const batches = data.batches.filter(b => b.status === 'qa');
-    if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch di QA</p></div>'; return; }
+    if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch di QA.</p></div>'; return; }
 
     c.innerHTML = batches.map(b => {
         const actionHtml = `
