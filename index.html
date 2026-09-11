@@ -71,6 +71,7 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:
 .status.qa_locked { background: #ffebee; color: #b71c1c; }
 .status.done { background: #c8e6c9; color: #1b5e20; }
 .status.multitask { background: #fff8e1; color: #e65100; }
+.status.jadwal_warning { background: #ffebee; color: #b71c1c; animation: pulse 2s infinite; }
 .total-ct { font-size: 14px; font-weight: 700; padding: 4px 14px; border-radius: 20px; white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; }
 .total-ct.on-target { background: #c8e6c9; color: #1b5e20; }
 .total-ct.on-going { background: #fff3e0; color: #e65100; }
@@ -166,7 +167,6 @@ table tr:hover { background: #fafafa; }
 .info-banner.success { background: #e8f5e9; color: #1b5e20; border-left-color: #2e7d32; }
 .info-banner.danger { background: #ffebee; color: #b71c1c; border-left-color: #c62828; }
 
-/* CHART STYLES */
 .chart-wrap { position: relative; }
 .line-chart-svg { width: 100%; height: auto; }
 .bar-chart-svg { width: 100%; height: auto; }
@@ -188,7 +188,7 @@ table tr:hover { background: #fafafa; }
 .chart-tooltip.show { display: block; }
 .chart-tooltip.warning { background: #c62828; }
 
-/* ============ CELL TOOLTIP (NEW STYLE) ============ */
+/* CELL TOOLTIP */
 .cell-tooltip { position: relative; }
 .cell-tooltip.has-ket {
     cursor: pointer;
@@ -207,11 +207,8 @@ table tr:hover { background: #fafafa; }
     font-size: 11px;
     animation: pulse 2s infinite;
 }
-.cell-tooltip.has-ket:hover {
-    background: #fff3e0 !important;
-}
+.cell-tooltip.has-ket:hover { background: #fff3e0 !important; }
 
-/* Global tooltip (diposisikan via JS) */
 .tooltip-box {
     display: none;
     position: fixed;
@@ -230,24 +227,10 @@ table tr:hover { background: #fafafa; }
     pointer-events: none;
 }
 .tooltip-box.warning { background: #c62828; }
-.tooltip-box::after {
-    content: '';
-    position: absolute;
-    border: 7px solid transparent;
-}
-.tooltip-box.arrow-bottom::after {
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border-bottom-color: #1a237e;
-}
+.tooltip-box::after { content: ''; position: absolute; border: 7px solid transparent; }
+.tooltip-box.arrow-bottom::after { bottom: 100%; left: 50%; transform: translateX(-50%); border-bottom-color: #1a237e; }
 .tooltip-box.arrow-bottom.warning::after { border-bottom-color: #c62828; }
-.tooltip-box.arrow-top::after {
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border-top-color: #1a237e;
-}
+.tooltip-box.arrow-top::after { top: 100%; left: 50%; transform: translateX(-50%); border-top-color: #1a237e; }
 .tooltip-box.arrow-top.warning::after { border-top-color: #c62828; }
 </style>
 </head>
@@ -638,6 +621,21 @@ function getQALatestStart(b) {
     return null;
 }
 
+// ============ HELPER: OVER-TARGET (threshold > 1 jam) ============
+// Return {over: bool, diff: hours}
+function hitungOverTarget(b, field, startField, targetHours, dynamicStart) {
+    if (!b[field] || !targetHours) return { over: false, diff: 0 };
+    let startRaw = null;
+    if (dynamicStart) startRaw = dynamicStart(b);
+    else if (startField) startRaw = b[startField];
+    if (!startRaw) return { over: false, diff: 0 };
+    const dur = diffHours(parseDate(startRaw), parseDate(b[field]));
+    if (dur === null) return { over: false, diff: 0 };
+    const diff = dur - targetHours;
+    // Over hanya kalau selisih > 1 jam
+    return { over: diff > 1, diff: Math.round(diff * 100) / 100 };
+}
+
 // ============ CHECK TAHAP LENGKAP ============
 function rmLengkap(b) { return !!(b.tanggalTimbang && b.tanggalSerahTerima); }
 function wadahLengkap(b) { return !!(b.wadahReady && b.tanggalSerahTerimaWadah); }
@@ -646,6 +644,7 @@ function allLogisticLengkap(b) { return rmLengkap(b) && wadahLengkap(b) && kemas
 function inputProdLengkap(b) { return !!(b.tanggalBPP && b.tanggalKirimDokumen); }
 function qcLengkap(b) { return !!(b.tanggalTerimaSample && b.estimasiLWS && b.tanggalSelesaiKimia && b.tanggalSelesaiMikro); }
 function qaLengkap(b) { return !!b.tanggalRilis; }
+function jadwalLengkap(b) { return !!(b.jadwalRawMaterial && b.jadwalWadah && b.jadwalKemas); }
 
 function cekKelengkapan(b) {
     const belum = [];
@@ -822,7 +821,6 @@ document.querySelectorAll('.tab-btn[data-logtab]').forEach(btn => {
     });
 });
 
-// ============ INIT DATE FILTERS ============
 function initDateFilters() {
     const now = new Date();
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -1031,9 +1029,12 @@ function checkOverPreview(bid, field, inputId, ketField, startRaw, targetHours) 
     if (!ketBox) return;
     if (!input || !input.value || !startRaw || !targetHours) { ketBox.innerHTML = ''; return; }
     const dur = diffHours(parseDate(startRaw), parseDate(input.value));
-    if (dur === null || dur <= targetHours) { ketBox.innerHTML = ''; return; }
+    if (dur === null) { ketBox.innerHTML = ''; return; }
+    const diff = dur - targetHours;
+    // Over hanya kalau selisih > 1 jam
+    if (diff <= 1) { ketBox.innerHTML = ''; return; }
     ketBox.innerHTML = `<div class="keterangan-wajib">
-        <label>📝 Keterangan WAJIB — Over +${(dur-targetHours).toFixed(1)} jam</label>
+        <label>📝 Keterangan WAJIB — Over +${diff.toFixed(1)} jam</label>
         <textarea id="ket_${field}_${bid}" rows="2" placeholder="Jelaskan alasan over target..."></textarea>
     </div>`;
 }
@@ -1047,13 +1048,17 @@ function doSaveField(bid, field, ketField, startRaw, targetHours, inputId) {
     let ket = '';
     if (startRaw && targetHours) {
         const dur = diffHours(parseDate(startRaw), parseDate(input.value));
-        if (dur !== null && dur > targetHours) {
-            const ketInput = document.getElementById('ket_' + field + '_' + bid);
-            if (!ketInput || !ketInput.value.trim()) {
-                showNotification(`⚠️ Over target +${(dur-targetHours).toFixed(1)} jam! Isi keterangan wajib dulu.`, 'error');
-                return false;
+        if (dur !== null) {
+            const diff = dur - targetHours;
+            // Hanya wajib keterangan kalau selisih > 1 jam
+            if (diff > 1) {
+                const ketInput = document.getElementById('ket_' + field + '_' + bid);
+                if (!ketInput || !ketInput.value.trim()) {
+                    showNotification(`⚠️ Over target +${diff.toFixed(1)} jam! Isi keterangan wajib dulu.`, 'error');
+                    return false;
+                }
+                ket = ketInput.value.trim();
             }
-            ket = ketInput.value.trim();
         }
     }
 
@@ -1120,7 +1125,6 @@ function renderScoreCard(b, actionHtml = '', showEditDelete = false) {
     const c = calculatePCT(b);
     const targetPCT = getTargetPCT(b);
 
-    // Tentukan tampilan: kalau PCT Exc ada → pakai PCT Exc, kalau tidak → On Going
     let ctClass, ctDisplay, ctLabel;
     if (c.pctExclude !== null) {
         ctLabel = 'PCT Exc';
@@ -1184,6 +1188,16 @@ function renderScoreCard(b, actionHtml = '', showEditDelete = false) {
 
     const kb = b.kategori ? getKategoriBadge(b.kategori) : '';
 
+    // BADGE GANDA: kalau jadwal belum lengkap tapi udah lanjut tahap
+    let jadwalWarning = '';
+    if (!jadwalLengkap(b) && status !== 'produksi' && status !== 'done') {
+        const belumJadwal = [];
+        if (!b.jadwalRawMaterial) belumJadwal.push('RM');
+        if (!b.jadwalWadah) belumJadwal.push('Wadah');
+        if (!b.jadwalKemas) belumJadwal.push('Kemas');
+        jadwalWarning = `<span class="status jadwal_warning">⚠️ Jadwal ${belumJadwal.join(', ')} belum lengkap</span>`;
+    }
+
     let editDel = '';
     if (showEditDelete && (currentUser.role === 'admin' || currentUser.department === 'PPIC')) {
         editDel = `<div class="edit-actions">
@@ -1198,6 +1212,7 @@ function renderScoreCard(b, actionHtml = '', showEditDelete = false) {
                 <span class="batch-number">${b.batchNumber}</span>
                 <span class="status ${status}">${getStatusLabel(status)}</span>
                 ${kb}
+                ${jadwalWarning}
             </div>
             <div><span class="total-ct ${ctClass}">⏱️ ${ctLabel}: ${ctDisplay}</span></div>
         </div>
@@ -1220,16 +1235,13 @@ function renderEditableField(cfg) {
     if (dynamicStart) startRaw = dynamicStart(b);
     else if (startField) startRaw = b[startField] || null;
 
-    let overInfo = null;
-    if (saved && startRaw && targetHours) {
-        const dur = diffHours(parseDate(startRaw), parseDate(b[field]));
-        if (dur !== null && dur > targetHours) overInfo = { over: true, diff: dur - targetHours };
-    }
+    // Over-target: pakai helper dengan threshold > 1 jam
+    const overInfo = hitungOverTarget(b, field, startField, targetHours, dynamicStart);
 
-    let overBadge = overInfo ? `<span class="badge-over" style="margin-left:6px;">⚠️ Over +${overInfo.diff.toFixed(1)}j</span>` : '';
+    let overBadge = overInfo.over ? `<span class="badge-over" style="margin-left:6px;">⚠️ Over +${overInfo.diff.toFixed(1)}j</span>` : '';
     let optionalBadge = optional ? `<span class="badge-optional" style="margin-left:6px;">OPSIONAL</span>` : '';
     let ketDisplay = '';
-    if (overInfo && b[ketField]) {
+    if (overInfo.over && b[ketField]) {
         ketDisplay = `<div style="margin-top:5px;font-size:11px;color:#e65100;background:#fff3e0;padding:4px 8px;border-radius:4px;">📝 ${b[ketField]}</div>`;
     }
 
@@ -1245,7 +1257,7 @@ function renderEditableField(cfg) {
                 onclick="doSaveField('${b.id}','${field}','${ketField}','${startRaw||''}',${targetHours||0},'${inputId}')">💾 Simpan</button>`;
     }
 
-    return `<div class="jadwal-item ${saved && !unlocked ? 'saved' : ''} ${overInfo ? 'over' : ''}">
+    return `<div class="jadwal-item ${saved && !unlocked ? 'saved' : ''} ${overInfo.over ? 'over' : ''}">
         <label>${icon} ${label}${overBadge}${optionalBadge}</label>
         ${inner}
         ${ketDisplay}
@@ -1253,18 +1265,18 @@ function renderEditableField(cfg) {
 }
 
 // ============ KANBAN PRODUKSI ============
+// Fix: batch tetap muncul sampai 3 jadwal lengkap
 function renderKanbanProduksi() {
     const c = document.getElementById('kanbanProduksi');
     if (!c) return;
-    const batches = data.batches.filter(b => !allLogisticLengkap(b) && !inputProdLengkap(b) && !qcLengkap(b) && !qaLengkap(b));
-    if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch aktif di Kanban Produksi</p></div>'; return; }
+    const batches = data.batches.filter(b => !jadwalLengkap(b));
+    if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch di Kanban Produksi</p></div>'; return; }
 
     c.innerHTML = batches.map(b => {
         let statusInfo = '';
-        if (rmLengkap(b) && !allLogisticLengkap(b)) {
-            statusInfo = `<div class="info-banner warning">ℹ️ Raw Material sudah lengkap. Menunggu Wadah & Kemas selesai di Logistic. Batch juga muncul di Input Produksi.</div>`;
-        } else if (allLogisticLengkap(b)) {
-            statusInfo = `<div class="info-banner success">✅ Semua Logistic lengkap. Batch sudah masuk Input Produksi.</div>`;
+        const status = hitungStatus(b);
+        if (rmLengkap(b) && status !== 'produksi' && !allLogisticLengkap(b)) {
+            statusInfo = `<div class="info-banner warning">⚠️ <b>Perhatian:</b> Batch sudah lanjut ke tahap <b>${getStatusLabel(status)}</b>, tapi jadwal permintaan Wadah/Kemas belum lengkap. Harap segera diisi!</div>`;
         }
 
         const actionHtml = `
@@ -1273,11 +1285,11 @@ function renderKanbanProduksi() {
             <div class="jadwal-container" style="grid-template-columns:1fr;">
                 ${renderEditableField({ b, field: 'jadwalRawMaterial', label: 'Jadwal Permintaan Raw Material', icon: '🧪', ketField: 'ket_jadwalRawMaterial', startField: null, targetHours: 0 })}
             </div>
-            <div class="section-title optional" style="margin-top:15px;">📅 Jadwal Permintaan Wadah & Kemas <span class="badge-optional">OPSIONAL</span></div>
-            <div class="info-banner">💡 Boleh diisi sekarang atau menyusul kapan saja</div>
+            <div class="section-title optional" style="margin-top:15px;">📅 Jadwal Permintaan Wadah & Kemas <span class="badge-wajib">WAJIB</span></div>
+            <div class="info-banner">💡 Harus diisi sebelum QA bisa rilis</div>
             <div class="jadwal-container two-col">
-                ${renderEditableField({ b, field: 'jadwalWadah', label: 'Jadwal Permintaan Wadah', icon: '📦', ketField: 'ket_jadwalWadah', startField: null, targetHours: 0, optional: true })}
-                ${renderEditableField({ b, field: 'jadwalKemas', label: 'Jadwal Permintaan Kemas', icon: '📦', ketField: 'ket_jadwalKemas', startField: null, targetHours: 0, optional: true })}
+                ${renderEditableField({ b, field: 'jadwalWadah', label: 'Jadwal Permintaan Wadah', icon: '📦', ketField: 'ket_jadwalWadah', startField: null, targetHours: 0 })}
+                ${renderEditableField({ b, field: 'jadwalKemas', label: 'Jadwal Permintaan Kemas', icon: '📦', ketField: 'ket_jadwalKemas', startField: null, targetHours: 0 })}
             </div>
         `;
         return renderScoreCard(b, actionHtml);
@@ -1533,7 +1545,6 @@ function updateKPIDash(t, batches) {
     document.getElementById(`kpi${p}TargetDetail`).textContent = ot + ' / ' + td + ' batch';
 }
 
-// ============ LINE CHART ============
 function renderLineChartDash(t, batches) {
     const container = document.getElementById(t === 'oral' ? 'lineChartOral' : 'lineChartInjeksi');
     if (!container) return;
@@ -1663,7 +1674,6 @@ function renderLineChartDash(t, batches) {
     container.innerHTML = legendHtml + svg;
 }
 
-// ============ BAR CHART ============
 function renderBarChartDash(t, batches) {
     const container = document.getElementById(t === 'oral' ? 'barChartOral' : 'barChartInjeksi');
     if (!container) return;
@@ -1722,7 +1732,6 @@ function renderBarChartDash(t, batches) {
     container.innerHTML = svg;
 }
 
-// ============ DETAIL TABLE (DONE) — TOOLTIP MODERN ============
 function renderDetailTableDash(t, batches) {
     const tb = document.getElementById(t === 'oral' ? 'detailTableBodyOral' : 'detailTableBodyInjeksi');
     if (!tb) return;
@@ -1763,7 +1772,6 @@ function renderDetailTableDash(t, batches) {
     }).join('');
 }
 
-// ============ ON GOING TABLE ============
 function renderOnGoingTableDash(t, batches) {
     const tb = document.getElementById(t === 'oral' ? 'onGoingTableBodyOral' : 'onGoingTableBodyInjeksi');
     if (!tb) return;
@@ -1804,7 +1812,7 @@ function renderOnGoingTableDash(t, batches) {
     }).join('');
 }
 
-// ============ CELL TOOLTIP (GLOBAL, POSISI DINAMIS) ============
+// ============ CELL TOOLTIP ============
 let cellTooltipEl = null;
 
 function showCellTooltip(e, cellEl) {
@@ -1819,7 +1827,6 @@ function showCellTooltip(e, cellEl) {
     document.body.appendChild(tip);
     cellTooltipEl = tip;
 
-    // Ukur dulu biar bisa positioning
     tip.style.visibility = 'hidden';
     tip.style.display = 'block';
     const rect = cellEl.getBoundingClientRect();
@@ -1830,8 +1837,6 @@ function showCellTooltip(e, cellEl) {
     const useTop = spaceAbove >= tipRect.height + 12 || spaceAbove > spaceBelow;
 
     let top, left;
-
-    // Horizontal center, clamp ke window
     left = rect.left + rect.width / 2 - tipRect.width / 2;
     left = Math.max(8, Math.min(left, window.innerWidth - tipRect.width - 8));
 
@@ -1855,11 +1860,9 @@ function hideCellTooltip() {
     }
 }
 
-// Hide tooltip kalau scroll
 window.addEventListener('scroll', hideCellTooltip, true);
 window.addEventListener('resize', hideCellTooltip);
 
-// ============ CHART TOOLTIP ============
 function showChartTooltip(e, html) {
     const tip = document.getElementById('chartTooltip');
     if (!tip) return;
