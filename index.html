@@ -165,6 +165,65 @@ table tr:hover { background: #fafafa; }
 .info-banner.warning { background: #fff3e0; color: #e65100; border-left-color: #f57c00; }
 .info-banner.success { background: #e8f5e9; color: #1b5e20; border-left-color: #2e7d32; }
 .info-banner.danger { background: #ffebee; color: #b71c1c; border-left-color: #c62828; }
+
+/* ============ CHART STYLES ============ */
+.chart-wrap { position: relative; }
+.line-chart-svg { width: 100%; height: 260px; }
+.bar-chart-svg { width: 100%; height: 280px; }
+.chart-tooltip {
+    position: fixed;
+    background: #1a237e;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 10000;
+    display: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    max-width: 300px;
+    white-space: normal;
+    line-height: 1.5;
+}
+.chart-tooltip.show { display: block; }
+.chart-tooltip.warning { background: #c62828; }
+.chart-legend { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 10px; font-size: 12px; }
+.chart-legend .dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+
+/* Tooltip untuk kolom tabel */
+.cell-tooltip { position: relative; cursor: help; }
+.cell-tooltip.has-ket { border-bottom: 1px dashed #f57c00; }
+.cell-tooltip:hover .tooltip-box { display: block; }
+.tooltip-box {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a237e;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    z-index: 100;
+    white-space: normal;
+    width: 220px;
+    line-height: 1.5;
+    margin-bottom: 5px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    text-align: left;
+}
+.tooltip-box::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #1a237e;
+}
+.tooltip-box.warning { background: #c62828; }
+.tooltip-box.warning::after { border-top-color: #c62828; }
 </style>
 </head>
 <body>
@@ -214,55 +273,109 @@ table tr:hover { background: #fafafa; }
 </div>
 <div id="dash-oral" class="dash-tab-content active">
 <div class="filter-bar">
-<div><label>📅 Periode</label><select id="filterPeriodeOral" onchange="renderDashboard()"><option value="all">Semua</option><option value="7">7 Hari</option><option value="30">30 Hari</option><option value="90">90 Hari</option></select></div>
-<div><label>🔍 Cari</label><input type="text" id="filterSearchOral" placeholder="Nomor batch..." oninput="renderDashboard()"></div>
+<div><label>📅 Dari Tanggal</label><input type="date" id="filterFromOral" onchange="renderDashboard()"></div>
+<div><label>📅 Sampai Tanggal</label><input type="date" id="filterToOral" onchange="renderDashboard()"></div>
+<div><label>🔍 Batch Number</label><input type="text" id="filterSearchOral" placeholder="Cari..." oninput="renderDashboard()"></div>
 <div><label>🏷️ Kategori</label><select id="filterKategoriOral" onchange="renderDashboard()"><option value="all">Semua</option><option value="Rutin">Rutin</option><option value="Validasi">Validasi</option><option value="Study">Study</option></select></div>
 <button class="btn btn-primary btn-sm" onclick="resetFilter('oral')">Reset</button>
 </div>
 <div class="grid-4">
-<div class="kpi-card oral"><div class="kpi-value" id="kpiOralAvgDash">-</div><div class="kpi-label">📊 Rata-rata PCT Exc Oral (hari)</div><div class="kpi-sub" id="kpiOralCountDash">0 Batch</div></div>
+<div class="kpi-card oral"><div class="kpi-value" id="kpiOralAvgInc">-</div><div class="kpi-label">📊 Rata-rata PCT Inc Mikro (hari)</div><div class="kpi-sub" id="kpiOralCountInc">0 Batch</div></div>
+<div class="kpi-card oral"><div class="kpi-value" id="kpiOralAvgExc">-</div><div class="kpi-label">📊 Rata-rata PCT Exc Mikro (hari)</div><div class="kpi-sub" id="kpiOralCountExc">0 Batch</div></div>
 <div class="kpi-card total"><div class="kpi-value" id="kpiOralTotal">0</div><div class="kpi-label">📦 Total Batch Oral</div><div class="kpi-sub" id="kpiOralOnGoing">On Going: 0</div></div>
-<div class="kpi-card" style="border-left-color:#2e7d32;"><div class="kpi-value" id="kpiOralDone">0</div><div class="kpi-label">✅ Selesai</div><div class="kpi-sub">Target: 6.8 hari</div></div>
 <div class="kpi-card" style="border-left-color:#f57c00;"><div class="kpi-value" id="kpiOralTarget">-</div><div class="kpi-label">🎯 On Target Rate</div><div class="kpi-sub" id="kpiOralTargetDetail">0 / 0 batch</div></div>
 </div>
+
 <div class="chart-card" style="margin-top:20px;">
-<h3>📋 Detail PCT per Batch - Oral (Target PCT Exc: 6.8 hari)</h3>
-<div class="table-container">
+<h3>📈 PCT Inc & Exc Mikro per Hari (Bulan Berjalan)</h3>
+<div class="chart-legend">
+<span><span class="dot" style="background:#6a1b9a;"></span> PCT Inc Mikro</span>
+<span><span class="dot" style="background:#ce93d8;"></span> PCT Exc Mikro</span>
+</div>
+<div class="chart-wrap" id="lineChartOral"><div class="empty-state"><p>Belum ada data</p></div></div>
+</div>
+
+<div class="chart-card">
+<h3>📊 PCT Inc per Batch vs Target (6.8 hari)</h3>
+<div class="chart-wrap" id="barChartOral"><div class="empty-state"><p>Belum ada data</p></div></div>
+</div>
+
+<div class="chart-card">
+<h3>📋 Detail PCT per Batch - Oral</h3>
+<div class="table-container" style="max-height:400px;overflow-y:auto;">
 <table>
-<thead><tr><th>BATCH</th><th>Kode</th><th>Kategori</th><th>Rilis</th><th>PCT inc</th><th>PCT exc</th><th>Target</th><th>Logistik</th><th>Produksi</th><th>QC</th><th>QA</th><th>Status</th></tr></thead>
-<tbody id="detailTableBodyOral"><tr><td colspan="12" style="text-align:center;color:#999;padding:30px;">Belum ada data</td></tr></tbody>
+<thead><tr>
+<th>BATCH NUMBER</th><th>Tanggal Rilis</th><th>PCT Site Inc Mikro</th><th>PCT Site Exc Mikro</th>
+<th>Logistik</th><th>Produksi</th><th>QC</th><th>QA</th>
+</tr></thead>
+<tbody id="detailTableBodyOral"><tr><td colspan="8" style="text-align:center;color:#999;padding:30px;">Belum ada data</td></tr></tbody>
 </table>
 </div>
 </div>
+
 <div class="chart-card">
 <h3>⏳ On Going - Oral</h3>
-<div class="table-container">
+<div class="table-container" style="max-height:400px;overflow-y:auto;">
 <table>
-<thead><tr><th>BATCH</th><th>Kategori</th><th>PCT On Going</th><th>Status</th><th>Estimasi LWS</th><th>Target Rilis</th></tr></thead>
+<thead><tr>
+<th>BATCH NUMBER</th><th>PCT On Going</th><th>Status</th><th>Estimasi LWS</th><th>Target Rilis</th><th>Keterangan</th>
+</tr></thead>
 <tbody id="onGoingTableBodyOral"><tr><td colspan="6" style="text-align:center;color:#999;padding:30px;">Tidak ada batch On Going</td></tr></tbody>
 </table>
 </div>
 </div>
 </div>
+
 <div id="dash-injeksi" class="dash-tab-content">
 <div class="filter-bar">
-<div><label>📅 Periode</label><select id="filterPeriodeInjeksi" onchange="renderDashboard()"><option value="all">Semua</option><option value="7">7 Hari</option><option value="30">30 Hari</option><option value="90">90 Hari</option></select></div>
-<div><label>🔍 Cari</label><input type="text" id="filterSearchInjeksi" placeholder="Nomor batch..." oninput="renderDashboard()"></div>
+<div><label>📅 Dari Tanggal</label><input type="date" id="filterFromInjeksi" onchange="renderDashboard()"></div>
+<div><label>📅 Sampai Tanggal</label><input type="date" id="filterToInjeksi" onchange="renderDashboard()"></div>
+<div><label>🔍 Batch Number</label><input type="text" id="filterSearchInjeksi" placeholder="Cari..." oninput="renderDashboard()"></div>
 <div><label>🏷️ Kategori</label><select id="filterKategoriInjeksi" onchange="renderDashboard()"><option value="all">Semua</option><option value="Rutin">Rutin</option><option value="Validasi">Validasi</option><option value="Study">Study</option></select></div>
 <button class="btn btn-primary btn-sm" onclick="resetFilter('injeksi')">Reset</button>
 </div>
 <div class="grid-4">
-<div class="kpi-card injeksi"><div class="kpi-value" id="kpiInjeksiAvgDash">-</div><div class="kpi-label">📊 Rata-rata PCT Exc Injeksi (hari)</div><div class="kpi-sub" id="kpiInjeksiCountDash">0 Batch</div></div>
+<div class="kpi-card injeksi"><div class="kpi-value" id="kpiInjeksiAvgInc">-</div><div class="kpi-label">📊 Rata-rata PCT Inc Mikro (hari)</div><div class="kpi-sub" id="kpiInjeksiCountInc">0 Batch</div></div>
+<div class="kpi-card injeksi"><div class="kpi-value" id="kpiInjeksiAvgExc">-</div><div class="kpi-label">📊 Rata-rata PCT Exc Mikro (hari)</div><div class="kpi-sub" id="kpiInjeksiCountExc">0 Batch</div></div>
 <div class="kpi-card total"><div class="kpi-value" id="kpiInjeksiTotal">0</div><div class="kpi-label">📦 Total Batch Injeksi</div><div class="kpi-sub" id="kpiInjeksiOnGoing">On Going: 0</div></div>
-<div class="kpi-card" style="border-left-color:#2e7d32;"><div class="kpi-value" id="kpiInjeksiDone">0</div><div class="kpi-label">✅ Selesai</div><div class="kpi-sub">Target: 16 hari</div></div>
 <div class="kpi-card" style="border-left-color:#f57c00;"><div class="kpi-value" id="kpiInjeksiTarget">-</div><div class="kpi-label">🎯 On Target Rate</div><div class="kpi-sub" id="kpiInjeksiTargetDetail">0 / 0 batch</div></div>
 </div>
+
 <div class="chart-card" style="margin-top:20px;">
-<h3>📋 Detail PCT per Batch - Injeksi (Target PCT Exc: 16 hari)</h3>
-<div class="table-container">
+<h3>📈 PCT Inc & Exc Mikro per Hari (Bulan Berjalan)</h3>
+<div class="chart-legend">
+<span><span class="dot" style="background:#0d47a1;"></span> PCT Inc Mikro</span>
+<span><span class="dot" style="background:#64b5f6;"></span> PCT Exc Mikro</span>
+</div>
+<div class="chart-wrap" id="lineChartInjeksi"><div class="empty-state"><p>Belum ada data</p></div></div>
+</div>
+
+<div class="chart-card">
+<h3>📊 PCT Inc per Batch vs Target (16 hari)</h3>
+<div class="chart-wrap" id="barChartInjeksi"><div class="empty-state"><p>Belum ada data</p></div></div>
+</div>
+
+<div class="chart-card">
+<h3>📋 Detail PCT per Batch - Injeksi</h3>
+<div class="table-container" style="max-height:400px;overflow-y:auto;">
 <table>
-<thead><tr><th>BATCH</th><th>Kode</th><th>Kategori</th><th>Rilis</th><th>PCT inc</th><th>PCT exc</th><th>Target</th><th>Logistik</th><th>Produksi</th><th>QC</th><th>QA</th><th>Status</th></tr></thead>
-<tbody id="detailTableBodyInjeksi"><tr><td colspan="12" style="text-align:center;color:#999;padding:30px;">Belum ada data</td></tr></tbody>
+<thead><tr>
+<th>BATCH NUMBER</th><th>Tanggal Rilis</th><th>PCT Site Inc Mikro</th><th>PCT Site Exc Mikro</th>
+<th>Logistik</th><th>Produksi</th><th>QC</th><th>QA</th>
+</tr></thead>
+<tbody id="detailTableBodyInjeksi"><tr><td colspan="8" style="text-align:center;color:#999;padding:30px;">Belum ada data</td></tr></tbody>
+</table>
+</div>
+</div>
+
+<div class="chart-card">
+<h3>⏳ On Going - Injeksi</h3>
+<div class="table-container" style="max-height:400px;overflow-y:auto;">
+<table>
+<thead><tr>
+<th>BATCH NUMBER</th><th>PCT On Going</th><th>Status</th><th>Estimasi LWS</th><th>Target Rilis</th><th>Keterangan</th>
+</tr></thead>
+<tbody id="onGoingTableBodyInjeksi"><tr><td colspan="6" style="text-align:center;color:#999;padding:30px;">Tidak ada batch On Going</td></tr></tbody>
 </table>
 </div>
 </div>
@@ -408,6 +521,9 @@ table tr:hover { background: #fafafa; }
 </div>
 </div>
 
+<!-- CHART TOOLTIP -->
+<div class="chart-tooltip" id="chartTooltip"></div>
+
 <script>
 let data = { personil: [], products: [], batches: [], auditLog: [] };
 let currentUser = null;
@@ -416,10 +532,9 @@ let editingBatchId = null;
 
 const DEPT_PAGES = { 'PPIC': ['ppic'], 'Produksi': ['produksi'], 'Logistic': ['logistic'], 'QC': ['qc'], 'QA': ['qa'], 'Management': ['management'] };
 
-// ============ TARGET PCT PER TIPE (dalam hari) ============
 const TARGET_PCT_PER_TIPE = {
-    'injeksi': 16,     // 16 hari = 384 jam
-    'oral': 6.8        // 6.8 hari = 163.2 jam
+    'injeksi': 16,
+    'oral': 6.8
 };
 function getTargetPCT(b) {
     return TARGET_PCT_PER_TIPE[b.type] || null;
@@ -460,6 +575,12 @@ function displayDT(raw) {
     if (isNaN(d.getTime())) return raw;
     return d.toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric'}) + ' ' + d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
 }
+function displayShort(raw) {
+    if (!raw) return '-';
+    const d = new Date(raw);
+    if (isNaN(d.getTime())) return raw;
+    return d.toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'2-digit'});
+}
 
 function rawDT(stored) {
     if (!stored) return '';
@@ -491,8 +612,6 @@ function getStatusBadge(actual, target) {
     return `<span class="status-badge ${getStatusClass(actual, target)}">${getStatusText(actual, target)}</span>`;
 }
 
-// ============ HELPER: HITUNG START untuk OVER-CHECK ============
-// Khusus QA: MAX(tanggalSelesaiMikro, tanggalKirimDokumen)
 function getQALatestStart(b) {
     const tMk = parseDate(b.tanggalSelesaiMikro);
     const tKirim = parseDate(b.tanggalKirimDokumen);
@@ -511,7 +630,6 @@ function inputProdLengkap(b) { return !!(b.tanggalBPP && b.tanggalKirimDokumen);
 function qcLengkap(b) { return !!(b.tanggalTerimaSample && b.estimasiLWS && b.tanggalSelesaiKimia && b.tanggalSelesaiMikro); }
 function qaLengkap(b) { return !!b.tanggalRilis; }
 
-// ============ CEK KELENGKAPAN SEBELUM RILIS ============
 function cekKelengkapan(b) {
     const belum = [];
     if (!b.jadwalRawMaterial) belum.push('📅 Jadwal Permintaan Raw Material (Kanban Produksi)');
@@ -532,7 +650,6 @@ function cekKelengkapan(b) {
     return belum;
 }
 
-// ============ HITUNG STATUS BATCH ============
 function hitungStatus(b) {
     if (qaLengkap(b)) return 'done';
     if (qcLengkap(b)) {
@@ -618,6 +735,7 @@ function showMainApp() {
     else if (currentUser.role === 'user') ui.textContent = `👤 ${currentUser.name} - ${currentUser.department}`;
     else ui.textContent = '👤 Guest';
     updateNavigation();
+    initDateFilters();
     renderAll();
     showPage('dashboard');
 }
@@ -686,6 +804,23 @@ document.querySelectorAll('.tab-btn[data-logtab]').forEach(btn => {
         renderAll();
     });
 });
+
+// ============ INIT DATE FILTERS (default: bulan berjalan) ============
+function initDateFilters() {
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const fmt = d => {
+        const pad = n => String(n).padStart(2,'0');
+        return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    };
+    ['Oral','Injeksi'].forEach(t => {
+        const f = document.getElementById('filterFrom' + t);
+        const to = document.getElementById('filterTo' + t);
+        if (f && !f.value) f.value = fmt(firstDay);
+        if (to && !to.value) to.value = fmt(lastDay);
+    });
+}
 
 // ============ PERSONIL & PRODUCT ============
 function addPersonil() {
@@ -886,7 +1021,6 @@ function checkOverPreview(bid, field, inputId, ketField, startRaw, targetHours) 
     </div>`;
 }
 
-// ============ SAVE FIELD ============
 function doSaveField(bid, field, ketField, startRaw, targetHours, inputId) {
     const input = document.getElementById(inputId);
     if (!input || !input.value) { showNotification('Isi field terlebih dahulu!', 'error'); return false; }
@@ -915,7 +1049,6 @@ function doSaveField(bid, field, ketField, startRaw, targetHours, inputId) {
     return true;
 }
 
-// ============ CHECKBOX ============
 function saveCheckbox(bid, field, checked) {
     const b = data.batches.find(x => x.id === bid);
     if (!b) return;
@@ -924,7 +1057,7 @@ function saveCheckbox(bid, field, checked) {
     saveData(); renderAll();
 }
 
-// ============ CALCULATE PCT (RUMUS BARU) ============
+// ============ CALCULATE PCT ============
 function calculatePCT(b) {
     const tT = parseDate(b.tanggalTimbang);
     const tS = parseDate(b.tanggalSerahTerima);
@@ -967,7 +1100,6 @@ function calculatePCT(b) {
 function renderScoreCard(b, actionHtml = '', showEditDelete = false) {
     if (!b) return '';
     const status = hitungStatus(b);
-
     const c = calculatePCT(b);
     const targetPCT = getTargetPCT(b);
     const ctClass = (c.pctExclude !== null && targetPCT !== null) ? (c.pctExclude <= targetPCT ? 'on-target' : 'over') : 'default';
@@ -1046,7 +1178,6 @@ function renderScoreCard(b, actionHtml = '', showEditDelete = false) {
 }
 
 // ============ RENDER FIELD ============
-// Field yang punya over-check: SerahTerima RM, KirimDokumen, SelesaiMikro, TanggalRilis
 function renderEditableField(cfg) {
     const { b, field, label, icon, ketField, startField, targetHours, optional, dynamicStart } = cfg;
     const saved = !!b[field];
@@ -1054,15 +1185,10 @@ function renderEditableField(cfg) {
     const inputId = `in_${field}_${b.id}`;
     const ketBoxId = `ketbox_${field}_${b.id}`;
 
-    // Hitung start raw — bisa static (dari field) atau dynamic (fungsi)
     let startRaw = null;
-    if (dynamicStart) {
-        startRaw = dynamicStart(b);
-    } else if (startField) {
-        startRaw = b[startField] || null;
-    }
+    if (dynamicStart) startRaw = dynamicStart(b);
+    else if (startField) startRaw = b[startField] || null;
 
-    // AUTO-RECALCULATE: setiap render cek over-target
     let overInfo = null;
     if (saved && startRaw && targetHours) {
         const dur = diffHours(parseDate(startRaw), parseDate(b[field]));
@@ -1096,13 +1222,10 @@ function renderEditableField(cfg) {
 }
 
 // ============ KANBAN PRODUKSI ============
-// ⚠️ Jadwal Permintaan: TIDAK ada over-check
 function renderKanbanProduksi() {
     const c = document.getElementById('kanbanProduksi');
     if (!c) return;
-    const batches = data.batches.filter(b =>
-        !allLogisticLengkap(b) && !inputProdLengkap(b) && !qcLengkap(b) && !qaLengkap(b)
-    );
+    const batches = data.batches.filter(b => !allLogisticLengkap(b) && !inputProdLengkap(b) && !qcLengkap(b) && !qaLengkap(b));
     if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch aktif di Kanban Produksi</p></div>'; return; }
 
     c.innerHTML = batches.map(b => {
@@ -1131,7 +1254,6 @@ function renderKanbanProduksi() {
 }
 
 // ============ LOGISTIC RAW MATERIAL ============
-// ✅ Over-check HANYA di SerahTerima RM (start: Timbang, target: targetTimbang)
 function renderLogisticRawMaterial() {
     const c = document.getElementById('logisticRawMaterial');
     if (!c) return;
@@ -1152,7 +1274,6 @@ function renderLogisticRawMaterial() {
 }
 
 // ============ LOGISTIC WADAH ============
-// ❌ Tidak ada over-check
 function renderLogisticWadah() {
     const c = document.getElementById('logisticWadah');
     if (!c) return;
@@ -1179,7 +1300,6 @@ function renderLogisticWadah() {
 }
 
 // ============ LOGISTIC KEMAS ============
-// ❌ Tidak ada over-check
 function renderLogisticKemas() {
     const c = document.getElementById('logisticKemas');
     if (!c) return;
@@ -1206,13 +1326,10 @@ function renderLogisticKemas() {
 }
 
 // ============ INPUT PRODUKSI ============
-// ✅ Over-check HANYA di KirimDokumen (start: BPP, target: targetProduksi)
 function renderInputProduksi() {
     const c = document.getElementById('inputProduksi');
     if (!c) return;
-    const batches = data.batches.filter(b =>
-        rmLengkap(b) && !inputProdLengkap(b) && !qcLengkap(b) && !qaLengkap(b)
-    );
+    const batches = data.batches.filter(b => rmLengkap(b) && !inputProdLengkap(b) && !qcLengkap(b) && !qaLengkap(b));
     if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch siap input produksi. Menunggu Raw Material selesai.</p></div>'; return; }
 
     c.innerHTML = batches.map(b => {
@@ -1236,13 +1353,10 @@ function renderInputProduksi() {
 }
 
 // ============ QC ============
-// ✅ Over-check HANYA di SelesaiMikro (start: TerimaSample, target: targetAnalisa)
 function renderQC() {
     const c = document.getElementById('qcList');
     if (!c) return;
-    const batches = data.batches.filter(b =>
-        inputProdLengkap(b) && !qcLengkap(b) && !qaLengkap(b)
-    );
+    const batches = data.batches.filter(b => inputProdLengkap(b) && !qcLengkap(b) && !qaLengkap(b));
     if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch di QC.</p></div>'; return; }
 
     c.innerHTML = batches.map(b => {
@@ -1260,7 +1374,6 @@ function renderQC() {
 }
 
 // ============ QA ============
-// ✅ Over-check di TanggalRilis (start: MAX(Mikro, KirimDok), target: targetPerilisan)
 function renderQA() {
     const c = document.getElementById('qaList');
     if (!c) return;
@@ -1270,7 +1383,6 @@ function renderQA() {
     c.innerHTML = batches.map(b => {
         const belum = cekKelengkapan(b);
         const lengkap = belum.length === 0;
-
         let warningHtml = '';
         if (!lengkap) {
             warningHtml = `<div style="background:#ffebee;border-left:4px solid #c62828;padding:10px 14px;border-radius:6px;margin-bottom:12px;">
@@ -1291,15 +1403,7 @@ function renderQA() {
                 ${warningHtml}
                 <div class="section-title">✅ Quality Assurance</div>
                 <div class="jadwal-container">
-                    ${renderEditableField({ 
-                        b, 
-                        field: 'tanggalRilis', 
-                        label: 'Tanggal Rilis', 
-                        icon: '🎉', 
-                        ketField: 'ket_qa', 
-                        dynamicStart: getQALatestStart,
-                        targetHours: b.targetPerilisan 
-                    })}
+                    ${renderEditableField({ b, field: 'tanggalRilis', label: 'Tanggal Rilis', icon: '🎉', ketField: 'ket_qa', dynamicStart: getQALatestStart, targetHours: b.targetPerilisan })}
                 </div>
             `;
         } else {
@@ -1327,37 +1431,56 @@ function renderPPIC() {
     c.innerHTML = data.batches.map(b => renderScoreCard(b, '', true)).join('');
 }
 
-// ============ DASHBOARD ============
+// ============ DASHBOARD (REVAMPED) ============
 function renderDashboard() {
     const t = currentDashTab;
-    const pEl = document.getElementById(t === 'oral' ? 'filterPeriodeOral' : 'filterPeriodeInjeksi');
+    const pEl = document.getElementById(t === 'oral' ? 'filterFromOral' : 'filterFromInjeksi');
+    const toEl = document.getElementById(t === 'oral' ? 'filterToOral' : 'filterToInjeksi');
     const sEl = document.getElementById(t === 'oral' ? 'filterSearchOral' : 'filterSearchInjeksi');
     const kEl = document.getElementById(t === 'oral' ? 'filterKategoriOral' : 'filterKategoriInjeksi');
-    const periode = pEl?.value || 'all';
+
+    const fromDate = pEl?.value ? new Date(pEl.value + 'T00:00:00') : null;
+    const toDate = toEl?.value ? new Date(toEl.value + 'T23:59:59') : null;
     const search = (sEl?.value || '').toLowerCase();
     const kat = kEl?.value || 'all';
 
     let batches = data.batches.filter(b => b.type === t);
     if (search) batches = batches.filter(b => b.batchNumber.toLowerCase().includes(search));
     if (kat !== 'all') batches = batches.filter(b => (b.kategori || '') === kat);
-    if (periode !== 'all') {
-        const d = parseInt(periode);
-        const co = new Date(); co.setDate(co.getDate() - d);
-        batches = batches.filter(b => { const x = parseDate(b.createdAt); return x && x >= co; });
+
+    // Filter tanggal: untuk done → by tanggalRilis, untuk on going → by createdAt
+    if (fromDate || toDate) {
+        batches = batches.filter(b => {
+            const refDate = b.tanggalRilis ? parseDate(b.tanggalRilis) : parseDate(b.createdAt);
+            if (!refDate) return false;
+            if (fromDate && refDate < fromDate) return false;
+            if (toDate && refDate > toDate) return false;
+            return true;
+        });
     }
+
     updateKPIDash(t, batches);
+    renderLineChartDash(t, batches);
+    renderBarChartDash(t, batches);
     renderDetailTableDash(t, batches);
-    if (t === 'oral') renderOnGoingTableDash(t, batches);
+    renderOnGoingTableDash(t, batches);
 }
 
 function updateKPIDash(t, batches) {
     const done = batches.filter(b => qaLengkap(b));
     const og = batches.filter(b => !qaLengkap(b)).length;
-    let avg = '-', count = 0;
+
+    let avgInc = '-', countInc = 0;
+    if (done.length) {
+        const tot = done.map(b => calculatePCT(b).pctInclude).filter(v => v !== null);
+        if (tot.length) { avgInc = (tot.reduce((a,b)=>a+b,0) / tot.length).toFixed(2); countInc = tot.length; }
+    }
+    let avgExc = '-', countExc = 0;
     if (done.length) {
         const tot = done.map(b => calculatePCT(b).pctExclude).filter(v => v !== null);
-        if (tot.length) { avg = (tot.reduce((a,b)=>a+b,0) / tot.length).toFixed(2); count = tot.length; }
+        if (tot.length) { avgExc = (tot.reduce((a,b)=>a+b,0) / tot.length).toFixed(2); countExc = tot.length; }
     }
+
     let ot = 0, td = 0;
     done.forEach(b => {
         const c = calculatePCT(b);
@@ -1369,64 +1492,313 @@ function updateKPIDash(t, batches) {
     });
     const rate = td > 0 ? Math.round((ot/td)*100) : 0;
     const p = t === 'oral' ? 'Oral' : 'Injeksi';
-    document.getElementById(`kpi${p}AvgDash`).textContent = avg;
-    document.getElementById(`kpi${p}CountDash`).textContent = count + ' Batch';
+
+    document.getElementById(`kpi${p}AvgInc`).textContent = avgInc;
+    document.getElementById(`kpi${p}CountInc`).textContent = countInc + ' Batch';
+    document.getElementById(`kpi${p}AvgExc`).textContent = avgExc;
+    document.getElementById(`kpi${p}CountExc`).textContent = countExc + ' Batch';
     document.getElementById(`kpi${p}Total`).textContent = batches.length;
     document.getElementById(`kpi${p}OnGoing`).textContent = 'On Going: ' + og;
-    document.getElementById(`kpi${p}Done`).textContent = done.length;
     document.getElementById(`kpi${p}Target`).textContent = rate + '%';
     document.getElementById(`kpi${p}TargetDetail`).textContent = ot + ' / ' + td + ' batch';
 }
 
+// ============ LINE CHART (per hari bulan berjalan) ============
+function renderLineChartDash(t, batches) {
+    const container = document.getElementById(t === 'oral' ? 'lineChartOral' : 'lineChartInjeksi');
+    if (!container) return;
+    const done = batches.filter(b => qaLengkap(b) && b.tanggalRilis);
+    if (!done.length) { container.innerHTML = '<div class="empty-state"><p>Belum ada data</p></div>'; return; }
+
+    // Bulan berjalan
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    // Group by day (tanggal rilis)
+    const groups = {};
+    done.forEach(b => {
+        const d = parseDate(b.tanggalRilis);
+        if (!d) return;
+        if (d.getFullYear() !== year || d.getMonth() !== month) return;
+        const day = d.getDate();
+        if (!groups[day]) groups[day] = [];
+        const c = calculatePCT(b);
+        groups[day].push(c);
+    });
+
+    // Siapkan data per hari
+    const points = [];
+    for (let day = 1; day <= daysInMonth; day++) {
+        if (groups[day] && groups[day].length) {
+            const incArr = groups[day].map(c => c.pctInclude).filter(v => v !== null);
+            const excArr = groups[day].map(c => c.pctExclude).filter(v => v !== null);
+            points.push({
+                day,
+                inc: incArr.length ? incArr.reduce((a,b)=>a+b,0)/incArr.length : null,
+                exc: excArr.length ? excArr.reduce((a,b)=>a+b,0)/excArr.length : null,
+                count: groups[day].length
+            });
+        } else {
+            points.push({ day, inc: null, exc: null, count: 0 });
+        }
+    }
+
+    const activePoints = points.filter(p => p.inc !== null || p.exc !== null);
+    if (!activePoints.length) { container.innerHTML = '<div class="empty-state"><p>Belum ada data di bulan ini</p></div>'; return; }
+
+    // SVG
+    const W = container.clientWidth || 800;
+    const H = 260;
+    const padL = 45, padR = 20, padT = 20, padB = 40;
+    const chartW = W - padL - padR;
+    const chartH = H - padT - padB;
+    const maxVal = Math.max(...activePoints.map(p => Math.max(p.inc || 0, p.exc || 0)), 1) * 1.15;
+
+    const xStep = chartW / (points.length - 1 || 1);
+    const xPos = i => padL + i * xStep;
+    const yPos = v => padT + chartH - (v / maxVal) * chartH;
+
+    // Grid + Y-axis
+    let svg = `<svg class="line-chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">`;
+    for (let i = 0; i <= 4; i++) {
+        const y = padT + (chartH / 4) * i;
+        const val = maxVal - (maxVal / 4) * i;
+        svg += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="#e0e0e0" stroke-dasharray="2,2"/>`;
+        svg += `<text x="${padL-8}" y="${y+4}" text-anchor="end" font-size="10" fill="#666">${val.toFixed(1)}</text>`;
+    }
+
+    // X-axis labels (setiap 2 hari biar ga penuh)
+    points.forEach((p, i) => {
+        if (p.day % 2 === 1 || p.day === daysInMonth) {
+            svg += `<text x="${xPos(i)}" y="${H-15}" text-anchor="middle" font-size="9" fill="#666">${p.day}</text>`;
+        }
+    });
+
+    // Build path untuk Inc & Exc
+    const buildPath = key => {
+        let path = '';
+        let started = false;
+        points.forEach((p, i) => {
+            if (p[key] !== null) {
+                if (!started) { path += `M ${xPos(i)} ${yPos(p[key])}`; started = true; }
+                else path += ` L ${xPos(i)} ${yPos(p[key])}`;
+            }
+        });
+        return path;
+    };
+
+    const incPath = buildPath('inc');
+    const excPath = buildPath('exc');
+    const incColor = t === 'oral' ? '#6a1b9a' : '#0d47a1';
+    const excColor = t === 'oral' ? '#ce93d8' : '#64b5f6';
+
+    if (incPath) svg += `<path d="${incPath}" stroke="${incColor}" stroke-width="2.5" fill="none" stroke-linejoin="round"/>`;
+    if (excPath) svg += `<path d="${excPath}" stroke="${excColor}" stroke-width="2.5" fill="none" stroke-linejoin="round"/>`;
+
+    // Dots + hover
+    points.forEach((p, i) => {
+        if (p.inc !== null) {
+            svg += `<circle cx="${xPos(i)}" cy="${yPos(p.inc)}" r="4" fill="${incColor}" stroke="white" stroke-width="2" style="cursor:pointer;"
+                onmouseover="showChartTooltip(event, 'Tanggal ${p.day}/${month+1}<br>📊 PCT Inc Mikro: <b>${p.inc.toFixed(2)} hari</b><br>📦 ${p.count} batch')"
+                onmouseout="hideChartTooltip()"/>`;
+        }
+        if (p.exc !== null) {
+            svg += `<circle cx="${xPos(i)}" cy="${yPos(p.exc)}" r="4" fill="${excColor}" stroke="white" stroke-width="2" style="cursor:pointer;"
+                onmouseover="showChartTooltip(event, 'Tanggal ${p.day}/${month+1}<br>📊 PCT Exc Mikro: <b>${p.exc.toFixed(2)} hari</b><br>📦 ${p.count} batch')"
+                onmouseout="hideChartTooltip()"/>`;
+        }
+    });
+
+    svg += `</svg>`;
+    container.innerHTML = svg;
+}
+
+// ============ BAR CHART (per batch + target line) ============
+function renderBarChartDash(t, batches) {
+    const container = document.getElementById(t === 'oral' ? 'barChartOral' : 'barChartInjeksi');
+    if (!container) return;
+    const done = batches.filter(b => qaLengkap(b));
+    if (!done.length) { container.innerHTML = '<div class="empty-state"><p>Belum ada data</p></div>'; return; }
+
+    // Urutkan by tanggal rilis, ambil 15 terakhir
+    done.sort((a,b) => new Date(a.tanggalRilis) - new Date(b.tanggalRilis));
+    const display = done.slice(-15);
+
+    const targetPCT = t === 'oral' ? 6.8 : 16;
+    const targetLabel = t === 'oral' ? '6.8 hari' : '16 hari';
+    const barColor = t === 'oral' ? '#6a1b9a' : '#0d47a1';
+
+    const W = container.clientWidth || 800;
+    const H = 280;
+    const padL = 45, padR = 20, padT = 30, padB = 70;
+    const chartW = W - padL - padR;
+    const chartH = H - padT - padB;
+
+    const maxVal = Math.max(...display.map(b => calculatePCT(b).pctInclude || 0), targetPCT) * 1.15;
+    const barW = Math.min(30, (chartW / display.length) * 0.6);
+    const gap = (chartW - (barW * display.length)) / (display.length + 1);
+
+    const yPos = v => padT + chartH - (v / maxVal) * chartH;
+
+    let svg = `<svg class="bar-chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">`;
+
+    // Grid + Y
+    for (let i = 0; i <= 4; i++) {
+        const y = padT + (chartH / 4) * i;
+        const val = maxVal - (maxVal / 4) * i;
+        svg += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="#e0e0e0" stroke-dasharray="2,2"/>`;
+        svg += `<text x="${padL-8}" y="${y+4}" text-anchor="end" font-size="10" fill="#666">${val.toFixed(1)}</text>`;
+    }
+
+    // Bars
+    display.forEach((b, i) => {
+        const c = calculatePCT(b);
+        const val = c.pctInclude || 0;
+        const x = padL + gap + i * (barW + gap);
+        const y = yPos(val);
+        const h = padT + chartH - y;
+        const isOver = val > targetPCT;
+        const fill = isOver ? '#c62828' : barColor;
+
+        svg += `<rect x="${x}" y="${y}" width="${barW}" height="${h}" fill="${fill}" rx="3" style="cursor:pointer;"
+            onmouseover="showChartTooltip(event, '<b>${b.batchNumber}</b><br>📊 PCT Inc: ${c.pctInclude !== null ? c.pctInclude.toFixed(2) : '-'} hari<br>📊 PCT Exc: ${c.pctExclude !== null ? c.pctExclude.toFixed(2) : '-'} hari<br>🎯 Target: ${targetLabel}<br>${isOver ? '❌ Over Target' : '✅ On Target'}')"
+            onmouseout="hideChartTooltip()"/>`;
+        // Label nilai
+        svg += `<text x="${x + barW/2}" y="${y - 5}" text-anchor="middle" font-size="9" font-weight="600" fill="#333">${val.toFixed(1)}</text>`;
+        // Label batch (rotate)
+        svg += `<text x="${x + barW/2}" y="${H - 45}" text-anchor="end" font-size="9" fill="#666" transform="rotate(-45 ${x + barW/2} ${H-45})">${b.batchNumber}</text>`;
+    });
+
+    // Garis target
+    const targetY = yPos(targetPCT);
+    svg += `<line x1="${padL}" y1="${targetY}" x2="${W-padR}" y2="${targetY}" stroke="#c62828" stroke-width="2" stroke-dasharray="6,4"/>`;
+    svg += `<text x="${W-padR-5}" y="${targetY-5}" text-anchor="end" font-size="11" font-weight="700" fill="#c62828">Target ${targetLabel}</text>`;
+
+    svg += `</svg>`;
+    container.innerHTML = svg;
+}
+
+// ============ DETAIL TABLE (DONE) dengan TOOLTIP ============
 function renderDetailTableDash(t, batches) {
     const tb = document.getElementById(t === 'oral' ? 'detailTableBodyOral' : 'detailTableBodyInjeksi');
     if (!tb) return;
     const doneB = batches.filter(b => qaLengkap(b));
-    if (!doneB.length) { tb.innerHTML = '<tr><td colspan="12" style="text-align:center;color:#999;padding:30px;">Belum ada data</td></tr>'; return; }
+    if (!doneB.length) { tb.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#999;padding:30px;">Belum ada data</td></tr>'; return; }
     doneB.sort((a,b) => new Date(b.tanggalRilis) - new Date(a.tanggalRilis));
+
     tb.innerHTML = doneB.map(b => {
         const c = calculatePCT(b);
-        const targetHari = getTargetPCT(b);
-        const targetLabel = t === 'oral' ? '6.8 hari' : '16 hari';
-        const badge = getStatusBadge(c.pctExclude, targetHari);
+
+        // Buat cell dengan tooltip keterangan over
+        const cellWithTooltip = (val, ket, stageName, startLabel, targetLabel) => {
+            const hasKet = ket && ket.trim() !== '';
+            const cls = hasKet ? 'cell-tooltip has-ket' : 'cell-tooltip';
+            const display = val !== null ? val.toFixed(2) : '-';
+            let tooltip = '';
+            if (hasKet) {
+                tooltip = `<div class="tooltip-box warning">
+                    <div style="font-weight:700;margin-bottom:4px;">⚠️ ${stageName} - Over Target</div>
+                    <div style="margin-bottom:6px;font-size:10px;opacity:0.85;">${startLabel} → Target: ${targetLabel}</div>
+                    <div style="border-top:1px solid rgba(255,255,255,0.3);padding-top:6px;">📝 ${ket}</div>
+                </div>`;
+            }
+            return `<td class="${cls}">${display}${tooltip}</td>`;
+        };
+
+        const targetLabelLog = b.targetTimbang + ' jam';
+        const targetLabelProd = b.targetProduksi + ' jam';
+        const targetLabelQC = b.targetAnalisa + ' jam';
+        const targetLabelQA = b.targetPerilisan + ' jam';
+
         return `<tr>
             <td><strong>${b.batchNumber}</strong></td>
-            <td><span class="text-muted">${b.productCode}</span></td>
-            <td>${b.kategori ? getKategoriBadge(b.kategori) : '-'}</td>
-            <td>${displayDT(b.tanggalRilis)}</td>
+            <td>${displayShort(b.tanggalRilis)}</td>
             <td>${c.pctInclude !== null ? c.pctInclude.toFixed(2) : '-'}</td>
             <td><strong>${c.pctExclude !== null ? c.pctExclude.toFixed(2) : '-'}</strong></td>
-            <td><span class="badge-target ${t}">${targetLabel}</span></td>
-            <td>${c.logistik !== null ? c.logistik.toFixed(2) : '-'}</td>
-            <td>${c.produksi !== null ? c.produksi.toFixed(2) : '-'}</td>
-            <td>${c.qc !== null ? c.qc.toFixed(2) : '-'}</td>
-            <td>${c.qa !== null ? c.qa.toFixed(2) : '-'}</td>
-            <td>${badge}</td>
+            ${cellWithTooltip(c.logistik, b.ket_rawMaterial, 'Logistik', 'Timbang → Serah Terima', targetLabelLog)}
+            ${cellWithTooltip(c.produksi, b.ket_produksi, 'Produksi', 'BPP → Kirim Dokumen', targetLabelProd)}
+            ${cellWithTooltip(c.qc, b.ket_qc, 'QC', 'Terima Sample → Selesai Mikro', targetLabelQC)}
+            ${cellWithTooltip(c.qa, b.ket_qa, 'QA', 'MAX(Mikro, Kirim Dok) → Rilis', targetLabelQA)}
         </tr>`;
     }).join('');
 }
 
+// ============ ON GOING TABLE dengan KETERANGAN ============
 function renderOnGoingTableDash(t, batches) {
-    const tb = document.getElementById('onGoingTableBodyOral');
+    const tb = document.getElementById(t === 'oral' ? 'onGoingTableBodyOral' : 'onGoingTableBodyInjeksi');
     if (!tb) return;
     const og = batches.filter(b => !qaLengkap(b));
     if (!og.length) { tb.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;padding:30px;">Tidak ada batch On Going</td></tr>'; return; }
+
     tb.innerHTML = og.map(b => {
         const c = calculatePCT(b);
         const st = hitungStatus(b);
-        return `<tr><td><strong>${b.batchNumber}</strong></td><td>${b.kategori ? getKategoriBadge(b.kategori) : '-'}</td><td>${c.onGoing !== null ? c.onGoing.toFixed(2) + ' hari' : '-'}</td><td><span class="status-badge progress">${getStatusLabel(st)}</span></td><td>${b.tanggalTerimaSample ? displayDT(b.tanggalTerimaSample) : '-'}</td><td>${c.targetRilis ? displayDT(c.targetRilis) : '-'}</td></tr>`;
+
+        // Gabung semua keterangan wajib yang ada
+        const kets = [];
+        if (b.ket_rawMaterial && b.ket_rawMaterial.trim()) kets.push(`🚚 <b>Logistik:</b> ${b.ket_rawMaterial}`);
+        if (b.ket_produksi && b.ket_produksi.trim()) kets.push(`🏭 <b>Produksi:</b> ${b.ket_produksi}`);
+        if (b.ket_qc && b.ket_qc.trim()) kets.push(`🔬 <b>QC:</b> ${b.ket_qc}`);
+        if (b.ket_qa && b.ket_qa.trim()) kets.push(`✅ <b>QA:</b> ${b.ket_qa}`);
+        const ketHtml = kets.length 
+            ? `<div class="cell-tooltip has-ket" style="display:inline-block;padding:2px 8px;border-radius:4px;background:#fff3e0;color:#e65100;font-size:11px;font-weight:600;cursor:help;">
+                📝 ${kets.length} keterangan
+                <div class="tooltip-box warning" style="left:0;transform:none;width:280px;">
+                    <div style="font-weight:700;margin-bottom:6px;">📝 Keterangan Over Target:</div>
+                    ${kets.join('<br><br>')}
+                </div>
+              </div>`
+            : '<span class="text-muted">-</span>';
+
+        return `<tr>
+            <td><strong>${b.batchNumber}</strong></td>
+            <td>${c.onGoing !== null ? c.onGoing.toFixed(2) + ' hari' : '-'}</td>
+            <td><span class="status-badge progress">${getStatusLabel(st)}</span></td>
+            <td>${b.estimasiLWS ? displayShort(b.estimasiLWS) : '-'}</td>
+            <td>${c.targetRilis ? displayShort(c.targetRilis) : '-'}</td>
+            <td>${ketHtml}</td>
+        </tr>`;
     }).join('');
+}
+
+// ============ CHART TOOLTIP ============
+function showChartTooltip(e, html) {
+    const tip = document.getElementById('chartTooltip');
+    if (!tip) return;
+    tip.innerHTML = html;
+    tip.classList.add('show');
+    tip.style.left = (e.clientX + 12) + 'px';
+    tip.style.top = (e.clientY + 12) + 'px';
+}
+function hideChartTooltip() {
+    const tip = document.getElementById('chartTooltip');
+    if (tip) tip.classList.remove('show');
 }
 
 function resetFilter(t) {
     if (t === 'oral') {
-        document.getElementById('filterPeriodeOral').value = 'all';
         document.getElementById('filterSearchOral').value = '';
         document.getElementById('filterKategoriOral').value = 'all';
     } else {
-        document.getElementById('filterPeriodeInjeksi').value = 'all';
         document.getElementById('filterSearchInjeksi').value = '';
         document.getElementById('filterKategoriInjeksi').value = 'all';
+    }
+    // Reset tanggal ke bulan berjalan
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const fmt = d => {
+        const pad = n => String(n).padStart(2,'0');
+        return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    };
+    if (t === 'oral') {
+        document.getElementById('filterFromOral').value = fmt(firstDay);
+        document.getElementById('filterToOral').value = fmt(lastDay);
+    } else {
+        document.getElementById('filterFromInjeksi').value = fmt(firstDay);
+        document.getElementById('filterToInjeksi').value = fmt(lastDay);
     }
     renderDashboard();
 }
@@ -1485,6 +1857,13 @@ function renderAll() {
     renderProductList();
     if (currentUser?.role === 'admin') renderAudit();
 }
+
+// Re-render chart saat window resize
+let resizeTimer;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => renderDashboard(), 300);
+});
 
 loadData();
 console.log('📊 PCT Monitoring System Loaded');
