@@ -188,40 +188,67 @@ table tr:hover { background: #fafafa; }
 .chart-tooltip.show { display: block; }
 .chart-tooltip.warning { background: #c62828; }
 
-/* Tooltip untuk kolom tabel */
-.cell-tooltip { position: relative; cursor: help; }
-.cell-tooltip.has-ket { border-bottom: 1px dashed #f57c00; }
-.cell-tooltip:hover .tooltip-box { display: block; }
+/* ============ CELL TOOLTIP (NEW STYLE) ============ */
+.cell-tooltip { position: relative; }
+.cell-tooltip.has-ket {
+    cursor: pointer;
+    background: linear-gradient(135deg, #fff8e1 0%, #fff8e1 40%, #ffffff 40%, #ffffff 100%);
+    font-weight: 700;
+    color: #e65100;
+    position: relative;
+    padding-right: 22px;
+}
+.cell-tooltip.has-ket::after {
+    content: '💬';
+    position: absolute;
+    top: 50%;
+    right: 4px;
+    transform: translateY(-50%);
+    font-size: 11px;
+    animation: pulse 2s infinite;
+}
+.cell-tooltip.has-ket:hover {
+    background: #fff3e0 !important;
+}
+
+/* Global tooltip (diposisikan via JS) */
 .tooltip-box {
     display: none;
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
+    position: fixed;
     background: #1a237e;
     color: white;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 11px;
-    z-index: 100;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    z-index: 99999;
     white-space: normal;
-    width: 220px;
+    width: max-content;
+    max-width: 300px;
     line-height: 1.5;
-    margin-bottom: 5px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
     text-align: left;
+    pointer-events: none;
 }
+.tooltip-box.warning { background: #c62828; }
 .tooltip-box::after {
     content: '';
     position: absolute;
+    border: 7px solid transparent;
+}
+.tooltip-box.arrow-bottom::after {
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-bottom-color: #1a237e;
+}
+.tooltip-box.arrow-bottom.warning::after { border-bottom-color: #c62828; }
+.tooltip-box.arrow-top::after {
     top: 100%;
     left: 50%;
     transform: translateX(-50%);
-    border: 5px solid transparent;
     border-top-color: #1a237e;
 }
-.tooltip-box.warning { background: #c62828; }
-.tooltip-box.warning::after { border-top-color: #c62828; }
+.tooltip-box.arrow-top.warning::after { border-top-color: #c62828; }
 </style>
 </head>
 <body>
@@ -1092,8 +1119,22 @@ function renderScoreCard(b, actionHtml = '', showEditDelete = false) {
     const status = hitungStatus(b);
     const c = calculatePCT(b);
     const targetPCT = getTargetPCT(b);
-    const ctClass = (c.pctExclude !== null && targetPCT !== null) ? (c.pctExclude <= targetPCT ? 'on-target' : 'over') : 'default';
-    const ctDisp = c.pctExclude !== null ? c.pctExclude.toFixed(2) + ' hari' : (c.onGoing !== null ? c.onGoing.toFixed(2) + ' hari (on going)' : '-');
+
+    // Tentukan tampilan: kalau PCT Exc ada → pakai PCT Exc, kalau tidak → On Going
+    let ctClass, ctDisplay, ctLabel;
+    if (c.pctExclude !== null) {
+        ctLabel = 'PCT Exc';
+        ctDisplay = c.pctExclude.toFixed(2) + ' hari';
+        ctClass = (targetPCT !== null && c.pctExclude <= targetPCT) ? 'on-target' : 'over';
+    } else if (c.onGoing !== null) {
+        ctLabel = 'On Going';
+        ctDisplay = c.onGoing.toFixed(2) + ' hari';
+        ctClass = 'on-going';
+    } else {
+        ctLabel = 'PCT Exc';
+        ctDisplay = '-';
+        ctClass = 'default';
+    }
 
     const steps = [
         { key: 'produksi', l: 'Kanban' },
@@ -1158,7 +1199,7 @@ function renderScoreCard(b, actionHtml = '', showEditDelete = false) {
                 <span class="status ${status}">${getStatusLabel(status)}</span>
                 ${kb}
             </div>
-            <div><span class="total-ct ${ctClass}">⏱️ PCT Exc: ${ctDisp}</span></div>
+            <div><span class="total-ct ${ctClass}">⏱️ ${ctLabel}: ${ctDisplay}</span></div>
         </div>
         ${stepHtml}
         ${detailsHtml ? `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px;font-size:12px;margin-top:10px;">${detailsHtml}</div>` : ''}
@@ -1492,7 +1533,7 @@ function updateKPIDash(t, batches) {
     document.getElementById(`kpi${p}TargetDetail`).textContent = ot + ' / ' + td + ' batch';
 }
 
-// ============ LINE CHART (per tanggal rilis di bulan berjalan) ============
+// ============ LINE CHART ============
 function renderLineChartDash(t, batches) {
     const container = document.getElementById(t === 'oral' ? 'lineChartOral' : 'lineChartInjeksi');
     if (!container) return;
@@ -1578,7 +1619,6 @@ function renderLineChartDash(t, batches) {
     if (incData.path) svg += `<path d="${incData.path}" stroke="${incColor}" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
     if (excData.path) svg += `<path d="${excData.path}" stroke="${excColor}" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
 
-    // Dots + label inc
     points.forEach((p, i) => {
         if (p.inc !== null) {
             const x = xPos(i), y = yPos(p.inc);
@@ -1586,7 +1626,6 @@ function renderLineChartDash(t, batches) {
             svg += `<text x="${x}" y="${y-12}" text-anchor="middle" font-size="11" font-weight="700" fill="${incColor}">${p.inc.toFixed(2)}</text>`;
         }
     });
-    // Dots + label exc
     points.forEach((p, i) => {
         if (p.exc !== null) {
             const x = xPos(i), y = yPos(p.exc);
@@ -1683,7 +1722,7 @@ function renderBarChartDash(t, batches) {
     container.innerHTML = svg;
 }
 
-// ============ DETAIL TABLE (DONE) ============
+// ============ DETAIL TABLE (DONE) — TOOLTIP MODERN ============
 function renderDetailTableDash(t, batches) {
     const tb = document.getElementById(t === 'oral' ? 'detailTableBodyOral' : 'detailTableBodyInjeksi');
     if (!tb) return;
@@ -1693,19 +1732,22 @@ function renderDetailTableDash(t, batches) {
 
     tb.innerHTML = doneB.map(b => {
         const c = calculatePCT(b);
+
         const cellWithTooltip = (val, ket, stageName, startLabel, targetLabel) => {
             const hasKet = ket && ket.trim() !== '';
-            const cls = hasKet ? 'cell-tooltip has-ket' : 'cell-tooltip';
             const display = val !== null ? val.toFixed(2) : '-';
-            let tooltip = '';
-            if (hasKet) {
-                tooltip = `<div class="tooltip-box warning">
-                    <div style="font-weight:700;margin-bottom:4px;">⚠️ ${stageName} - Over Target</div>
-                    <div style="margin-bottom:6px;font-size:10px;opacity:0.85;">${startLabel} → Target: ${targetLabel}</div>
-                    <div style="border-top:1px solid rgba(255,255,255,0.3);padding-top:6px;">📝 ${ket}</div>
-                </div>`;
-            }
-            return `<td class="${cls}">${display}${tooltip}</td>`;
+            if (!hasKet) return `<td>${display}</td>`;
+
+            const tooltipData = encodeURIComponent(
+                `<div style="font-weight:700;margin-bottom:6px;">⚠️ ${stageName} - Over Target</div>
+                 <div style="font-size:10px;opacity:0.85;margin-bottom:6px;">${startLabel} • Target: ${targetLabel}</div>
+                 <div style="border-top:1px solid rgba(255,255,255,0.3);padding-top:6px;">📝 ${ket}</div>`
+            );
+
+            return `<td class="cell-tooltip has-ket" 
+                data-tooltip="${tooltipData}"
+                onmouseenter="showCellTooltip(event, this)"
+                onmouseleave="hideCellTooltip()">${display}</td>`;
         };
 
         return `<tr>
@@ -1737,15 +1779,19 @@ function renderOnGoingTableDash(t, batches) {
         if (b.ket_produksi && b.ket_produksi.trim()) kets.push(`🏭 <b>Produksi:</b> ${b.ket_produksi}`);
         if (b.ket_qc && b.ket_qc.trim()) kets.push(`🔬 <b>QC:</b> ${b.ket_qc}`);
         if (b.ket_qa && b.ket_qa.trim()) kets.push(`✅ <b>QA:</b> ${b.ket_qa}`);
-        const ketHtml = kets.length 
-            ? `<div class="cell-tooltip has-ket" style="display:inline-block;padding:2px 8px;border-radius:4px;background:#fff3e0;color:#e65100;font-size:11px;font-weight:600;cursor:help;">
-                📝 ${kets.length} keterangan
-                <div class="tooltip-box warning" style="left:0;transform:none;width:280px;">
-                    <div style="font-weight:700;margin-bottom:6px;">📝 Keterangan Over Target:</div>
-                    ${kets.join('<br><br>')}
-                </div>
-              </div>`
-            : '<span class="text-muted">-</span>';
+
+        let ketHtml = '<span class="text-muted">-</span>';
+        if (kets.length) {
+            const tooltipData = encodeURIComponent(
+                `<div style="font-weight:700;margin-bottom:8px;">📝 Keterangan Over Target (${kets.length}):</div>
+                 ${kets.map(k => `<div style="margin-bottom:6px;padding-bottom:6px;border-bottom:1px dashed rgba(255,255,255,0.2);">${k}</div>`).join('')}`
+            );
+            ketHtml = `<span class="cell-tooltip has-ket" 
+                style="display:inline-block;padding:2px 10px;border-radius:4px;background:#fff3e0;color:#e65100;font-size:11px;font-weight:600;cursor:pointer;"
+                data-tooltip="${tooltipData}"
+                onmouseenter="showCellTooltip(event, this)"
+                onmouseleave="hideCellTooltip()">📝 ${kets.length} keterangan</span>`;
+        }
 
         return `<tr>
             <td><strong>${b.batchNumber}</strong></td>
@@ -1757,6 +1803,61 @@ function renderOnGoingTableDash(t, batches) {
         </tr>`;
     }).join('');
 }
+
+// ============ CELL TOOLTIP (GLOBAL, POSISI DINAMIS) ============
+let cellTooltipEl = null;
+
+function showCellTooltip(e, cellEl) {
+    hideCellTooltip();
+    const encoded = cellEl.getAttribute('data-tooltip');
+    if (!encoded) return;
+    const html = decodeURIComponent(encoded);
+
+    const tip = document.createElement('div');
+    tip.className = 'tooltip-box warning';
+    tip.innerHTML = html;
+    document.body.appendChild(tip);
+    cellTooltipEl = tip;
+
+    // Ukur dulu biar bisa positioning
+    tip.style.visibility = 'hidden';
+    tip.style.display = 'block';
+    const rect = cellEl.getBoundingClientRect();
+    const tipRect = tip.getBoundingClientRect();
+
+    const spaceAbove = rect.top;
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const useTop = spaceAbove >= tipRect.height + 12 || spaceAbove > spaceBelow;
+
+    let top, left;
+
+    // Horizontal center, clamp ke window
+    left = rect.left + rect.width / 2 - tipRect.width / 2;
+    left = Math.max(8, Math.min(left, window.innerWidth - tipRect.width - 8));
+
+    if (useTop) {
+        top = rect.top - tipRect.height - 12;
+        tip.classList.add('arrow-bottom');
+    } else {
+        top = rect.bottom + 12;
+        tip.classList.add('arrow-top');
+    }
+
+    tip.style.top = top + 'px';
+    tip.style.left = left + 'px';
+    tip.style.visibility = 'visible';
+}
+
+function hideCellTooltip() {
+    if (cellTooltipEl) {
+        cellTooltipEl.remove();
+        cellTooltipEl = null;
+    }
+}
+
+// Hide tooltip kalau scroll
+window.addEventListener('scroll', hideCellTooltip, true);
+window.addEventListener('resize', hideCellTooltip);
 
 // ============ CHART TOOLTIP ============
 function showChartTooltip(e, html) {
