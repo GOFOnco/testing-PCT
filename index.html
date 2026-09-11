@@ -166,10 +166,10 @@ table tr:hover { background: #fafafa; }
 .info-banner.success { background: #e8f5e9; color: #1b5e20; border-left-color: #2e7d32; }
 .info-banner.danger { background: #ffebee; color: #b71c1c; border-left-color: #c62828; }
 
-/* ============ CHART STYLES ============ */
+/* CHART STYLES */
 .chart-wrap { position: relative; }
-.line-chart-svg { width: 100%; height: 260px; }
-.bar-chart-svg { width: 100%; height: 280px; }
+.line-chart-svg { width: 100%; height: auto; }
+.bar-chart-svg { width: 100%; height: auto; }
 .chart-tooltip {
     position: fixed;
     background: #1a237e;
@@ -187,8 +187,6 @@ table tr:hover { background: #fafafa; }
 }
 .chart-tooltip.show { display: block; }
 .chart-tooltip.warning { background: #c62828; }
-.chart-legend { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 10px; font-size: 12px; }
-.chart-legend .dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
 
 /* Tooltip untuk kolom tabel */
 .cell-tooltip { position: relative; cursor: help; }
@@ -288,10 +286,6 @@ table tr:hover { background: #fafafa; }
 
 <div class="chart-card" style="margin-top:20px;">
 <h3>📈 PCT Inc & Exc Mikro per Hari (Bulan Berjalan)</h3>
-<div class="chart-legend">
-<span><span class="dot" style="background:#6a1b9a;"></span> PCT Inc Mikro</span>
-<span><span class="dot" style="background:#ce93d8;"></span> PCT Exc Mikro</span>
-</div>
 <div class="chart-wrap" id="lineChartOral"><div class="empty-state"><p>Belum ada data</p></div></div>
 </div>
 
@@ -343,10 +337,6 @@ table tr:hover { background: #fafafa; }
 
 <div class="chart-card" style="margin-top:20px;">
 <h3>📈 PCT Inc & Exc Mikro per Hari (Bulan Berjalan)</h3>
-<div class="chart-legend">
-<span><span class="dot" style="background:#0d47a1;"></span> PCT Inc Mikro</span>
-<span><span class="dot" style="background:#64b5f6;"></span> PCT Exc Mikro</span>
-</div>
 <div class="chart-wrap" id="lineChartInjeksi"><div class="empty-state"><p>Belum ada data</p></div></div>
 </div>
 
@@ -805,7 +795,7 @@ document.querySelectorAll('.tab-btn[data-logtab]').forEach(btn => {
     });
 });
 
-// ============ INIT DATE FILTERS (default: bulan berjalan) ============
+// ============ INIT DATE FILTERS ============
 function initDateFilters() {
     const now = new Date();
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -1431,7 +1421,7 @@ function renderPPIC() {
     c.innerHTML = data.batches.map(b => renderScoreCard(b, '', true)).join('');
 }
 
-// ============ DASHBOARD (REVAMPED) ============
+// ============ DASHBOARD ============
 function renderDashboard() {
     const t = currentDashTab;
     const pEl = document.getElementById(t === 'oral' ? 'filterFromOral' : 'filterFromInjeksi');
@@ -1448,7 +1438,6 @@ function renderDashboard() {
     if (search) batches = batches.filter(b => b.batchNumber.toLowerCase().includes(search));
     if (kat !== 'all') batches = batches.filter(b => (b.kategori || '') === kat);
 
-    // Filter tanggal: untuk done → by tanggalRilis, untuk on going → by createdAt
     if (fromDate || toDate) {
         batches = batches.filter(b => {
             const refDate = b.tanggalRilis ? parseDate(b.tanggalRilis) : parseDate(b.createdAt);
@@ -1503,126 +1492,145 @@ function updateKPIDash(t, batches) {
     document.getElementById(`kpi${p}TargetDetail`).textContent = ot + ' / ' + td + ' batch';
 }
 
-// ============ LINE CHART (per hari bulan berjalan) ============
+// ============ LINE CHART (per tanggal rilis di bulan berjalan) ============
 function renderLineChartDash(t, batches) {
     const container = document.getElementById(t === 'oral' ? 'lineChartOral' : 'lineChartInjeksi');
     if (!container) return;
     const done = batches.filter(b => qaLengkap(b) && b.tanggalRilis);
     if (!done.length) { container.innerHTML = '<div class="empty-state"><p>Belum ada data</p></div>'; return; }
 
-    // Bulan berjalan
     const now = new Date();
     const year = now.getFullYear();
     const month = now.getMonth();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const bulanNama = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][month];
 
-    // Group by day (tanggal rilis)
     const groups = {};
     done.forEach(b => {
         const d = parseDate(b.tanggalRilis);
         if (!d) return;
         if (d.getFullYear() !== year || d.getMonth() !== month) return;
-        const day = d.getDate();
-        if (!groups[day]) groups[day] = [];
+        const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        if (!groups[key]) groups[key] = { date: d, inc: [], exc: [] };
         const c = calculatePCT(b);
-        groups[day].push(c);
+        if (c.pctInclude !== null) groups[key].inc.push(c.pctInclude);
+        if (c.pctExclude !== null) groups[key].exc.push(c.pctExclude);
     });
 
-    // Siapkan data per hari
-    const points = [];
-    for (let day = 1; day <= daysInMonth; day++) {
-        if (groups[day] && groups[day].length) {
-            const incArr = groups[day].map(c => c.pctInclude).filter(v => v !== null);
-            const excArr = groups[day].map(c => c.pctExclude).filter(v => v !== null);
-            points.push({
-                day,
-                inc: incArr.length ? incArr.reduce((a,b)=>a+b,0)/incArr.length : null,
-                exc: excArr.length ? excArr.reduce((a,b)=>a+b,0)/excArr.length : null,
-                count: groups[day].length
-            });
-        } else {
-            points.push({ day, inc: null, exc: null, count: 0 });
-        }
-    }
+    const sortedKeys = Object.keys(groups).sort();
+    if (!sortedKeys.length) { container.innerHTML = '<div class="empty-state"><p>Belum ada data di bulan ini</p></div>'; return; }
 
-    const activePoints = points.filter(p => p.inc !== null || p.exc !== null);
-    if (!activePoints.length) { container.innerHTML = '<div class="empty-state"><p>Belum ada data di bulan ini</p></div>'; return; }
+    const points = sortedKeys.map(k => {
+        const g = groups[k];
+        const avgInc = g.inc.length ? g.inc.reduce((a,b)=>a+b,0)/g.inc.length : null;
+        const avgExc = g.exc.length ? g.exc.reduce((a,b)=>a+b,0)/g.exc.length : null;
+        return {
+            date: g.date,
+            label: `${g.date.getDate()} ${bulanNama} ${g.date.getFullYear()}`,
+            inc: avgInc,
+            exc: avgExc
+        };
+    });
 
-    // SVG
-    const W = container.clientWidth || 800;
-    const H = 260;
-    const padL = 45, padR = 20, padT = 20, padB = 40;
+    const W = container.clientWidth || 1000;
+    const H = 320;
+    const padL = 55, padR = 30, padT = 30, padB = 70;
     const chartW = W - padL - padR;
     const chartH = H - padT - padB;
-    const maxVal = Math.max(...activePoints.map(p => Math.max(p.inc || 0, p.exc || 0)), 1) * 1.15;
 
-    const xStep = chartW / (points.length - 1 || 1);
-    const xPos = i => padL + i * xStep;
+    const allVals = points.flatMap(p => [p.inc, p.exc]).filter(v => v !== null);
+    const maxVal = Math.ceil(Math.max(...allVals, 1) * 1.15 / 2.5) * 2.5;
+    const yStep = maxVal / 5;
+
+    const xPos = i => points.length === 1 ? padL + chartW/2 : padL + (i / (points.length - 1)) * chartW;
     const yPos = v => padT + chartH - (v / maxVal) * chartH;
 
-    // Grid + Y-axis
-    let svg = `<svg class="line-chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">`;
-    for (let i = 0; i <= 4; i++) {
-        const y = padT + (chartH / 4) * i;
-        const val = maxVal - (maxVal / 4) * i;
-        svg += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="#e0e0e0" stroke-dasharray="2,2"/>`;
-        svg += `<text x="${padL-8}" y="${y+4}" text-anchor="end" font-size="10" fill="#666">${val.toFixed(1)}</text>`;
+    const incColor = t === 'oral' ? '#c2185b' : '#0d47a1';
+    const excColor = t === 'oral' ? '#80cbc4' : '#64b5f6';
+
+    let svg = `<svg class="line-chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;">`;
+
+    for (let i = 0; i <= 5; i++) {
+        const y = padT + (chartH / 5) * i;
+        const val = maxVal - yStep * i;
+        svg += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="#e8e8e8" stroke-width="1"/>`;
+        svg += `<text x="${padL-10}" y="${y+4}" text-anchor="end" font-size="11" fill="#888">${val % 1 === 0 ? val.toFixed(0) : val.toFixed(1)}</text>`;
     }
 
-    // X-axis labels (setiap 2 hari biar ga penuh)
-    points.forEach((p, i) => {
-        if (p.day % 2 === 1 || p.day === daysInMonth) {
-            svg += `<text x="${xPos(i)}" y="${H-15}" text-anchor="middle" font-size="9" fill="#666">${p.day}</text>`;
-        }
-    });
-
-    // Build path untuk Inc & Exc
     const buildPath = key => {
-        let path = '';
-        let started = false;
-        points.forEach((p, i) => {
-            if (p[key] !== null) {
-                if (!started) { path += `M ${xPos(i)} ${yPos(p[key])}`; started = true; }
-                else path += ` L ${xPos(i)} ${yPos(p[key])}`;
-            }
-        });
-        return path;
+        const pts = points.map((p, i) => p[key] !== null ? { x: xPos(i), y: yPos(p[key]) } : null).filter(x => x !== null);
+        if (pts.length === 0) return { path: '' };
+        if (pts.length === 1) return { path: `M ${pts[0].x} ${pts[0].y}` };
+        let d = `M ${pts[0].x} ${pts[0].y}`;
+        for (let i = 1; i < pts.length; i++) {
+            const prev = pts[i-1], cur = pts[i];
+            const cx1 = prev.x + (cur.x - prev.x) / 2;
+            const cy1 = prev.y;
+            const cx2 = prev.x + (cur.x - prev.x) / 2;
+            const cy2 = cur.y;
+            d += ` C ${cx1} ${cy1}, ${cx2} ${cy2}, ${cur.x} ${cur.y}`;
+        }
+        return { path: d };
     };
 
-    const incPath = buildPath('inc');
-    const excPath = buildPath('exc');
-    const incColor = t === 'oral' ? '#6a1b9a' : '#0d47a1';
-    const excColor = t === 'oral' ? '#ce93d8' : '#64b5f6';
+    const incData = buildPath('inc');
+    const excData = buildPath('exc');
 
-    if (incPath) svg += `<path d="${incPath}" stroke="${incColor}" stroke-width="2.5" fill="none" stroke-linejoin="round"/>`;
-    if (excPath) svg += `<path d="${excPath}" stroke="${excColor}" stroke-width="2.5" fill="none" stroke-linejoin="round"/>`;
+    if (incData.path) svg += `<path d="${incData.path}" stroke="${incColor}" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+    if (excData.path) svg += `<path d="${excData.path}" stroke="${excColor}" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
 
-    // Dots + hover
+    // Dots + label inc
     points.forEach((p, i) => {
         if (p.inc !== null) {
-            svg += `<circle cx="${xPos(i)}" cy="${yPos(p.inc)}" r="4" fill="${incColor}" stroke="white" stroke-width="2" style="cursor:pointer;"
-                onmouseover="showChartTooltip(event, 'Tanggal ${p.day}/${month+1}<br>📊 PCT Inc Mikro: <b>${p.inc.toFixed(2)} hari</b><br>📦 ${p.count} batch')"
-                onmouseout="hideChartTooltip()"/>`;
+            const x = xPos(i), y = yPos(p.inc);
+            svg += `<circle cx="${x}" cy="${y}" r="4.5" fill="${incColor}" stroke="white" stroke-width="2"/>`;
+            svg += `<text x="${x}" y="${y-12}" text-anchor="middle" font-size="11" font-weight="700" fill="${incColor}">${p.inc.toFixed(2)}</text>`;
         }
+    });
+    // Dots + label exc
+    points.forEach((p, i) => {
         if (p.exc !== null) {
-            svg += `<circle cx="${xPos(i)}" cy="${yPos(p.exc)}" r="4" fill="${excColor}" stroke="white" stroke-width="2" style="cursor:pointer;"
-                onmouseover="showChartTooltip(event, 'Tanggal ${p.day}/${month+1}<br>📊 PCT Exc Mikro: <b>${p.exc.toFixed(2)} hari</b><br>📦 ${p.count} batch')"
-                onmouseout="hideChartTooltip()"/>`;
+            const x = xPos(i), y = yPos(p.exc);
+            svg += `<circle cx="${x}" cy="${y}" r="4.5" fill="${excColor}" stroke="white" stroke-width="2"/>`;
+            svg += `<text x="${x}" y="${y+18}" text-anchor="middle" font-size="11" font-weight="700" fill="${excColor}">${p.exc.toFixed(2)}</text>`;
         }
     });
 
+    points.forEach((p, i) => {
+        const x = xPos(i);
+        svg += `<text x="${x}" y="${H-35}" text-anchor="middle" font-size="11" fill="#666">${p.label}</text>`;
+    });
+
+    svg += `<text x="${padL + chartW/2}" y="${H-10}" text-anchor="middle" font-size="12" font-style="italic" fill="#999">Tanggal Rilis</text>`;
+
     svg += `</svg>`;
-    container.innerHTML = svg;
+
+    const legendHtml = `
+        <div style="display:flex;justify-content:center;gap:30px;margin-bottom:12px;font-size:12px;font-weight:600;flex-wrap:wrap;">
+            <span style="display:flex;align-items:center;gap:8px;">
+                <span style="display:inline-block;width:32px;height:3px;background:${incColor};border-radius:2px;position:relative;">
+                    <span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:8px;height:8px;border-radius:50%;background:${incColor};border:1.5px solid white;"></span>
+                </span>
+                <span style="color:${incColor};">PCT site inc mikro (hari)</span>
+            </span>
+            <span style="display:flex;align-items:center;gap:8px;">
+                <span style="display:inline-block;width:32px;height:3px;background:${excColor};border-radius:2px;position:relative;">
+                    <span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:8px;height:8px;border-radius:50%;background:${excColor};border:1.5px solid white;"></span>
+                </span>
+                <span style="color:${excColor};">PCT site exc mikro (hari)</span>
+            </span>
+        </div>
+    `;
+
+    container.innerHTML = legendHtml + svg;
 }
 
-// ============ BAR CHART (per batch + target line) ============
+// ============ BAR CHART ============
 function renderBarChartDash(t, batches) {
     const container = document.getElementById(t === 'oral' ? 'barChartOral' : 'barChartInjeksi');
     if (!container) return;
     const done = batches.filter(b => qaLengkap(b));
     if (!done.length) { container.innerHTML = '<div class="empty-state"><p>Belum ada data</p></div>'; return; }
 
-    // Urutkan by tanggal rilis, ambil 15 terakhir
     done.sort((a,b) => new Date(a.tanggalRilis) - new Date(b.tanggalRilis));
     const display = done.slice(-15);
 
@@ -1631,8 +1639,8 @@ function renderBarChartDash(t, batches) {
     const barColor = t === 'oral' ? '#6a1b9a' : '#0d47a1';
 
     const W = container.clientWidth || 800;
-    const H = 280;
-    const padL = 45, padR = 20, padT = 30, padB = 70;
+    const H = 300;
+    const padL = 45, padR = 20, padT = 30, padB = 80;
     const chartW = W - padL - padR;
     const chartH = H - padT - padB;
 
@@ -1642,9 +1650,8 @@ function renderBarChartDash(t, batches) {
 
     const yPos = v => padT + chartH - (v / maxVal) * chartH;
 
-    let svg = `<svg class="bar-chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">`;
+    let svg = `<svg class="bar-chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;">`;
 
-    // Grid + Y
     for (let i = 0; i <= 4; i++) {
         const y = padT + (chartH / 4) * i;
         const val = maxVal - (maxVal / 4) * i;
@@ -1652,7 +1659,6 @@ function renderBarChartDash(t, batches) {
         svg += `<text x="${padL-8}" y="${y+4}" text-anchor="end" font-size="10" fill="#666">${val.toFixed(1)}</text>`;
     }
 
-    // Bars
     display.forEach((b, i) => {
         const c = calculatePCT(b);
         const val = c.pctInclude || 0;
@@ -1665,13 +1671,10 @@ function renderBarChartDash(t, batches) {
         svg += `<rect x="${x}" y="${y}" width="${barW}" height="${h}" fill="${fill}" rx="3" style="cursor:pointer;"
             onmouseover="showChartTooltip(event, '<b>${b.batchNumber}</b><br>📊 PCT Inc: ${c.pctInclude !== null ? c.pctInclude.toFixed(2) : '-'} hari<br>📊 PCT Exc: ${c.pctExclude !== null ? c.pctExclude.toFixed(2) : '-'} hari<br>🎯 Target: ${targetLabel}<br>${isOver ? '❌ Over Target' : '✅ On Target'}')"
             onmouseout="hideChartTooltip()"/>`;
-        // Label nilai
         svg += `<text x="${x + barW/2}" y="${y - 5}" text-anchor="middle" font-size="9" font-weight="600" fill="#333">${val.toFixed(1)}</text>`;
-        // Label batch (rotate)
         svg += `<text x="${x + barW/2}" y="${H - 45}" text-anchor="end" font-size="9" fill="#666" transform="rotate(-45 ${x + barW/2} ${H-45})">${b.batchNumber}</text>`;
     });
 
-    // Garis target
     const targetY = yPos(targetPCT);
     svg += `<line x1="${padL}" y1="${targetY}" x2="${W-padR}" y2="${targetY}" stroke="#c62828" stroke-width="2" stroke-dasharray="6,4"/>`;
     svg += `<text x="${W-padR-5}" y="${targetY-5}" text-anchor="end" font-size="11" font-weight="700" fill="#c62828">Target ${targetLabel}</text>`;
@@ -1680,7 +1683,7 @@ function renderBarChartDash(t, batches) {
     container.innerHTML = svg;
 }
 
-// ============ DETAIL TABLE (DONE) dengan TOOLTIP ============
+// ============ DETAIL TABLE (DONE) ============
 function renderDetailTableDash(t, batches) {
     const tb = document.getElementById(t === 'oral' ? 'detailTableBodyOral' : 'detailTableBodyInjeksi');
     if (!tb) return;
@@ -1690,8 +1693,6 @@ function renderDetailTableDash(t, batches) {
 
     tb.innerHTML = doneB.map(b => {
         const c = calculatePCT(b);
-
-        // Buat cell dengan tooltip keterangan over
         const cellWithTooltip = (val, ket, stageName, startLabel, targetLabel) => {
             const hasKet = ket && ket.trim() !== '';
             const cls = hasKet ? 'cell-tooltip has-ket' : 'cell-tooltip';
@@ -1707,25 +1708,20 @@ function renderDetailTableDash(t, batches) {
             return `<td class="${cls}">${display}${tooltip}</td>`;
         };
 
-        const targetLabelLog = b.targetTimbang + ' jam';
-        const targetLabelProd = b.targetProduksi + ' jam';
-        const targetLabelQC = b.targetAnalisa + ' jam';
-        const targetLabelQA = b.targetPerilisan + ' jam';
-
         return `<tr>
             <td><strong>${b.batchNumber}</strong></td>
             <td>${displayShort(b.tanggalRilis)}</td>
             <td>${c.pctInclude !== null ? c.pctInclude.toFixed(2) : '-'}</td>
             <td><strong>${c.pctExclude !== null ? c.pctExclude.toFixed(2) : '-'}</strong></td>
-            ${cellWithTooltip(c.logistik, b.ket_rawMaterial, 'Logistik', 'Timbang → Serah Terima', targetLabelLog)}
-            ${cellWithTooltip(c.produksi, b.ket_produksi, 'Produksi', 'BPP → Kirim Dokumen', targetLabelProd)}
-            ${cellWithTooltip(c.qc, b.ket_qc, 'QC', 'Terima Sample → Selesai Mikro', targetLabelQC)}
-            ${cellWithTooltip(c.qa, b.ket_qa, 'QA', 'MAX(Mikro, Kirim Dok) → Rilis', targetLabelQA)}
+            ${cellWithTooltip(c.logistik, b.ket_rawMaterial, 'Logistik', 'Timbang → Serah Terima', b.targetTimbang + ' jam')}
+            ${cellWithTooltip(c.produksi, b.ket_produksi, 'Produksi', 'BPP → Kirim Dokumen', b.targetProduksi + ' jam')}
+            ${cellWithTooltip(c.qc, b.ket_qc, 'QC', 'Terima Sample → Selesai Mikro', b.targetAnalisa + ' jam')}
+            ${cellWithTooltip(c.qa, b.ket_qa, 'QA', 'MAX(Mikro, Kirim Dok) → Rilis', b.targetPerilisan + ' jam')}
         </tr>`;
     }).join('');
 }
 
-// ============ ON GOING TABLE dengan KETERANGAN ============
+// ============ ON GOING TABLE ============
 function renderOnGoingTableDash(t, batches) {
     const tb = document.getElementById(t === 'oral' ? 'onGoingTableBodyOral' : 'onGoingTableBodyInjeksi');
     if (!tb) return;
@@ -1736,7 +1732,6 @@ function renderOnGoingTableDash(t, batches) {
         const c = calculatePCT(b);
         const st = hitungStatus(b);
 
-        // Gabung semua keterangan wajib yang ada
         const kets = [];
         if (b.ket_rawMaterial && b.ket_rawMaterial.trim()) kets.push(`🚚 <b>Logistik:</b> ${b.ket_rawMaterial}`);
         if (b.ket_produksi && b.ket_produksi.trim()) kets.push(`🏭 <b>Produksi:</b> ${b.ket_produksi}`);
@@ -1778,14 +1773,6 @@ function hideChartTooltip() {
 }
 
 function resetFilter(t) {
-    if (t === 'oral') {
-        document.getElementById('filterSearchOral').value = '';
-        document.getElementById('filterKategoriOral').value = 'all';
-    } else {
-        document.getElementById('filterSearchInjeksi').value = '';
-        document.getElementById('filterKategoriInjeksi').value = 'all';
-    }
-    // Reset tanggal ke bulan berjalan
     const now = new Date();
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
     const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
@@ -1796,9 +1783,13 @@ function resetFilter(t) {
     if (t === 'oral') {
         document.getElementById('filterFromOral').value = fmt(firstDay);
         document.getElementById('filterToOral').value = fmt(lastDay);
+        document.getElementById('filterSearchOral').value = '';
+        document.getElementById('filterKategoriOral').value = 'all';
     } else {
         document.getElementById('filterFromInjeksi').value = fmt(firstDay);
         document.getElementById('filterToInjeksi').value = fmt(lastDay);
+        document.getElementById('filterSearchInjeksi').value = '';
+        document.getElementById('filterKategoriInjeksi').value = 'all';
     }
     renderDashboard();
 }
@@ -1858,7 +1849,6 @@ function renderAll() {
     if (currentUser?.role === 'admin') renderAudit();
 }
 
-// Re-render chart saat window resize
 let resizeTimer;
 window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
