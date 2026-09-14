@@ -16,7 +16,6 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:
 .btn-logout { background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 5px 15px; border-radius: 20px; cursor: pointer; font-size: 13px; }
 .btn-logout:hover { background: rgba(255,255,255,0.3); }
 
-/* ============ BELL NOTIFICATION ============ */
 .bell-wrapper { position: relative; }
 .btn-bell {
     background: rgba(255,255,255,0.2);
@@ -31,6 +30,10 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:
     display: flex;
     align-items: center;
     gap: 6px;
+}
+.btn-bell.has-notif {
+    background: rgba(255,255,255,0.4);
+    border-color: rgba(255,255,255,0.6);
 }
 .bell-badge {
     position: absolute;
@@ -109,7 +112,6 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:
 .notif-item.info { border-left: 3px solid #0d47a1; }
 .notif-item.success { border-left: 3px solid #2e7d32; }
 
-/* Mobile */
 @media (max-width: 768px) {
     .notif-dropdown { width: 92vw; right: -10px; max-height: 60vh; }
 }
@@ -170,7 +172,7 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:
 .status.qa_locked { background: #ffebee; color: #b71c1c; }
 .status.done { background: #c8e6c9; color: #1b5e20; }
 .status.multitask { background: #fff8e1; color: #e65100; }
-.status.jadwal_warning { background: #ffebee; color: #b71c1c; animation: pulse 2s infinite; }
+.status.jadwal_warning { background: #ffebee; color: #b71c1c; }
 .total-ct { font-size: 14px; font-weight: 700; padding: 4px 14px; border-radius: 20px; white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; }
 .total-ct.on-target { background: #c8e6c9; color: #1b5e20; }
 .total-ct.on-going { background: #fff3e0; color: #e65100; }
@@ -180,8 +182,7 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:
 .badge-kategori.rutin { background: #e8eaf6; color: #1a237e; }
 .badge-kategori.validasi { background: #fff3e0; color: #e65100; }
 .badge-kategori.study { background: #f3e5f5; color: #6a1b9a; }
-.badge-over { background: #ffcdd2; color: #b71c1c; padding: 3px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; animation: pulse 1.5s infinite; display: inline-block; }
-@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+.badge-over { background: #ffcdd2; color: #b71c1c; padding: 3px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-block; }
 .badge-optional { background: #e3f2fd; color: #0d47a1; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; }
 .badge-wajib { background: #ffcdd2; color: #b71c1c; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; }
 .badge-target { background: #e8eaf6; color: #1a237e; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
@@ -315,7 +316,6 @@ td.cell-over::before {
     right: 4px;
     transform: translateY(-50%);
     font-size: 11px;
-    animation: pulse 2s infinite;
 }
 .cell-tooltip.has-ket:hover { background: #fff3e0 !important; }
 
@@ -367,7 +367,6 @@ td.cell-over::before {
 <span class="datetime-info" id="liveDateTime">📅 -</span>
 <span class="user-info" id="userInfo">👤 Guest</span>
 
-<!-- BELL NOTIFIKASI -->
 <div class="bell-wrapper">
 <button class="btn-bell" id="btnBell" onclick="toggleNotifDropdown(event)">
 🔔 <span id="bellBadge" class="bell-badge" style="display:none;">0</span>
@@ -410,7 +409,12 @@ td.cell-over::before {
 <div class="filter-bar">
 <div><label>📅 Dari Tanggal </label><input type="date" id="filterFromOral" onchange="renderDashboard()"></div>
 <div><label>📅 Sampai Tanggal </label><input type="date" id="filterToOral" onchange="renderDashboard()"></div>
-<div><label>🔍 Batch Number </label><input type="text" id="filterSearchOral" placeholder="Cari..." oninput="renderDashboard()"></div>
+<div>
+<label>🔍 Batch Number </label>
+<select id="filterSearchOral" onchange="renderDashboard()" style="min-width:200px;">
+<option value="all">Semua Batch</option>
+</select>
+</div>
 <div><label>🏷️ Kategori </label><select id="filterKategoriOral" onchange="renderDashboard()"><option value="all">Semua</option><option value="Rutin">Rutin</option><option value="Validasi">Validasi</option><option value="Study">Study</option></select></div>
 <button class="btn btn-primary btn-sm" onclick="resetFilter('oral')">Reset</button>
 </div>
@@ -461,7 +465,12 @@ td.cell-over::before {
 <div class="filter-bar">
 <div><label>📅 Dari Tanggal </label><input type="date" id="filterFromInjeksi" onchange="renderDashboard()"></div>
 <div><label>📅 Sampai Tanggal </label><input type="date" id="filterToInjeksi" onchange="renderDashboard()"></div>
-<div><label>🔍 Batch Number </label><input type="text" id="filterSearchInjeksi" placeholder="Cari..." oninput="renderDashboard()"></div>
+<div>
+<label>🔍 Batch Number </label>
+<select id="filterSearchInjeksi" onchange="renderDashboard()" style="min-width:200px;">
+<option value="all">Semua Batch</option>
+</select>
+</div>
 <div><label>🏷️ Kategori </label><select id="filterKategoriInjeksi" onchange="renderDashboard()"><option value="all">Semua</option><option value="Rutin">Rutin</option><option value="Validasi">Validasi</option><option value="Study">Study</option></select></div>
 <button class="btn btn-primary btn-sm" onclick="resetFilter('injeksi')">Reset</button>
 </div>
@@ -669,7 +678,6 @@ let currentUser = null;
 let currentDashTab = 'oral';
 let editingBatchId = null;
 
-// Threshold stuck (jam) — notifikasi muncul kalau batch stuck > threshold
 const STUCK_THRESHOLD_HOURS = 24;
 
 const DEPT_PAGES = { 'PPIC': ['ppic'], 'Produksi': ['produksi'], 'Logistic': ['logistic'], 'QC': ['qc'], 'QA': ['qa'], 'Management': ['management'] };
@@ -763,7 +771,6 @@ function getQALatestStart(b) {
     return null;
 }
 
-// ============ HELPER: OVER-TARGET (threshold > 1 jam) ============
 function hitungOverTarget(b, field, startField, targetHours, dynamicStart) {
     if (!b[field] || !targetHours) return { over: false, diff: 0 };
     let startRaw = null;
@@ -776,7 +783,6 @@ function hitungOverTarget(b, field, startField, targetHours, dynamicStart) {
     return { over: diff > 1, diff: Math.round(diff * 100) / 100 };
 }
 
-// ============ CHECK TAHAP LENGKAP ============
 function rmLengkap(b) { return !!(b.tanggalTimbang && b.tanggalSerahTerima); }
 function wadahLengkap(b) { return !!(b.wadahReady && b.tanggalSerahTerimaWadah); }
 function kemasLengkap(b) { return !!(b.kemasReady && b.tanggalSerahTerimaKemas); }
@@ -824,8 +830,6 @@ function getStatusLabel(s) {
     return l[s] || s;
 }
 
-// ============ HELPER: HITUNG JAM STUCK DI TAHAP SEKARANG ============
-// Return { jam, tanggal_mulai } — berapa jam batch di tahap sekarang (approx)
 function getStuckDuration(b) {
     const now = new Date();
     const status = hitungStatus(b);
@@ -859,16 +863,14 @@ function getStuckDuration(b) {
 }
 
 // ============ NOTIFIKASI ============
-// Generate list notifikasi sesuai role user
 function generateNotifications() {
     if (!currentUser) return [];
     const notifs = [];
     const role = currentUser.role;
     const dept = currentUser.department;
 
-    // Helper: cek apakah user bisa lihat notif ini
     const canSee = (targetRole) => {
-        if (role === 'admin' || role === 'guest') return true; // admin & guest lihat semua
+        if (role === 'admin' || role === 'guest') return true;
         return dept === targetRole;
     };
 
@@ -876,9 +878,7 @@ function generateNotifications() {
         const status = hitungStatus(b);
         const stuck = getStuckDuration(b);
 
-        // ============ NOTIFIKASI PRODUKSI ============
         if (canSee('Produksi')) {
-            // 1. Batch baru dibuat, belum isi jadwal RM
             if (status === 'produksi' && !b.jadwalRawMaterial) {
                 const jam = stuck.jam;
                 notifs.push({
@@ -891,7 +891,6 @@ function generateNotifications() {
                     hint: 'Kanban Produksi'
                 });
             }
-            // 2. Jadwal RM terisi tapi Wadah/Kemas belum lengkap
             else if (!jadwalLengkap(b) && b.jadwalRawMaterial && (rmLengkap(b) || status !== 'produksi')) {
                 const belum = [];
                 if (!b.jadwalWadah) belum.push('Wadah');
@@ -904,7 +903,6 @@ function generateNotifications() {
                     hint: 'Kanban Produksi'
                 });
             }
-            // 3. RM lengkap, siap Input Produksi (belum diisi BPP/Dok)
             if (rmLengkap(b) && !inputProdLengkap(b) && status !== 'qc' && status !== 'qa' && status !== 'qa_locked' && status !== 'done') {
                 notifs.push({
                     icon: '🏭',
@@ -914,15 +912,9 @@ function generateNotifications() {
                     hint: 'Input Produksi'
                 });
             }
-            // 4. Stuck di Input Produksi > threshold
-            if (status === 'qc' && !inputProdLengkap(b)) {
-                // skip
-            }
         }
 
-        // ============ NOTIFIKASI LOGISTIC ============
         if (canSee('Logistic')) {
-            // 1. Jadwal RM terisi tapi timbang/serah terima belum lengkap
             if (b.jadwalRawMaterial && !rmLengkap(b) && status !== 'done') {
                 const jam = stuck.jam;
                 notifs.push({
@@ -933,7 +925,6 @@ function generateNotifications() {
                     hint: 'Logistic → Raw Material'
                 });
             }
-            // 2. Jadwal Wadah terisi tapi checkbox/tanggal belum lengkap
             if (b.jadwalWadah && !wadahLengkap(b) && status !== 'done') {
                 const jam = stuck.jam;
                 notifs.push({
@@ -944,7 +935,6 @@ function generateNotifications() {
                     hint: 'Logistic → Wadah'
                 });
             }
-            // 3. Jadwal Kemas terisi tapi checkbox/tanggal belum lengkap
             if (b.jadwalKemas && !kemasLengkap(b) && status !== 'done') {
                 const jam = stuck.jam;
                 notifs.push({
@@ -957,7 +947,6 @@ function generateNotifications() {
             }
         }
 
-        // ============ NOTIFIKASI QC ============
         if (canSee('QC')) {
             if (status === 'qc' && !qcLengkap(b)) {
                 const jam = stuck.jam;
@@ -971,7 +960,6 @@ function generateNotifications() {
             }
         }
 
-        // ============ NOTIFIKASI QA ============
         if (canSee('QA')) {
             if ((status === 'qa' || status === 'qa_locked') && !qaLengkap(b)) {
                 const jam = stuck.jam;
@@ -995,9 +983,7 @@ function generateNotifications() {
             }
         }
 
-        // ============ NOTIFIKASI PPIC ============
         if (canSee('PPIC')) {
-            // Stuck > threshold di tahap apapun
             if (stuck.jam > STUCK_THRESHOLD_HOURS * 2 && status !== 'done') {
                 notifs.push({
                     icon: '🚨',
@@ -1010,7 +996,6 @@ function generateNotifications() {
         }
     });
 
-    // Sort: danger dulu, lalu warning, info
     const order = { danger: 0, warning: 1, info: 2, success: 3 };
     notifs.sort((a, b) => (order[a.level] || 99) - (order[b.level] || 99));
 
@@ -1064,7 +1049,6 @@ function toggleNotifDropdown(e) {
     }
 }
 
-// Close dropdown kalau klik di luar
 document.addEventListener('click', function(e) {
     const dd = document.getElementById('notifDropdown');
     const wrapper = document.querySelector('.bell-wrapper');
@@ -1894,7 +1878,7 @@ function renderPPIC() {
     c.innerHTML = data.batches.map(b => renderScoreCard(b, '', true)).join('');
 }
 
-// ============ DASHBOARD ============
+// ============ DASHBOARD (DROPDOWN BATCH NUMBER) ============
 function renderDashboard() {
     const t = currentDashTab;
     const pEl = document.getElementById(t === 'oral' ? 'filterFromOral' : 'filterFromInjeksi');
@@ -1902,13 +1886,31 @@ function renderDashboard() {
     const sEl = document.getElementById(t === 'oral' ? 'filterSearchOral' : 'filterSearchInjeksi');
     const kEl = document.getElementById(t === 'oral' ? 'filterKategoriOral' : 'filterKategoriInjeksi');
 
+    // === POPULATE DROPDOWN BATCH ===
+    if (sEl && sEl.tagName === 'SELECT') {
+        const currentVal = sEl.value;
+        const batchesForDropdown = data.batches
+            .filter(b => b.type === t)
+            .sort((a, b) => a.batchNumber.localeCompare(b.batchNumber));
+        sEl.innerHTML = '<option value="all">Semua Batch</option>' +
+            batchesForDropdown.map(b => `<option value="${b.batchNumber}">${b.batchNumber} (${b.kategori || 'Rutin'})</option>`).join('');
+        if (currentVal && batchesForDropdown.some(b => b.batchNumber === currentVal)) {
+            sEl.value = currentVal;
+        } else {
+            sEl.value = 'all';
+        }
+    }
+
     const fromDate = pEl?.value ? new Date(pEl.value + 'T00:00:00') : null;
     const toDate = toEl?.value ? new Date(toEl.value + 'T23:59:59') : null;
-    const search = (sEl?.value || '').toLowerCase();
+    const searchVal = (sEl?.value || 'all');
     const kat = kEl?.value || 'all';
 
     let batches = data.batches.filter(b => b.type === t);
-    if (search) batches = batches.filter(b => b.batchNumber.toLowerCase().includes(search));
+    // Filter batch number (exact match)
+    if (searchVal && searchVal !== 'all') {
+        batches = batches.filter(b => b.batchNumber === searchVal);
+    }
     if (kat !== 'all') batches = batches.filter(b => (b.kategori || '') === kat);
 
     if (fromDate || toDate) {
@@ -2373,12 +2375,12 @@ function resetFilter(t) {
     if (t === 'oral') {
         document.getElementById('filterFromOral').value = fmt(firstDay);
         document.getElementById('filterToOral').value = fmt(lastDay);
-        document.getElementById('filterSearchOral').value = '';
+        document.getElementById('filterSearchOral').value = 'all';
         document.getElementById('filterKategoriOral').value = 'all';
     } else {
         document.getElementById('filterFromInjeksi').value = fmt(firstDay);
         document.getElementById('filterToInjeksi').value = fmt(lastDay);
-        document.getElementById('filterSearchInjeksi').value = '';
+        document.getElementById('filterSearchInjeksi').value = 'all';
         document.getElementById('filterKategoriInjeksi').value = 'all';
     }
     renderDashboard();
@@ -2437,7 +2439,7 @@ function renderAll() {
     renderPersonilList();
     renderProductList();
     if (currentUser?.role === 'admin') renderAudit();
-    renderNotifikasi(); // Update bell counter
+    renderNotifikasi();
 }
 
 let resizeTimer;
@@ -2446,7 +2448,6 @@ window.addEventListener('resize', () => {
     resizeTimer = setTimeout(() => renderDashboard(), 300);
 });
 
-// Auto-refresh notifikasi tiap 30 detik (real-time feel)
 setInterval(() => {
     if (currentUser) renderNotifikasi();
 }, 30000);
