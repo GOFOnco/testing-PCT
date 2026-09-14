@@ -340,6 +340,34 @@ td.cell-over::before {
 .tooltip-box.arrow-top::after { top: 100%; left: 50%; transform: translateX(-50%); border-top-color: #1a237e; }
 .tooltip-box.arrow-top.warning::after { border-top-color: #c62828; }
 
+/* ============ COMPACT MODE: BATCH DONE ============ */
+.score-card-done {
+    padding: 12px 18px;
+    background: #f1f8f2;
+    border-left: 4px solid #2e7d32 !important;
+}
+.score-card-done .header-info {
+    margin-bottom: 6px;
+}
+.score-card-done .step-indicator {
+    padding: 6px 12px;
+    margin-bottom: 8px;
+    font-size: 10px;
+    background: #e8f5e9;
+}
+.score-card-done .step-indicator .step {
+    padding: 2px 8px;
+    font-size: 10px;
+}
+.score-card-done .edit-actions {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #c8e6c9;
+}
+.score-card-done .done-detail .score-card-action {
+    margin-top: 10px;
+}
+
 /* ============ MULTI-SELECT DROPDOWN ============ */
 .multi-select { position: relative; min-width: 200px; }
 .multi-select-trigger {
@@ -1830,6 +1858,73 @@ function renderScoreCard(b, actionHtml = '', showEditDelete = false) {
     });
     stepHtml += `</div>`;
 
+    const kb = b.kategori ? getKategoriBadge(b.kategori) : '';
+
+    let jadwalWarning = '';
+    if (!jadwalLengkap(b) && status !== 'produksi' && status !== 'done') {
+        const belumJadwal = [];
+        if (!b.jadwalRawMaterial) belumJadwal.push('RM');
+        if (!b.jadwalWadah) belumJadwal.push('Wadah');
+        if (!b.jadwalKemas) belumJadwal.push('Kemas');
+        jadwalWarning = `<span class="status jadwal_warning">⚠️ Jadwal ${belumJadwal.join(', ')} belum lengkap</span>`;
+    }
+
+    let editDel = '';
+    if (showEditDelete && (currentUser.role === 'admin' || currentUser.department === 'PPIC')) {
+        editDel = `<div class="edit-actions">
+            <button class="btn btn-warning btn-sm" onclick="openEditBatch('${b.id}')">✏️ Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteBatch('${b.id}')">🗑️ Hapus</button>
+        </div>`;
+    }
+
+    // ============ COMPACT MODE UNTUK BATCH DONE ============
+    if (status === 'done') {
+        let detailsHtml = '';
+        const df = [
+            { l: 'Actual Timbang', v: displayDT(b.tanggalTimbang) },
+            { l: 'Actual Serah Terima RM', v: displayDT(b.tanggalSerahTerima) },
+            { l: 'Wadah Siap', v: b.wadahReady ? '✅ Siap' : '' },
+            { l: 'Actual Serah Terima Wadah', v: displayDT(b.tanggalSerahTerimaWadah) },
+            { l: 'Kemas Siap', v: b.kemasReady ? '✅ Siap' : '' },
+            { l: 'Actual Serah Terima Kemas', v: displayDT(b.tanggalSerahTerimaKemas) },
+            { l: 'Tgl BPP', v: displayDT(b.tanggalBPP) },
+            { l: 'Kirim Dokumen', v: displayDT(b.tanggalKirimDokumen) },
+            { l: 'Terima Sample', v: displayDT(b.tanggalTerimaSample) },
+            { l: 'Estimasi LWS', v: displayDT(b.estimasiLWS) },
+            { l: 'Selesai Kimia', v: displayDT(b.tanggalSelesaiKimia) },
+            { l: 'Selesai Mikro', v: displayDT(b.tanggalSelesaiMikro) },
+            { l: 'Rilis', v: displayDT(b.tanggalRilis) },
+            { l: 'Jadwal RM', v: displayDT(b.jadwalRawMaterial) },
+            { l: 'Jadwal Wadah', v: displayDT(b.jadwalWadah) },
+            { l: 'Jadwal Kemas', v: displayDT(b.jadwalKemas) }
+        ];
+        df.forEach(f => { if (f.v && f.v !== '-') detailsHtml += `<div><span style="color:#757575;">${f.l}:</span> <strong>${f.v}</strong></div>`; });
+
+        return `<div class="score-card score-card-done" id="sc_${b.id}" style="border-left-color:#2e7d32;">
+            <div class="header-info">
+                <div class="batch-info">
+                    <span class="batch-number">${b.batchNumber}</span>
+                    <span class="status ${status}">${getStatusLabel(status)}</span>
+                    ${kb}
+                </div>
+                <div><span class="total-ct ${ctClass}">⏱️ ${ctLabel}: ${ctDisplay}</span></div>
+            </div>
+            ${stepHtml}
+            <div class="done-detail" id="detail_${b.id}" style="display:none;">
+                ${detailsHtml ? `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px;font-size:12px;margin-top:10px;">${detailsHtml}</div>` : ''}
+                ${actionHtml ? `<div class="score-card-action">${actionHtml}</div>` : ''}
+            </div>
+            <div class="edit-actions">
+                <button class="btn btn-secondary btn-sm" onclick="toggleDoneDetail('${b.id}', this)">📋 Detail</button>
+                ${(showEditDelete && (currentUser.role === 'admin' || currentUser.department === 'PPIC')) ? `
+                    <button class="btn btn-warning btn-sm" onclick="openEditBatch('${b.id}')">✏️ Edit</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteBatch('${b.id}')">🗑️ Hapus</button>
+                ` : ''}
+            </div>
+        </div>`;
+    }
+
+    // ============ FULL DETAIL UNTUK BATCH ON-GOING ============
     let detailsHtml = '';
     const df = [
         { l: 'Jadwal RM', v: displayDT(b.jadwalRawMaterial) },
@@ -1851,25 +1946,6 @@ function renderScoreCard(b, actionHtml = '', showEditDelete = false) {
     ];
     df.forEach(f => { if (f.v && f.v !== '-') detailsHtml += `<div><span style="color:#757575;">${f.l}:</span> <strong>${f.v}</strong></div>`; });
 
-    const kb = b.kategori ? getKategoriBadge(b.kategori) : '';
-
-    let jadwalWarning = '';
-    if (!jadwalLengkap(b) && status !== 'produksi' && status !== 'done') {
-        const belumJadwal = [];
-        if (!b.jadwalRawMaterial) belumJadwal.push('RM');
-        if (!b.jadwalWadah) belumJadwal.push('Wadah');
-        if (!b.jadwalKemas) belumJadwal.push('Kemas');
-        jadwalWarning = `<span class="status jadwal_warning">⚠️ Jadwal ${belumJadwal.join(', ')} belum lengkap</span>`;
-    }
-
-    let editDel = '';
-    if (showEditDelete && (currentUser.role === 'admin' || currentUser.department === 'PPIC')) {
-        editDel = `<div class="edit-actions">
-            <button class="btn btn-warning btn-sm" onclick="openEditBatch('${b.id}')">✏️ Edit</button>
-            <button class="btn btn-danger btn-sm" onclick="deleteBatch('${b.id}')">🗑️ Hapus</button>
-        </div>`;
-    }
-
     return `<div class="score-card" style="border-left-color: ${b.type === 'injeksi' ? '#0d47a1' : '#6a1b9a'}">
         <div class="header-info">
             <div class="batch-info">
@@ -1885,6 +1961,15 @@ function renderScoreCard(b, actionHtml = '', showEditDelete = false) {
         ${actionHtml ? `<div class="score-card-action">${actionHtml}</div>` : ''}
         ${editDel}
     </div>`;
+}
+
+// ============ TOGGLE DETAIL BATCH DONE ============
+function toggleDoneDetail(id, btn) {
+    const el = document.getElementById('detail_' + id);
+    if (!el) return;
+    const isHidden = el.style.display === 'none' || !el.style.display;
+    el.style.display = isHidden ? 'block' : 'none';
+    if (btn) btn.textContent = isHidden ? '📋 Tutup' : '📋 Detail';
 }
 
 // ============ RENDER FIELD ============
