@@ -269,7 +269,7 @@ td.cell-over::before {
 .score-card-action { margin-top: 12px; padding-top: 12px; border-top: 1px dashed #ddd; }
 .section-title { font-size: 13px; font-weight: 700; color: #1a237e; padding: 6px 10px; background: #e8eaf6; border-radius: 6px; margin: 10px 0 8px 0; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .section-title.optional { background: #e3f2fd; color: #0d47a1; }
-.edit-actions { display: flex; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px dashed #ddd; }
+.edit-actions { display: flex; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px dashed #ddd; flex-wrap: wrap; }
 .info-banner { background: #e3f2fd; color: #0d47a1; padding: 8px 12px; border-radius: 6px; font-size: 12px; margin-bottom: 8px; border-left: 3px solid #0d47a1; }
 .info-banner.warning { background: #fff3e0; color: #e65100; border-left-color: #f57c00; }
 .info-banner.success { background: #e8f5e9; color: #1b5e20; border-left-color: #2e7d32; }
@@ -914,7 +914,6 @@ let currentUser = null;
 let currentDashTab = 'oral';
 let editingBatchId = null;
 
-// Multi-select state
 const multiSelectState = {
     msBatchOral: new Set(),
     msBatchInjeksi: new Set(),
@@ -1865,7 +1864,6 @@ function renderScoreCard(b, actionHtml = '', opts = {}) {
     if (!b) return '';
     const showEditDelete = opts.showEditDelete || false;
     const showDetailBtn = opts.showDetailBtn !== false;
-    const forceFullCard = opts.forceFullCard || false;
 
     const status = hitungStatus(b);
     const c = calculatePCT(b);
@@ -1922,10 +1920,8 @@ function renderScoreCard(b, actionHtml = '', opts = {}) {
         jadwalWarning = `<span class="status jadwal_warning">⚠️ Jadwal ${belumJadwal.join(', ')} belum lengkap</span>`;
     }
 
-    // Tombol detail
     const detailBtn = showDetailBtn ? `<button class="btn btn-secondary btn-sm" onclick="openDetailBatchModal('${b.id}')">📋 Riwayat Detail</button>` : '';
 
-    // Tombol edit/hapus (khusus PPIC)
     let editDel = '';
     if (showEditDelete && (currentUser.role === 'admin' || currentUser.department === 'PPIC')) {
         editDel = `<button class="btn btn-warning btn-sm" onclick="openEditBatch('${b.id}')">✏️ Edit</button>
@@ -1933,7 +1929,7 @@ function renderScoreCard(b, actionHtml = '', opts = {}) {
     }
 
     // ============ COMPACT MODE UNTUK BATCH DONE ============
-    if (status === 'done' && !forceFullCard) {
+    if (status === 'done') {
         return `<div class="score-card score-card-done" id="sc_${b.id}" style="border-left-color:#2e7d32;">
             <div class="header-info">
                 <div class="batch-info">
@@ -1951,50 +1947,7 @@ function renderScoreCard(b, actionHtml = '', opts = {}) {
         </div>`;
     }
 
-    // ============ FULL CARD (PPIC / FORCE) ============
-    if (forceFullCard) {
-        let detailsHtml = '';
-        const df = [
-            { l: 'Jadwal RM', v: displayDT(b.jadwalRawMaterial) },
-            { l: 'Jadwal Wadah', v: displayDT(b.jadwalWadah) },
-            { l: 'Jadwal Kemas', v: displayDT(b.jadwalKemas) },
-            { l: 'Actual Timbang', v: displayDT(b.tanggalTimbang) },
-            { l: 'Actual Serah Terima RM', v: displayDT(b.tanggalSerahTerima) },
-            { l: 'Wadah Siap', v: b.wadahReady ? '✅ Siap' : '' },
-            { l: 'Actual Serah Terima Wadah', v: displayDT(b.tanggalSerahTerimaWadah) },
-            { l: 'Kemas Siap', v: b.kemasReady ? '✅ Siap' : '' },
-            { l: 'Actual Serah Terima Kemas', v: displayDT(b.tanggalSerahTerimaKemas) },
-            { l: 'Tgl BPP', v: displayDT(b.tanggalBPP) },
-            { l: 'Kirim Dokumen', v: displayDT(b.tanggalKirimDokumen) },
-            { l: 'Terima Sample', v: displayDT(b.tanggalTerimaSample) },
-            { l: 'Estimasi LWS', v: displayDT(b.estimasiLWS) },
-            { l: 'Selesai Kimia', v: displayDT(b.tanggalSelesaiKimia) },
-            { l: 'Selesai Mikro', v: displayDT(b.tanggalSelesaiMikro) },
-            { l: 'Rilis', v: displayDT(b.tanggalRilis) }
-        ];
-        df.forEach(f => { if (f.v && f.v !== '-') detailsHtml += `<div><span style="color:#757575;">${f.l}:</span> <strong>${f.v}</strong></div>`; });
-
-        return `<div class="score-card" style="border-left-color: ${b.type === 'injeksi' ? '#0d47a1' : '#6a1b9a'}">
-            <div class="header-info">
-                <div class="batch-info">
-                    <span class="batch-number">${b.batchNumber}</span>
-                    <span class="status ${status}">${getStatusLabel(status)}</span>
-                    ${kb}
-                    ${jadwalWarning}
-                </div>
-                <div><span class="total-ct ${ctClass}">⏱️ ${ctLabel}: ${ctDisplay}</span></div>
-            </div>
-            ${stepHtml}
-            ${detailsHtml ? `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px;font-size:12px;margin-top:10px;">${detailsHtml}</div>` : ''}
-            ${actionHtml ? `<div class="score-card-action">${actionHtml}</div>` : ''}
-            <div class="edit-actions">
-                ${detailBtn}
-                ${editDel}
-            </div>
-        </div>`;
-    }
-
-    // ============ MODE PROSES: cuma field tahap aktif ============
+    // ============ MODE PROSES / PPIC: header + step + tombol ============
     return `<div class="score-card" style="border-left-color: ${b.type === 'injeksi' ? '#0d47a1' : '#6a1b9a'}">
         <div class="header-info">
             <div class="batch-info">
@@ -2023,7 +1976,6 @@ function openDetailBatchModal(id) {
     const targetLabel = b.type === 'injeksi' ? '16 hari' : '6.8 hari';
     const status = hitungStatus(b);
 
-    // Definisi field per section
     const sections = [
         {
             title: '📅 Kanban Produksi',
@@ -2085,7 +2037,6 @@ function openDetailBatchModal(id) {
         }
     ];
 
-    // Tentukan section mana yang aktif (sesuai status batch)
     const activeSectionTitle = {
         'produksi': '📅 Kanban Produksi',
         'raw_material': '🧪 Logistic — Raw Material',
@@ -2470,7 +2421,7 @@ function renderPPIC() {
     const c = document.getElementById('ppicScoreCards');
     if (!c) return;
     if (!data.batches.length) { c.innerHTML = '<div class="empty-state"><p>Belum ada batch</p></div>'; return; }
-    c.innerHTML = data.batches.map(b => renderScoreCard(b, '', { showEditDelete: true, forceFullCard: true })).join('');
+    c.innerHTML = data.batches.map(b => renderScoreCard(b, '', { showEditDelete: true })).join('');
 }
 
 // ============ DASHBOARD ============
