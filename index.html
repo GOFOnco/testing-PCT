@@ -11,10 +11,116 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:
 .header { background: linear-gradient(135deg, #1a237e, #0d47a1); color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.3); position: sticky; top: 0; z-index: 1000; flex-wrap: wrap; gap: 10px; }
 .header h1 { font-size: 24px; font-weight: 300; }
 .header h1 span { font-weight: 700; }
-.header-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.header-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; position: relative; }
 .user-info, .datetime-info { font-size: 13px; background: rgba(255,255,255,0.15); padding: 5px 15px; border-radius: 20px; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .btn-logout { background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 5px 15px; border-radius: 20px; cursor: pointer; font-size: 13px; }
 .btn-logout:hover { background: rgba(255,255,255,0.3); }
+
+/* ============ BELL NOTIFICATION ============ */
+.bell-wrapper { position: relative; }
+.btn-bell {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 16px;
+    position: relative;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.btn-bell:hover { background: rgba(255,255,255,0.35); }
+.btn-bell.has-notif { animation: bell-ring 2s infinite; }
+@keyframes bell-ring {
+    0%, 60%, 100% { transform: rotate(0); }
+    10%, 30%, 50% { transform: rotate(12deg); }
+    20%, 40% { transform: rotate(-12deg); }
+}
+.bell-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #c62828;
+    color: white;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    min-width: 18px;
+    text-align: center;
+    border: 2px solid #1a237e;
+    line-height: 1.2;
+}
+.notif-dropdown {
+    display: none;
+    position: absolute;
+    top: 45px;
+    right: 0;
+    background: white;
+    color: #333;
+    width: 360px;
+    max-height: 480px;
+    overflow-y: auto;
+    border-radius: 10px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    z-index: 10001;
+    animation: dropdownIn 0.2s;
+}
+.notif-dropdown.show { display: block; }
+@keyframes dropdownIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.notif-header {
+    padding: 12px 16px;
+    border-bottom: 2px solid #e8eaf6;
+    background: #f8f9fa;
+    border-radius: 10px 10px 0 0;
+    font-weight: 700;
+    color: #1a237e;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+.notif-header .notif-count { font-size: 12px; font-weight: 600; color: #666; }
+.notif-list { padding: 6px 0; }
+.notif-item {
+    padding: 10px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+    line-height: 1.5;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    transition: background 0.2s;
+}
+.notif-item:hover { background: #fafafa; }
+.notif-item:last-child { border-bottom: none; }
+.notif-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.notif-content { flex: 1; }
+.notif-batch { font-weight: 700; color: #1a237e; font-size: 12px; }
+.notif-msg { color: #555; font-size: 12px; margin-top: 2px; }
+.notif-hint { font-size: 10px; color: #999; margin-top: 3px; font-style: italic; }
+.notif-empty { padding: 40px 20px; text-align: center; color: #999; font-size: 13px; }
+.notif-empty .icon { font-size: 40px; margin-bottom: 8px; opacity: 0.5; }
+
+.notif-item.warning { border-left: 3px solid #f57c00; }
+.notif-item.danger { border-left: 3px solid #c62828; }
+.notif-item.info { border-left: 3px solid #0d47a1; }
+.notif-item.success { border-left: 3px solid #2e7d32; }
+
+/* Mobile */
+@media (max-width: 768px) {
+    .notif-dropdown { width: 92vw; right: -10px; max-height: 60vh; }
+}
+
 .nav { background: white; padding: 0 20px; display: flex; gap: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: sticky; top: 70px; z-index: 999; flex-wrap: wrap; }
 .nav-btn { padding: 12px 20px; border: none; background: transparent; color: #555; font-size: 14px; font-weight: 600; cursor: pointer; border-bottom: 3px solid transparent; }
 .nav-btn:hover { color: #0d47a1; background: #f5f5f5; }
@@ -143,7 +249,6 @@ table th { padding: 10px 12px; text-align: left; font-weight: 600; color: #555; 
 table td { padding: 8px 12px; border-bottom: 1px solid #f0f0f0; white-space: nowrap; }
 table tbody tr:hover { background: #fafafa; }
 
-/* Cell yang over target — merah */
 td.cell-over {
     background: #ffebee !important;
     color: #c62828 !important;
@@ -254,7 +359,7 @@ td.cell-over::before {
 <div id="loginError" class="login-error"></div>
 <div class="form-group">
 <label>Hy, Welcome!</label>
-<input type="text" id="loginInput" placeholder="Masukkan NIK anda" onkeydown="if(event.key==='Enter') login()">
+<input type="text" id="loginInput" placeholder="Masukkan Inisial" onkeydown="if(event.key==='Enter') login()">
 </div>
 <button class="btn btn-primary" onclick="login()">🔐 Login</button>
 <div class="login-divider">atau</div>
@@ -268,6 +373,23 @@ td.cell-over::before {
 <div class="header-right">
 <span class="datetime-info" id="liveDateTime">📅 -</span>
 <span class="user-info" id="userInfo">👤 Guest</span>
+
+<!-- BELL NOTIFIKASI -->
+<div class="bell-wrapper">
+<button class="btn-bell" id="btnBell" onclick="toggleNotifDropdown(event)">
+🔔 <span id="bellBadge" class="bell-badge" style="display:none;">0</span>
+</button>
+<div class="notif-dropdown" id="notifDropdown">
+<div class="notif-header">
+<span>🔔 Notifikasi</span>
+<span class="notif-count" id="notifCount">0</span>
+</div>
+<div class="notif-list" id="notifList">
+<div class="notif-empty"><div class="icon">🔔</div>Tidak ada notifikasi</div>
+</div>
+</div>
+</div>
+
 <button class="btn-logout" onclick="logout()">🚪 Logout</button>
 </div>
 </header>
@@ -293,10 +415,10 @@ td.cell-over::before {
 </div>
 <div id="dash-oral" class="dash-tab-content active">
 <div class="filter-bar">
-<div><label>📅 Dari Tanggal </label><input type="date" id="filterFromOral" onchange="renderDashboard()"></div>
-<div><label>📅 Sampai Tanggal </label><input type="date" id="filterToOral" onchange="renderDashboard()"></div>
-<div><label>🔍 Batch Number </label><input type="text" id="filterSearchOral" placeholder="Cari..." oninput="renderDashboard()"></div>
-<div><label>🏷️ Kategori </label><select id="filterKategoriOral" onchange="renderDashboard()"><option value="all">Semua</option><option value="Rutin">Rutin</option><option value="Validasi">Validasi</option><option value="Study">Study</option></select></div>
+<div><label>📅 Dari Tanggal</label><input type="date" id="filterFromOral" onchange="renderDashboard()"></div>
+<div><label>📅 Sampai Tanggal</label><input type="date" id="filterToOral" onchange="renderDashboard()"></div>
+<div><label>🔍 Batch Number</label><input type="text" id="filterSearchOral" placeholder="Cari..." oninput="renderDashboard()"></div>
+<div><label>🏷️ Kategori</label><select id="filterKategoriOral" onchange="renderDashboard()"><option value="all">Semua</option><option value="Rutin">Rutin</option><option value="Validasi">Validasi</option><option value="Study">Study</option></select></div>
 <button class="btn btn-primary btn-sm" onclick="resetFilter('oral')">Reset</button>
 </div>
 <div class="grid-4">
@@ -344,10 +466,10 @@ td.cell-over::before {
 
 <div id="dash-injeksi" class="dash-tab-content">
 <div class="filter-bar">
-<div><label>📅 Dari Tanggal </label><input type="date" id="filterFromInjeksi" onchange="renderDashboard()"></div>
-<div><label>📅 Sampai Tanggal </label><input type="date" id="filterToInjeksi" onchange="renderDashboard()"></div>
-<div><label>🔍 Batch Number </label><input type="text" id="filterSearchInjeksi" placeholder="Cari..." oninput="renderDashboard()"></div>
-<div><label>🏷️ Kategori </label><select id="filterKategoriInjeksi" onchange="renderDashboard()"><option value="all">Semua</option><option value="Rutin">Rutin</option><option value="Validasi">Validasi</option><option value="Study">Study</option></select></div>
+<div><label>📅 Dari Tanggal</label><input type="date" id="filterFromInjeksi" onchange="renderDashboard()"></div>
+<div><label>📅 Sampai Tanggal</label><input type="date" id="filterToInjeksi" onchange="renderDashboard()"></div>
+<div><label>🔍 Batch Number</label><input type="text" id="filterSearchInjeksi" placeholder="Cari..." oninput="renderDashboard()"></div>
+<div><label>🏷️ Kategori</label><select id="filterKategoriInjeksi" onchange="renderDashboard()"><option value="all">Semua</option><option value="Rutin">Rutin</option><option value="Validasi">Validasi</option><option value="Study">Study</option></select></div>
 <button class="btn btn-primary btn-sm" onclick="resetFilter('injeksi')">Reset</button>
 </div>
 <div class="grid-4">
@@ -486,7 +608,7 @@ td.cell-over::before {
 <div>
 <div class="card">
 <h2>👤 Manage Personil</h2>
-<div class="form-group"><label>NIK</label><input type="text" id="personilName" placeholder="Masukkan NIK"></div>
+<div class="form-group"><label>Nama</label><input type="text" id="personilName" placeholder="Masukkan nama"></div>
 <div class="form-group"><label>Departemen</label><select id="personilDept"><option value="PPIC">PPIC</option><option value="Produksi">Produksi</option><option value="Logistic">Logistic</option><option value="QC">QC</option><option value="QA">QA</option><option value="Management">Management</option></select></div>
 <button class="btn btn-primary" onclick="addPersonil()">➕ Tambah Personil</button>
 <div style="margin-top:15px;"><h3>Daftar Personil</h3><div id="personilList"></div></div>
@@ -553,6 +675,9 @@ let data = { personil: [], products: [], batches: [], auditLog: [] };
 let currentUser = null;
 let currentDashTab = 'oral';
 let editingBatchId = null;
+
+// Threshold stuck (jam) — notifikasi muncul kalau batch stuck > threshold
+const STUCK_THRESHOLD_HOURS = 24;
 
 const DEPT_PAGES = { 'PPIC': ['ppic'], 'Produksi': ['produksi'], 'Logistic': ['logistic'], 'QC': ['qc'], 'QA': ['qa'], 'Management': ['management'] };
 
@@ -706,6 +831,255 @@ function getStatusLabel(s) {
     return l[s] || s;
 }
 
+// ============ HELPER: HITUNG JAM STUCK DI TAHAP SEKARANG ============
+// Return { jam, tanggal_mulai } — berapa jam batch di tahap sekarang (approx)
+function getStuckDuration(b) {
+    const now = new Date();
+    const status = hitungStatus(b);
+    let startDate = null;
+    switch (status) {
+        case 'produksi':
+            startDate = parseDate(b.createdAt);
+            break;
+        case 'raw_material':
+            startDate = parseDate(b.jadwalRawMaterial);
+            break;
+        case 'multitask':
+            startDate = parseDate(b.tanggalSerahTerima);
+            break;
+        case 'produksi_input':
+            startDate = parseDate(b.tanggalSerahTerima) || parseDate(b.createdAt);
+            break;
+        case 'qc':
+            startDate = parseDate(b.tanggalKirimDokumen) || parseDate(b.createdAt);
+            break;
+        case 'qa':
+        case 'qa_locked':
+            startDate = parseDate(b.tanggalSelesaiMikro) || parseDate(b.createdAt);
+            break;
+        default:
+            return { jam: 0, tanggal_mulai: null };
+    }
+    if (!startDate) return { jam: 0, tanggal_mulai: null };
+    const jam = Math.round(((now - startDate) / (1000*60*60)) * 10) / 10;
+    return { jam, tanggal_mulai: startDate };
+}
+
+// ============ NOTIFIKASI ============
+// Generate list notifikasi sesuai role user
+function generateNotifications() {
+    if (!currentUser) return [];
+    const notifs = [];
+    const role = currentUser.role;
+    const dept = currentUser.department;
+
+    // Helper: cek apakah user bisa lihat notif ini
+    const canSee = (targetRole) => {
+        if (role === 'admin' || role === 'guest') return true; // admin & guest lihat semua
+        return dept === targetRole;
+    };
+
+    data.batches.forEach(b => {
+        const status = hitungStatus(b);
+        const stuck = getStuckDuration(b);
+
+        // ============ NOTIFIKASI PRODUKSI ============
+        if (canSee('Produksi')) {
+            // 1. Batch baru dibuat, belum isi jadwal RM
+            if (status === 'produksi' && !b.jadwalRawMaterial) {
+                const jam = stuck.jam;
+                notifs.push({
+                    icon: jam > STUCK_THRESHOLD_HOURS ? '🚨' : '📅',
+                    level: jam > STUCK_THRESHOLD_HOURS ? 'danger' : 'warning',
+                    batch: b.batchNumber,
+                    msg: jam > STUCK_THRESHOLD_HOURS 
+                        ? `Belum isi Jadwal Permintaan RM (stuck ${jam.toFixed(1)} jam)` 
+                        : `Batch baru — isi Jadwal Permintaan RM`,
+                    hint: 'Kanban Produksi'
+                });
+            }
+            // 2. Jadwal RM terisi tapi Wadah/Kemas belum lengkap
+            else if (!jadwalLengkap(b) && b.jadwalRawMaterial && (rmLengkap(b) || status !== 'produksi')) {
+                const belum = [];
+                if (!b.jadwalWadah) belum.push('Wadah');
+                if (!b.jadwalKemas) belum.push('Kemas');
+                notifs.push({
+                    icon: '⚠️',
+                    level: 'warning',
+                    batch: b.batchNumber,
+                    msg: `Jadwal ${belum.join(' & ')} belum diisi`,
+                    hint: 'Kanban Produksi'
+                });
+            }
+            // 3. RM lengkap, siap Input Produksi (belum diisi BPP/Dok)
+            if (rmLengkap(b) && !inputProdLengkap(b) && status !== 'qc' && status !== 'qa' && status !== 'qa_locked' && status !== 'done') {
+                notifs.push({
+                    icon: '🏭',
+                    level: 'info',
+                    batch: b.batchNumber,
+                    msg: `Siap Input Produksi (BPP & Kirim Dokumen)`,
+                    hint: 'Input Produksi'
+                });
+            }
+            // 4. Stuck di Input Produksi > threshold
+            if (status === 'qc' && !inputProdLengkap(b)) {
+                // skip
+            }
+        }
+
+        // ============ NOTIFIKASI LOGISTIC ============
+        if (canSee('Logistic')) {
+            // 1. Jadwal RM terisi tapi timbang/serah terima belum lengkap
+            if (b.jadwalRawMaterial && !rmLengkap(b) && status !== 'done') {
+                const jam = stuck.jam;
+                notifs.push({
+                    icon: jam > STUCK_THRESHOLD_HOURS ? '🚨' : '🧪',
+                    level: jam > STUCK_THRESHOLD_HOURS ? 'danger' : 'warning',
+                    batch: b.batchNumber,
+                    msg: `RM belum lengkap — isi Timbang & Serah Terima${jam > STUCK_THRESHOLD_HOURS ? ` (stuck ${jam.toFixed(1)} jam)` : ''}`,
+                    hint: 'Logistic → Raw Material'
+                });
+            }
+            // 2. Jadwal Wadah terisi tapi checkbox/tanggal belum lengkap
+            if (b.jadwalWadah && !wadahLengkap(b) && status !== 'done') {
+                const jam = stuck.jam;
+                notifs.push({
+                    icon: jam > STUCK_THRESHOLD_HOURS ? '🚨' : '📦',
+                    level: jam > STUCK_THRESHOLD_HOURS ? 'danger' : 'warning',
+                    batch: b.batchNumber,
+                    msg: `Wadah belum siap — ceklis & isi Serah Terima${jam > STUCK_THRESHOLD_HOURS ? ` (stuck ${jam.toFixed(1)} jam)` : ''}`,
+                    hint: 'Logistic → Wadah'
+                });
+            }
+            // 3. Jadwal Kemas terisi tapi checkbox/tanggal belum lengkap
+            if (b.jadwalKemas && !kemasLengkap(b) && status !== 'done') {
+                const jam = stuck.jam;
+                notifs.push({
+                    icon: jam > STUCK_THRESHOLD_HOURS ? '🚨' : '📦',
+                    level: jam > STUCK_THRESHOLD_HOURS ? 'danger' : 'warning',
+                    batch: b.batchNumber,
+                    msg: `Kemas belum siap — ceklis & isi Serah Terima${jam > STUCK_THRESHOLD_HOURS ? ` (stuck ${jam.toFixed(1)} jam)` : ''}`,
+                    hint: 'Logistic → Kemas'
+                });
+            }
+        }
+
+        // ============ NOTIFIKASI QC ============
+        if (canSee('QC')) {
+            if (status === 'qc' && !qcLengkap(b)) {
+                const jam = stuck.jam;
+                notifs.push({
+                    icon: jam > STUCK_THRESHOLD_HOURS ? '🚨' : '🔬',
+                    level: jam > STUCK_THRESHOLD_HOURS ? 'danger' : 'info',
+                    batch: b.batchNumber,
+                    msg: `Batch di QC — isi 4 field analisa${jam > STUCK_THRESHOLD_HOURS ? ` (stuck ${jam.toFixed(1)} jam)` : ''}`,
+                    hint: 'QC'
+                });
+            }
+        }
+
+        // ============ NOTIFIKASI QA ============
+        if (canSee('QA')) {
+            if ((status === 'qa' || status === 'qa_locked') && !qaLengkap(b)) {
+                const jam = stuck.jam;
+                if (status === 'qa_locked') {
+                    notifs.push({
+                        icon: '🚫',
+                        level: 'danger',
+                        batch: b.batchNumber,
+                        msg: `QA terkunci — ada field wajib belum lengkap`,
+                        hint: 'Cek Kanban / Logistic / QC'
+                    });
+                } else {
+                    notifs.push({
+                        icon: jam > STUCK_THRESHOLD_HOURS ? '🚨' : '✅',
+                        level: jam > STUCK_THRESHOLD_HOURS ? 'danger' : 'info',
+                        batch: b.batchNumber,
+                        msg: `Siap rilis — isi Tanggal Rilis${jam > STUCK_THRESHOLD_HOURS ? ` (stuck ${jam.toFixed(1)} jam)` : ''}`,
+                        hint: 'QA'
+                    });
+                }
+            }
+        }
+
+        // ============ NOTIFIKASI PPIC ============
+        if (canSee('PPIC')) {
+            // Stuck > threshold di tahap apapun
+            if (stuck.jam > STUCK_THRESHOLD_HOURS * 2 && status !== 'done') {
+                notifs.push({
+                    icon: '🚨',
+                    level: 'danger',
+                    batch: b.batchNumber,
+                    msg: `Batch stuck di ${getStatusLabel(status)} — ${stuck.jam.toFixed(1)} jam`,
+                    hint: 'Follow up tim terkait'
+                });
+            }
+        }
+    });
+
+    // Sort: danger dulu, lalu warning, info
+    const order = { danger: 0, warning: 1, info: 2, success: 3 };
+    notifs.sort((a, b) => (order[a.level] || 99) - (order[b.level] || 99));
+
+    return notifs;
+}
+
+function renderNotifikasi() {
+    const notifs = generateNotifications();
+    const badge = document.getElementById('bellBadge');
+    const list = document.getElementById('notifList');
+    const count = document.getElementById('notifCount');
+    const bell = document.getElementById('btnBell');
+
+    if (!badge || !list || !count || !bell) return;
+
+    const total = notifs.length;
+    if (total > 0) {
+        badge.textContent = total > 99 ? '99+' : total;
+        badge.style.display = 'block';
+        bell.classList.add('has-notif');
+    } else {
+        badge.style.display = 'none';
+        bell.classList.remove('has-notif');
+    }
+    count.textContent = total + ' notifikasi';
+
+    if (total === 0) {
+        list.innerHTML = '<div class="notif-empty"><div class="icon">✨</div>Tidak ada notifikasi<br><small style="font-size:11px;opacity:0.7;">Semua tahap terpantau aman</small></div>';
+        return;
+    }
+
+    list.innerHTML = notifs.map(n => `
+        <div class="notif-item ${n.level}">
+            <div class="notif-icon">${n.icon}</div>
+            <div class="notif-content">
+                <div class="notif-batch">${n.batch}</div>
+                <div class="notif-msg">${n.msg}</div>
+                <div class="notif-hint">👉 ${n.hint}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function toggleNotifDropdown(e) {
+    if (e) e.stopPropagation();
+    const dd = document.getElementById('notifDropdown');
+    if (!dd) return;
+    dd.classList.toggle('show');
+    if (dd.classList.contains('show')) {
+        renderNotifikasi();
+    }
+}
+
+// Close dropdown kalau klik di luar
+document.addEventListener('click', function(e) {
+    const dd = document.getElementById('notifDropdown');
+    const wrapper = document.querySelector('.bell-wrapper');
+    if (dd && wrapper && !wrapper.contains(e.target)) {
+        dd.classList.remove('show');
+    }
+});
+
 // ============ AUDIT ============
 function addAudit(action, target, detail) {
     if (!currentUser) return;
@@ -753,7 +1127,7 @@ function login() {
     if (input === 'admin123') { currentUser = { role: 'admin', name: 'Admin', department: null }; addAudit('LOGIN', 'System', 'Admin login'); showMainApp(); return; }
     const p = data.personil.find(x => x.name.toLowerCase() === input.toLowerCase());
     if (p) { currentUser = { role: 'user', name: p.name, department: p.department }; addAudit('LOGIN', 'System', `Login sebagai ${p.department}`); showMainApp(); return; }
-    err.textContent = '⚠️ NIK tidak ditemukan!';
+    err.textContent = '⚠️ Nama tidak ditemukan!';
     err.classList.add('show');
 }
 function loginGuest() { currentUser = { role: 'guest', name: 'Guest', department: null }; showMainApp(); }
@@ -764,6 +1138,7 @@ function logout() {
     document.getElementById('loginPage').style.display = 'flex';
     document.getElementById('loginInput').value = '';
     document.getElementById('loginError').classList.remove('show');
+    document.getElementById('notifDropdown')?.classList.remove('show');
 }
 function showMainApp() {
     document.getElementById('loginPage').style.display = 'none';
@@ -863,8 +1238,8 @@ function initDateFilters() {
 function addPersonil() {
     const name = document.getElementById('personilName').value.trim();
     const dept = document.getElementById('personilDept').value;
-    if (!name) { showNotification('Masukkan NIK!', 'error'); return; }
-    if (data.personil.some(p => p.name.toLowerCase() === name.toLowerCase())) { showNotification('NIK sudah ada!', 'error'); return; }
+    if (!name) { showNotification('Masukkan nama!', 'error'); return; }
+    if (data.personil.some(p => p.name.toLowerCase() === name.toLowerCase())) { showNotification('Nama sudah ada!', 'error'); return; }
     data.personil.push({ id: generateId(), name, department: dept });
     document.getElementById('personilName').value = '';
     addAudit('CREATE', 'Personil', `Tambah ${name} (${dept})`);
@@ -1606,7 +1981,7 @@ function renderLineChartDash(t, batches) {
     const now = new Date();
     const year = now.getFullYear();
     const month = now.getMonth();
-    const bulanNIK = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][month];
+    const bulanNama = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][month];
 
     const groups = {};
     done.forEach(b => {
@@ -1629,7 +2004,7 @@ function renderLineChartDash(t, batches) {
         const avgExc = g.exc.length ? g.exc.reduce((a,b)=>a+b,0)/g.exc.length : null;
         return {
             date: g.date,
-            label: `${g.date.getDate()} ${bulanNIK} ${g.date.getFullYear()}`,
+            label: `${g.date.getDate()} ${bulanNama} ${g.date.getFullYear()}`,
             inc: avgInc,
             exc: avgExc
         };
@@ -1726,7 +2101,6 @@ function renderLineChartDash(t, batches) {
     container.innerHTML = legendHtml + svg;
 }
 
-// ============ BAR CHART ============
 function renderBarChartDash(t, batches) {
     const container = document.getElementById(t === 'oral' ? 'barChartOral' : 'barChartInjeksi');
     if (!container) return;
@@ -1777,44 +2151,16 @@ function renderBarChartDash(t, batches) {
         const targetPerilisanHari = b.targetPerilisan / 24;
 
         if (c.logistik !== null && b.targetTimbang > 0 && c.logistik > targetTimbangHari) {
-            overStages.push({
-                stage: 'Logistik',
-                label: 'Timbang → Serah Terima',
-                actual: c.logistik,
-                targetHari: targetTimbangHari,
-                diffHari: c.logistik - targetTimbangHari,
-                ket: b.ket_rawMaterial || ''
-            });
+            overStages.push({ stage: 'Logistik', label: 'Timbang → Serah Terima', actual: c.logistik, targetHari: targetTimbangHari, diffHari: c.logistik - targetTimbangHari, ket: b.ket_rawMaterial || '' });
         }
         if (c.produksi !== null && b.targetProduksi > 0 && c.produksi > targetProduksiHari) {
-            overStages.push({
-                stage: 'Produksi',
-                label: 'Serah Terima → Kirim Dokumen',
-                actual: c.produksi,
-                targetHari: targetProduksiHari,
-                diffHari: c.produksi - targetProduksiHari,
-                ket: b.ket_produksi || ''
-            });
+            overStages.push({ stage: 'Produksi', label: 'Serah Terima → Kirim Dokumen', actual: c.produksi, targetHari: targetProduksiHari, diffHari: c.produksi - targetProduksiHari, ket: b.ket_produksi || '' });
         }
         if (c.qc !== null && b.targetAnalisa > 0 && c.qc > targetAnalisaHari) {
-            overStages.push({
-                stage: 'QC',
-                label: 'Terima Sample → Selesai Mikro',
-                actual: c.qc,
-                targetHari: targetAnalisaHari,
-                diffHari: c.qc - targetAnalisaHari,
-                ket: b.ket_qc || ''
-            });
+            overStages.push({ stage: 'QC', label: 'Terima Sample → Selesai Mikro', actual: c.qc, targetHari: targetAnalisaHari, diffHari: c.qc - targetAnalisaHari, ket: b.ket_qc || '' });
         }
         if (c.qa !== null && b.targetPerilisan > 0 && c.qa > targetPerilisanHari) {
-            overStages.push({
-                stage: 'QA',
-                label: 'MAX(Mikro, Kirim Dok) → Rilis',
-                actual: c.qa,
-                targetHari: targetPerilisanHari,
-                diffHari: c.qa - targetPerilisanHari,
-                ket: b.ket_qa || ''
-            });
+            overStages.push({ stage: 'QA', label: 'MAX(Mikro, Kirim Dok) → Rilis', actual: c.qa, targetHari: targetPerilisanHari, diffHari: c.qa - targetPerilisanHari, ket: b.ket_qa || '' });
         }
 
         let tooltipHtml = `<div style="font-weight:700;font-size:13px;margin-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.3);padding-bottom:6px;">${b.batchNumber}</div>`;
@@ -1855,7 +2201,6 @@ function renderBarChartDash(t, batches) {
     container.innerHTML = svg;
 }
 
-// ============ DETAIL TABLE — Semua cell yang over jadi merah ============
 function renderDetailTableDash(t, batches) {
     const tb = document.getElementById(t === 'oral' ? 'detailTableBodyOral' : 'detailTableBodyInjeksi');
     if (!tb) return;
@@ -1867,11 +2212,9 @@ function renderDetailTableDash(t, batches) {
         const c = calculatePCT(b);
         const targetPCT = getTargetPCT(b);
 
-        // Cek PCT Inc & PCT Exc over target global
         const isOverInc = c.pctInclude !== null && targetPCT !== null && c.pctInclude > targetPCT;
         const isOverExc = c.pctExclude !== null && targetPCT !== null && c.pctExclude > targetPCT;
 
-        // Helper untuk cell proses (Logistik/Produksi/QC/QA) — merah kalau over target per-proses
         const cellProcess = (val, ket, stageName, startLabel, targetJam) => {
             const display = val !== null ? val.toFixed(2) : '-';
             const hasKet = ket && ket.trim() !== '';
@@ -2101,6 +2444,7 @@ function renderAll() {
     renderPersonilList();
     renderProductList();
     if (currentUser?.role === 'admin') renderAudit();
+    renderNotifikasi(); // Update bell counter
 }
 
 let resizeTimer;
@@ -2108,6 +2452,11 @@ window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => renderDashboard(), 300);
 });
+
+// Auto-refresh notifikasi tiap 30 detik (real-time feel)
+setInterval(() => {
+    if (currentUser) renderNotifikasi();
+}, 30000);
 
 loadData();
 console.log('📊 PCT Monitoring System Loaded');
