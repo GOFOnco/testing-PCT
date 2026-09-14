@@ -1141,11 +1141,6 @@ function getOverTargetStages(b) {
     const c = calculatePCT(b);
     const over = [];
 
-    // Konversi target jam ke hari (untuk compare dengan c.logistik yang udah hari)
-    // Tapi c.logistik dalam hari, b.targetTimbang dalam jam
-    // Jadi kita banding: c.logistik * 24 > b.targetTimbang
-    // Atau c.logistik > b.targetTimbang / 24
-
     if (c.logistik !== null && b.targetTimbang > 0) {
         const targetHari = b.targetTimbang / 24;
         if (c.logistik > targetHari) {
@@ -1791,6 +1786,7 @@ function renderLineChartDash(t, batches) {
     container.innerHTML = legendHtml + svg;
 }
 
+// ============ BAR CHART (Tooltip Lengkap dengan Konversi Hari+Jam) ============
 function renderBarChartDash(t, batches) {
     const container = document.getElementById(t === 'oral' ? 'barChartOral' : 'barChartInjeksi');
     if (!container) return;
@@ -1844,10 +1840,12 @@ function renderBarChartDash(t, batches) {
             tooltipHtml += `<div style="border-top:1px solid rgba(255,255,255,0.3);padding-top:8px;margin-top:4px;">`;
             tooltipHtml += `<div style="font-weight:700;margin-bottom:6px;">⚠️ Proses Over Target (${overStages.length}):</div>`;
             overStages.forEach(s => {
+                const diffHari = s.diff / 24;
+                const targetHari = s.target / 24;
                 tooltipHtml += `<div style="background:rgba(255,255,255,0.1);padding:6px 8px;border-radius:4px;margin-bottom:5px;font-size:11px;line-height:1.5;">
-                    <div style="font-weight:700;">${s.stage} — Over +${s.diff.toFixed(1)} jam</div>
+                    <div style="font-weight:700;">${s.stage} — Over +${diffHari.toFixed(2)} hari (${s.diff.toFixed(1)} jam)</div>
                     <div style="opacity:0.85;font-size:10px;">${s.label}</div>
-                    <div style="opacity:0.85;font-size:10px;">Aktual: ${s.actual.toFixed(2)} hari | Target: ${s.target} jam</div>
+                    <div style="opacity:0.85;font-size:10px;">Aktual: ${s.actual.toFixed(2)} hari | Target: ${targetHari.toFixed(2)} hari (${s.target} jam)</div>
                     ${s.ket ? `<div style="margin-top:4px;padding-top:4px;border-top:1px dashed rgba(255,255,255,0.3);">📝 <i>${s.ket}</i></div>` : ''}
                 </div>`;
             });
@@ -1873,7 +1871,7 @@ function renderBarChartDash(t, batches) {
     container.innerHTML = svg;
 }
 
-// ============ DETAIL TABLE (Baris merah kalau PCT Exc over ATAU ada proses over) ============
+// ============ DETAIL TABLE ============
 function renderDetailTableDash(t, batches) {
     const tb = document.getElementById(t === 'oral' ? 'detailTableBodyOral' : 'detailTableBodyInjeksi');
     if (!tb) return;
@@ -1885,12 +1883,9 @@ function renderDetailTableDash(t, batches) {
         const c = calculatePCT(b);
         const targetHari = getTargetPCT(b);
 
-        // Kondisi 1: PCT Exc > target global
         const pctExcOver = (c.pctExclude !== null && targetHari !== null && c.pctExclude > targetHari);
-        // Kondisi 2: ada proses yang over target
         const overStages = getOverTargetStages(b);
         const prosesOver = overStages.length > 0;
-        // Baris merah kalau salah satu terpenuhi
         const isOver = pctExcOver || prosesOver;
         const rowClass = isOver ? 'row-over' : '';
 
