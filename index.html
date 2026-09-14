@@ -1137,50 +1137,66 @@ function calculatePCT(b) {
 }
 
 // ============ HELPER: DETEKSI OVER-TARGET PER TAHAP ============
-// Return array { stage, label, actual, target, diff, ket }
 function getOverTargetStages(b) {
     const c = calculatePCT(b);
     const over = [];
 
-    if (c.logistik !== null && b.targetTimbang && c.logistik > b.targetTimbang) {
-        over.push({
-            stage: 'Logistik',
-            label: 'Timbang → Serah Terima',
-            actual: c.logistik,
-            target: b.targetTimbang,
-            diff: Math.round((c.logistik - b.targetTimbang) * 100) / 100,
-            ket: b.ket_rawMaterial || ''
-        });
+    // Konversi target jam ke hari (untuk compare dengan c.logistik yang udah hari)
+    // Tapi c.logistik dalam hari, b.targetTimbang dalam jam
+    // Jadi kita banding: c.logistik * 24 > b.targetTimbang
+    // Atau c.logistik > b.targetTimbang / 24
+
+    if (c.logistik !== null && b.targetTimbang > 0) {
+        const targetHari = b.targetTimbang / 24;
+        if (c.logistik > targetHari) {
+            over.push({
+                stage: 'Logistik',
+                label: 'Timbang → Serah Terima',
+                actual: c.logistik,
+                target: b.targetTimbang,
+                diff: Math.round((c.logistik * 24 - b.targetTimbang) * 100) / 100,
+                ket: b.ket_rawMaterial || ''
+            });
+        }
     }
-    if (c.produksi !== null && b.targetProduksi && c.produksi > b.targetProduksi) {
-        over.push({
-            stage: 'Produksi',
-            label: 'Serah Terima → Kirim Dokumen',
-            actual: c.produksi,
-            target: b.targetProduksi,
-            diff: Math.round((c.produksi - b.targetProduksi) * 100) / 100,
-            ket: b.ket_produksi || ''
-        });
+    if (c.produksi !== null && b.targetProduksi > 0) {
+        const targetHari = b.targetProduksi / 24;
+        if (c.produksi > targetHari) {
+            over.push({
+                stage: 'Produksi',
+                label: 'Serah Terima → Kirim Dokumen',
+                actual: c.produksi,
+                target: b.targetProduksi,
+                diff: Math.round((c.produksi * 24 - b.targetProduksi) * 100) / 100,
+                ket: b.ket_produksi || ''
+            });
+        }
     }
-    if (c.qc !== null && b.targetAnalisa && c.qc > b.targetAnalisa) {
-        over.push({
-            stage: 'QC',
-            label: 'Terima Sample → Selesai Mikro',
-            actual: c.qc,
-            target: b.targetAnalisa,
-            diff: Math.round((c.qc - b.targetAnalisa) * 100) / 100,
-            ket: b.ket_qc || ''
-        });
+    if (c.qc !== null && b.targetAnalisa > 0) {
+        const targetHari = b.targetAnalisa / 24;
+        if (c.qc > targetHari) {
+            over.push({
+                stage: 'QC',
+                label: 'Terima Sample → Selesai Mikro',
+                actual: c.qc,
+                target: b.targetAnalisa,
+                diff: Math.round((c.qc * 24 - b.targetAnalisa) * 100) / 100,
+                ket: b.ket_qc || ''
+            });
+        }
     }
-    if (c.qa !== null && b.targetPerilisan && c.qa > b.targetPerilisan) {
-        over.push({
-            stage: 'QA',
-            label: 'MAX(Mikro, Kirim Dok) → Rilis',
-            actual: c.qa,
-            target: b.targetPerilisan,
-            diff: Math.round((c.qa - b.targetPerilisan) * 100) / 100,
-            ket: b.ket_qa || ''
-        });
+    if (c.qa !== null && b.targetPerilisan > 0) {
+        const targetHari = b.targetPerilisan / 24;
+        if (c.qa > targetHari) {
+            over.push({
+                stage: 'QA',
+                label: 'MAX(Mikro, Kirim Dok) → Rilis',
+                actual: c.qa,
+                target: b.targetPerilisan,
+                diff: Math.round((c.qa * 24 - b.targetPerilisan) * 100) / 100,
+                ket: b.ket_qa || ''
+            });
+        }
     }
 
     return over;
@@ -1775,7 +1791,6 @@ function renderLineChartDash(t, batches) {
     container.innerHTML = legendHtml + svg;
 }
 
-// ============ BAR CHART (Tooltip Lengkap) ============
 function renderBarChartDash(t, batches) {
     const container = document.getElementById(t === 'oral' ? 'barChartOral' : 'barChartInjeksi');
     if (!container) return;
@@ -1819,7 +1834,6 @@ function renderBarChartDash(t, batches) {
         const isOver = val > targetPCT;
         const fill = isOver ? '#c62828' : barColor;
 
-        // Hitung tooltip lengkap
         const overStages = getOverTargetStages(b);
         let tooltipHtml = `<div style="font-weight:700;font-size:13px;margin-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.3);padding-bottom:6px;">${b.batchNumber}</div>`;
         tooltipHtml += `<div style="margin-bottom:4px;">📊 <b>PCT Inc:</b> ${c.pctInclude !== null ? c.pctInclude.toFixed(2) : '-'} hari</div>`;
@@ -1859,7 +1873,7 @@ function renderBarChartDash(t, batches) {
     container.innerHTML = svg;
 }
 
-// ============ DETAIL TABLE (Baris merah kalau over) ============
+// ============ DETAIL TABLE (Baris merah kalau PCT Exc over ATAU ada proses over) ============
 function renderDetailTableDash(t, batches) {
     const tb = document.getElementById(t === 'oral' ? 'detailTableBodyOral' : 'detailTableBodyInjeksi');
     if (!tb) return;
@@ -1871,8 +1885,13 @@ function renderDetailTableDash(t, batches) {
         const c = calculatePCT(b);
         const targetHari = getTargetPCT(b);
 
-        // Cek: apakah baris ini over? (PCT Exc > target)
-        const isOver = (c.pctExclude !== null && targetHari !== null && c.pctExclude > targetHari);
+        // Kondisi 1: PCT Exc > target global
+        const pctExcOver = (c.pctExclude !== null && targetHari !== null && c.pctExclude > targetHari);
+        // Kondisi 2: ada proses yang over target
+        const overStages = getOverTargetStages(b);
+        const prosesOver = overStages.length > 0;
+        // Baris merah kalau salah satu terpenuhi
+        const isOver = pctExcOver || prosesOver;
         const rowClass = isOver ? 'row-over' : '';
 
         const cellWithTooltip = (val, ket, stageName, startLabel, targetLabel) => {
@@ -2001,7 +2020,6 @@ function showChartTooltip(e, html) {
     if (!tip) return;
     tip.innerHTML = html;
     tip.classList.add('show');
-    // Posisi tooltip dengan clamp
     const tw = tip.offsetWidth;
     const th = tip.offsetHeight;
     let left = e.clientX + 12;
