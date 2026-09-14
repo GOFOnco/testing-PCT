@@ -185,9 +185,6 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:
 .badge-over { background: #ffcdd2; color: #b71c1c; padding: 3px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-block; }
 .badge-optional { background: #e3f2fd; color: #0d47a1; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; }
 .badge-wajib { background: #ffcdd2; color: #b71c1c; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; }
-.badge-target { background: #e8eaf6; color: #1a237e; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
-.badge-target.injeksi { background: #e3f2fd; color: #0d47a1; }
-.badge-target.oral { background: #f3e5f5; color: #6a1b9a; }
 .step-indicator { display: flex; align-items: center; gap: 8px; padding: 10px 15px; background: #f5f5f5; border-radius: 6px; margin-bottom: 15px; flex-wrap: wrap; font-size: 11px; }
 .step-indicator .step { padding: 3px 10px; border-radius: 12px; font-weight: 600; }
 .step-indicator .step.done { background: #c8e6c9; color: #1b5e20; }
@@ -342,6 +339,97 @@ td.cell-over::before {
 .tooltip-box.arrow-bottom.warning::after { border-bottom-color: #c62828; }
 .tooltip-box.arrow-top::after { top: 100%; left: 50%; transform: translateX(-50%); border-top-color: #1a237e; }
 .tooltip-box.arrow-top.warning::after { border-top-color: #c62828; }
+
+/* ============ MULTI-SELECT DROPDOWN ============ */
+.multi-select { position: relative; min-width: 200px; }
+.multi-select-trigger {
+    width: 100%;
+    padding: 8px 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 13px;
+    background: white;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    text-align: left;
+    transition: border-color 0.3s;
+}
+.multi-select-trigger:hover { border-color: #0d47a1; }
+.multi-select-trigger:focus { outline: none; border-color: #0d47a1; box-shadow: 0 0 0 3px rgba(13,71,161,0.1); }
+.multi-select-trigger .label {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #333;
+}
+.multi-select-trigger .arrow-icon {
+    font-size: 10px;
+    color: #999;
+    transition: transform 0.2s;
+}
+.multi-select.open .multi-select-trigger .arrow-icon { transform: rotate(180deg); }
+.multi-select-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    min-width: 100%;
+    max-height: 280px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    z-index: 100;
+    padding: 6px 0;
+}
+.multi-select.open .multi-select-menu { display: block; }
+.multi-select-option {
+    padding: 7px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #333;
+    transition: background 0.15s;
+    user-select: none;
+}
+.multi-select-option:hover { background: #f0f2f5; }
+.multi-select-option input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: #0d47a1;
+    flex-shrink: 0;
+}
+.multi-select-option.checked { background: #e8eaf6; color: #1a237e; font-weight: 600; }
+.multi-select-actions {
+    border-top: 1px solid #eee;
+    padding: 6px 8px;
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+    background: #fafafa;
+    border-radius: 0 0 6px 6px;
+}
+.multi-select-actions button {
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background: #e0e0e0;
+    color: #555;
+}
+.multi-select-actions button:hover { background: #d0d0d0; }
+.multi-select-actions button.primary { background: #0d47a1; color: white; }
+.multi-select-actions button.primary:hover { background: #1a237e; }
 </style>
 </head>
 <body>
@@ -411,11 +499,36 @@ td.cell-over::before {
 <div><label>📅 Sampai Tanggal </label><input type="date" id="filterToOral" onchange="renderDashboard()"></div>
 <div>
 <label>🔍 Batch Number </label>
-<select id="filterSearchOral" onchange="renderDashboard()" style="min-width:200px;">
-<option value="all">Semua Batch</option>
-</select>
+<div class="multi-select" id="msBatchOral">
+<button class="multi-select-trigger" type="button">
+<span class="label">Semua Batch</span>
+<span class="arrow-icon">▼</span>
+</button>
+<div class="multi-select-menu">
+<div id="msBatchOralOptions"></div>
+<div class="multi-select-actions">
+<button type="button" onclick="clearMultiSelect('msBatchOral')">Reset</button>
+<button type="button" class="primary" onclick="closeMultiSelect('msBatchOral')">OK</button>
 </div>
-<div><label>🏷️ Kategori </label><select id="filterKategoriOral" onchange="renderDashboard()"><option value="all">Semua</option><option value="Rutin">Rutin</option><option value="Validasi">Validasi</option><option value="Study">Study</option></select></div>
+</div>
+</div>
+</div>
+<div>
+<label>🏷️ Kategori </label>
+<div class="multi-select" id="msKatOral">
+<button class="multi-select-trigger" type="button">
+<span class="label">Semua Kategori</span>
+<span class="arrow-icon">▼</span>
+</button>
+<div class="multi-select-menu">
+<div id="msKatOralOptions"></div>
+<div class="multi-select-actions">
+<button type="button" onclick="clearMultiSelect('msKatOral')">Reset</button>
+<button type="button" class="primary" onclick="closeMultiSelect('msKatOral')">OK</button>
+</div>
+</div>
+</div>
+</div>
 <button class="btn btn-primary btn-sm" onclick="resetFilter('oral')">Reset</button>
 </div>
 <div class="grid-4">
@@ -467,11 +580,36 @@ td.cell-over::before {
 <div><label>📅 Sampai Tanggal </label><input type="date" id="filterToInjeksi" onchange="renderDashboard()"></div>
 <div>
 <label>🔍 Batch Number </label>
-<select id="filterSearchInjeksi" onchange="renderDashboard()" style="min-width:200px;">
-<option value="all">Semua Batch</option>
-</select>
+<div class="multi-select" id="msBatchInjeksi">
+<button class="multi-select-trigger" type="button">
+<span class="label">Semua Batch</span>
+<span class="arrow-icon">▼</span>
+</button>
+<div class="multi-select-menu">
+<div id="msBatchInjeksiOptions"></div>
+<div class="multi-select-actions">
+<button type="button" onclick="clearMultiSelect('msBatchInjeksi')">Reset</button>
+<button type="button" class="primary" onclick="closeMultiSelect('msBatchInjeksi')">OK</button>
 </div>
-<div><label>🏷️ Kategori </label><select id="filterKategoriInjeksi" onchange="renderDashboard()"><option value="all">Semua</option><option value="Rutin">Rutin</option><option value="Validasi">Validasi</option><option value="Study">Study</option></select></div>
+</div>
+</div>
+</div>
+<div>
+<label>🏷️ Kategori </label>
+<div class="multi-select" id="msKatInjeksi">
+<button class="multi-select-trigger" type="button">
+<span class="label">Semua Kategori</span>
+<span class="arrow-icon">▼</span>
+</button>
+<div class="multi-select-menu">
+<div id="msKatInjeksiOptions"></div>
+<div class="multi-select-actions">
+<button type="button" onclick="clearMultiSelect('msKatInjeksi')">Reset</button>
+<button type="button" class="primary" onclick="closeMultiSelect('msKatInjeksi')">OK</button>
+</div>
+</div>
+</div>
+</div>
 <button class="btn btn-primary btn-sm" onclick="resetFilter('injeksi')">Reset</button>
 </div>
 <div class="grid-4">
@@ -678,6 +816,14 @@ let currentUser = null;
 let currentDashTab = 'oral';
 let editingBatchId = null;
 
+// Multi-select state
+const multiSelectState = {
+    msBatchOral: new Set(),
+    msBatchInjeksi: new Set(),
+    msKatOral: new Set(),
+    msKatInjeksi: new Set()
+};
+
 const STUCK_THRESHOLD_HOURS = 24;
 
 const DEPT_PAGES = { 'PPIC': ['ppic'], 'Produksi': ['produksi'], 'Logistic': ['logistic'], 'QC': ['qc'], 'QA': ['qa'], 'Management': ['management'] };
@@ -702,6 +848,135 @@ function updateLiveDateTime() {
 }
 setInterval(updateLiveDateTime, 1000);
 updateLiveDateTime();
+
+// ============ MULTI-SELECT HELPERS ============
+function toggleMultiSelect(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    // Close others
+    document.querySelectorAll('.multi-select').forEach(ms => {
+        if (ms.id !== id) ms.classList.remove('open');
+    });
+    el.classList.toggle('open');
+}
+
+function closeMultiSelect(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('open');
+}
+
+function clearMultiSelect(id) {
+    multiSelectState[id] = new Set();
+    if (id.startsWith('msBatch')) {
+        renderMultiSelectOptions(id);
+    } else {
+        renderMultiSelectKategori(id);
+    }
+    renderDashboard();
+}
+
+function toggleMultiSelectOption(id, value) {
+    if (!multiSelectState[id]) multiSelectState[id] = new Set();
+    if (multiSelectState[id].has(value)) {
+        multiSelectState[id].delete(value);
+    } else {
+        multiSelectState[id].add(value);
+    }
+    if (id.startsWith('msBatch')) {
+        renderMultiSelectOptions(id);
+    } else {
+        renderMultiSelectKategori(id);
+    }
+    renderDashboard();
+}
+
+function renderMultiSelectOptions(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const optionsEl = document.getElementById(id + 'Options');
+    const labelEl = el.querySelector('.multi-select-trigger .label');
+    if (!optionsEl || !labelEl) return;
+
+    // Determine type from id
+    const tipe = id.includes('Oral') ? 'oral' : 'injeksi';
+    const batches = data.batches.filter(b => b.type === tipe).sort((a, b) => a.batchNumber.localeCompare(b.batchNumber));
+
+    const selected = multiSelectState[id] || new Set();
+
+    if (batches.length === 0) {
+        optionsEl.innerHTML = '<div style="padding:12px;text-align:center;color:#999;font-size:12px;">Belum ada batch</div>';
+    } else {
+        optionsEl.innerHTML = batches.map(b => {
+            const checked = selected.has(b.batchNumber);
+            return `<label class="multi-select-option ${checked ? 'checked' : ''}">
+                <input type="checkbox" ${checked ? 'checked' : ''} onchange="toggleMultiSelectOption('${id}', '${b.batchNumber}')">
+                <span>${b.batchNumber} <small style="color:#999;">(${b.kategori || 'Rutin'})</small></span>
+            </label>`;
+        }).join('');
+    }
+
+    // Update label
+    const count = selected.size;
+    if (count === 0) {
+        labelEl.textContent = 'Semua Batch';
+        labelEl.style.color = '#333';
+    } else {
+        labelEl.textContent = count === 1 ? [...selected][0] : `${count} batch dipilih`;
+        labelEl.style.color = '#0d47a1';
+        labelEl.style.fontWeight = '600';
+    }
+}
+
+function renderMultiSelectKategori(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const optionsEl = document.getElementById(id + 'Options');
+    const labelEl = el.querySelector('.multi-select-trigger .label');
+    if (!optionsEl || !labelEl) return;
+
+    const kategoriList = ['Rutin', 'Validasi', 'Study'];
+    const selected = multiSelectState[id] || new Set();
+
+    optionsEl.innerHTML = kategoriList.map(k => {
+        const checked = selected.has(k);
+        return `<label class="multi-select-option ${checked ? 'checked' : ''}">
+            <input type="checkbox" ${checked ? 'checked' : ''} onchange="toggleMultiSelectOption('${id}', '${k}')">
+            <span>${k}</span>
+        </label>`;
+    }).join('');
+
+    const count = selected.size;
+    if (count === 0) {
+        labelEl.textContent = 'Semua Kategori';
+        labelEl.style.color = '#333';
+    } else {
+        labelEl.textContent = count === 1 ? [...selected][0] : `${count} kategori dipilih`;
+        labelEl.style.color = '#0d47a1';
+        labelEl.style.fontWeight = '600';
+    }
+}
+
+// Event listener global
+document.addEventListener('click', function(e) {
+    document.querySelectorAll('.multi-select').forEach(ms => {
+        if (!ms.contains(e.target)) ms.classList.remove('open');
+    });
+    // Bell dropdown
+    const dd = document.getElementById('notifDropdown');
+    const wrapper = document.querySelector('.bell-wrapper');
+    if (dd && wrapper && !wrapper.contains(e.target)) {
+        dd.classList.remove('show');
+    }
+});
+
+// Setup trigger click (tanpa close otomatis)
+document.querySelectorAll('.multi-select-trigger').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const ms = this.closest('.multi-select');
+        if (ms) toggleMultiSelect(ms.id);
+    });
+});
 
 // ============ UTILS ============
 function generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2,5); }
@@ -797,12 +1072,12 @@ function cekKelengkapan(b) {
     if (!b.jadwalRawMaterial) belum.push('📅 Jadwal Permintaan Raw Material (Kanban Produksi)');
     if (!b.jadwalWadah) belum.push('📅 Jadwal Permintaan Wadah (Kanban Produksi)');
     if (!b.jadwalKemas) belum.push('📅 Jadwal Permintaan Kemas (Kanban Produksi)');
-    if (!b.tanggalTimbang) belum.push('⚖️ Tanggal Timbang (Logistic → Raw Material)');
-    if (!b.tanggalSerahTerima) belum.push('📤 Tanggal Serah Terima RM (Logistic → Raw Material)');
+    if (!b.tanggalTimbang) belum.push('⚖️ Actual Timbang (Logistic → Raw Material)');
+    if (!b.tanggalSerahTerima) belum.push('📤 Actual Serah Terima RM (Logistic → Raw Material)');
     if (!b.wadahReady) belum.push('✅ Checkbox Wadah Siap (Logistic → Wadah)');
-    if (!b.tanggalSerahTerimaWadah) belum.push('📅 Tanggal Serah Terima Wadah (Logistic → Wadah)');
+    if (!b.tanggalSerahTerimaWadah) belum.push('📅 Actual Serah Terima Wadah (Logistic → Wadah)');
     if (!b.kemasReady) belum.push('✅ Checkbox Kemas Siap (Logistic → Kemas)');
-    if (!b.tanggalSerahTerimaKemas) belum.push('📅 Tanggal Serah Terima Kemas (Logistic → Kemas)');
+    if (!b.tanggalSerahTerimaKemas) belum.push('📅 Actual Serah Terima Kemas (Logistic → Kemas)');
     if (!b.tanggalBPP) belum.push('📅 Tanggal BPP (Input Produksi)');
     if (!b.tanggalKirimDokumen) belum.push('📤 Tanggal Kirim Dokumen (Input Produksi)');
     if (!b.tanggalTerimaSample) belum.push('📥 Tanggal Terima Sample (QC)');
@@ -921,7 +1196,7 @@ function generateNotifications() {
                     icon: jam > STUCK_THRESHOLD_HOURS ? '🚨' : '🧪',
                     level: jam > STUCK_THRESHOLD_HOURS ? 'danger' : 'warning',
                     batch: b.batchNumber,
-                    msg: `RM belum lengkap — isi Timbang & Serah Terima${jam > STUCK_THRESHOLD_HOURS ? ` (stuck ${jam.toFixed(1)} jam)` : ''}`,
+                    msg: `RM belum lengkap — isi Actual Timbang & Actual Serah Terima${jam > STUCK_THRESHOLD_HOURS ? ` (stuck ${jam.toFixed(1)} jam)` : ''}`,
                     hint: 'Logistic → Raw Material'
                 });
             }
@@ -931,7 +1206,7 @@ function generateNotifications() {
                     icon: jam > STUCK_THRESHOLD_HOURS ? '🚨' : '📦',
                     level: jam > STUCK_THRESHOLD_HOURS ? 'danger' : 'warning',
                     batch: b.batchNumber,
-                    msg: `Wadah belum siap — ceklis & isi Serah Terima${jam > STUCK_THRESHOLD_HOURS ? ` (stuck ${jam.toFixed(1)} jam)` : ''}`,
+                    msg: `Wadah belum siap — ceklis & isi Actual Serah Terima${jam > STUCK_THRESHOLD_HOURS ? ` (stuck ${jam.toFixed(1)} jam)` : ''}`,
                     hint: 'Logistic → Wadah'
                 });
             }
@@ -941,7 +1216,7 @@ function generateNotifications() {
                     icon: jam > STUCK_THRESHOLD_HOURS ? '🚨' : '📦',
                     level: jam > STUCK_THRESHOLD_HOURS ? 'danger' : 'warning',
                     batch: b.batchNumber,
-                    msg: `Kemas belum siap — ceklis & isi Serah Terima${jam > STUCK_THRESHOLD_HOURS ? ` (stuck ${jam.toFixed(1)} jam)` : ''}`,
+                    msg: `Kemas belum siap — ceklis & isi Actual Serah Terima${jam > STUCK_THRESHOLD_HOURS ? ` (stuck ${jam.toFixed(1)} jam)` : ''}`,
                     hint: 'Logistic → Kemas'
                 });
             }
@@ -1048,14 +1323,6 @@ function toggleNotifDropdown(e) {
         renderNotifikasi();
     }
 }
-
-document.addEventListener('click', function(e) {
-    const dd = document.getElementById('notifDropdown');
-    const wrapper = document.querySelector('.bell-wrapper');
-    if (dd && wrapper && !wrapper.contains(e.target)) {
-        dd.classList.remove('show');
-    }
-});
 
 // ============ AUDIT ============
 function addAudit(action, target, detail) {
@@ -1541,12 +1808,12 @@ function renderScoreCard(b, actionHtml = '', showEditDelete = false) {
         { l: 'Jadwal RM', v: displayDT(b.jadwalRawMaterial) },
         { l: 'Jadwal Wadah', v: displayDT(b.jadwalWadah) },
         { l: 'Jadwal Kemas', v: displayDT(b.jadwalKemas) },
-        { l: 'Tgl Timbang', v: displayDT(b.tanggalTimbang) },
-        { l: 'Serah Terima RM', v: displayDT(b.tanggalSerahTerima) },
+        { l: 'Actual Timbang', v: displayDT(b.tanggalTimbang) },
+        { l: 'Actual Serah Terima RM', v: displayDT(b.tanggalSerahTerima) },
         { l: 'Wadah Siap', v: b.wadahReady ? '✅ Siap' : '' },
-        { l: 'Serah Terima Wadah', v: displayDT(b.tanggalSerahTerimaWadah) },
+        { l: 'Actual Serah Terima Wadah', v: displayDT(b.tanggalSerahTerimaWadah) },
         { l: 'Kemas Siap', v: b.kemasReady ? '✅ Siap' : '' },
-        { l: 'Serah Terima Kemas', v: displayDT(b.tanggalSerahTerimaKemas) },
+        { l: 'Actual Serah Terima Kemas', v: displayDT(b.tanggalSerahTerimaKemas) },
         { l: 'Tgl BPP', v: displayDT(b.tanggalBPP) },
         { l: 'Kirim Dokumen', v: displayDT(b.tanggalKirimDokumen) },
         { l: 'Terima Sample', v: displayDT(b.tanggalTerimaSample) },
@@ -1709,8 +1976,8 @@ function renderLogisticRawMaterial() {
             <div class="info-banner">📅 Jadwal Permintaan: ${displayDT(b.jadwalRawMaterial)}</div>
             <div class="section-title">🧪 Raw Material</div>
             <div class="jadwal-container two-col">
-                ${renderEditableField({ b, field: 'tanggalTimbang', label: 'Jadwal Timbang', icon: '⚖️', ketField: 'ket_rawMaterial', startField: null, targetHours: 0 })}
-                ${renderEditableField({ b, field: 'tanggalSerahTerima', label: 'Jadwal Serah Terima', icon: '📤', ketField: 'ket_rawMaterial', startField: 'tanggalTimbang', targetHours: b.targetTimbang })}
+                ${renderEditableField({ b, field: 'tanggalTimbang', label: 'Actual Timbang', icon: '⚖️', ketField: 'ket_rawMaterial', startField: null, targetHours: 0 })}
+                ${renderEditableField({ b, field: 'tanggalSerahTerima', label: 'Actual Serah Terima', icon: '📤', ketField: 'ket_rawMaterial', startField: 'tanggalTimbang', targetHours: b.targetTimbang })}
             </div>
         `;
         return renderScoreCard(b, actionHtml);
@@ -1737,7 +2004,7 @@ function renderLogisticWadah() {
             <div class="info-banner">📅 Jadwal Permintaan: ${displayDT(b.jadwalWadah)}</div>
             <div class="section-title">📦 Wadah</div>
             ${cbHtml}
-            ${renderEditableField({ b, field: 'tanggalSerahTerimaWadah', label: 'Jadwal Serah Terima Wadah', icon: '📅', ketField: 'ket_wadah', startField: null, targetHours: 0 })}
+            ${renderEditableField({ b, field: 'tanggalSerahTerimaWadah', label: 'Actual Serah Terima Wadah', icon: '📅', ketField: 'ket_wadah', startField: null, targetHours: 0 })}
         `;
         return renderScoreCard(b, actionHtml);
     }).join('');
@@ -1763,7 +2030,7 @@ function renderLogisticKemas() {
             <div class="info-banner">📅 Jadwal Permintaan: ${displayDT(b.jadwalKemas)}</div>
             <div class="section-title">📦 Kemas</div>
             ${cbHtml}
-            ${renderEditableField({ b, field: 'tanggalSerahTerimaKemas', label: 'Jadwal Serah Terima Kemas', icon: '📅', ketField: 'ket_kemas', startField: null, targetHours: 0 })}
+            ${renderEditableField({ b, field: 'tanggalSerahTerimaKemas', label: 'Actual Serah Terima Kemas', icon: '📅', ketField: 'ket_kemas', startField: null, targetHours: 0 })}
         `;
         return renderScoreCard(b, actionHtml);
     }).join('');
@@ -1878,40 +2145,31 @@ function renderPPIC() {
     c.innerHTML = data.batches.map(b => renderScoreCard(b, '', true)).join('');
 }
 
-// ============ DASHBOARD (DROPDOWN BATCH NUMBER) ============
+// ============ DASHBOARD ============
 function renderDashboard() {
     const t = currentDashTab;
     const pEl = document.getElementById(t === 'oral' ? 'filterFromOral' : 'filterFromInjeksi');
     const toEl = document.getElementById(t === 'oral' ? 'filterToOral' : 'filterToInjeksi');
-    const sEl = document.getElementById(t === 'oral' ? 'filterSearchOral' : 'filterSearchInjeksi');
-    const kEl = document.getElementById(t === 'oral' ? 'filterKategoriOral' : 'filterKategoriInjeksi');
 
-    // === POPULATE DROPDOWN BATCH ===
-    if (sEl && sEl.tagName === 'SELECT') {
-        const currentVal = sEl.value;
-        const batchesForDropdown = data.batches
-            .filter(b => b.type === t)
-            .sort((a, b) => a.batchNumber.localeCompare(b.batchNumber));
-        sEl.innerHTML = '<option value="all">Semua Batch</option>' +
-            batchesForDropdown.map(b => `<option value="${b.batchNumber}">${b.batchNumber} (${b.kategori || 'Rutin'})</option>`).join('');
-        if (currentVal && batchesForDropdown.some(b => b.batchNumber === currentVal)) {
-            sEl.value = currentVal;
-        } else {
-            sEl.value = 'all';
-        }
-    }
+    // Refresh multi-select options
+    renderMultiSelectOptions(t === 'oral' ? 'msBatchOral' : 'msBatchInjeksi');
+    renderMultiSelectKategori(t === 'oral' ? 'msKatOral' : 'msKatInjeksi');
 
     const fromDate = pEl?.value ? new Date(pEl.value + 'T00:00:00') : null;
     const toDate = toEl?.value ? new Date(toEl.value + 'T23:59:59') : null;
-    const searchVal = (sEl?.value || 'all');
-    const kat = kEl?.value || 'all';
+
+    const selectedBatch = multiSelectState[t === 'oral' ? 'msBatchOral' : 'msBatchInjeksi'];
+    const selectedKat = multiSelectState[t === 'oral' ? 'msKatOral' : 'msKatInjeksi'];
 
     let batches = data.batches.filter(b => b.type === t);
-    // Filter batch number (exact match)
-    if (searchVal && searchVal !== 'all') {
-        batches = batches.filter(b => b.batchNumber === searchVal);
+    // Filter batch number (multi-select)
+    if (selectedBatch.size > 0) {
+        batches = batches.filter(b => selectedBatch.has(b.batchNumber));
     }
-    if (kat !== 'all') batches = batches.filter(b => (b.kategori || '') === kat);
+    // Filter kategori (multi-select)
+    if (selectedKat.size > 0) {
+        batches = batches.filter(b => selectedKat.has(b.kategori || 'Rutin'));
+    }
 
     if (fromDate || toDate) {
         batches = batches.filter(b => {
@@ -2146,10 +2404,10 @@ function renderBarChartDash(t, batches) {
         const targetPerilisanHari = b.targetPerilisan / 24;
 
         if (c.logistik !== null && b.targetTimbang > 0 && c.logistik > targetTimbangHari) {
-            overStages.push({ stage: 'Logistik', label: 'Timbang → Serah Terima', actual: c.logistik, targetHari: targetTimbangHari, diffHari: c.logistik - targetTimbangHari, ket: b.ket_rawMaterial || '' });
+            overStages.push({ stage: 'Logistik', label: 'Actual Timbang → Actual Serah Terima', actual: c.logistik, targetHari: targetTimbangHari, diffHari: c.logistik - targetTimbangHari, ket: b.ket_rawMaterial || '' });
         }
         if (c.produksi !== null && b.targetProduksi > 0 && c.produksi > targetProduksiHari) {
-            overStages.push({ stage: 'Produksi', label: 'Serah Terima → Kirim Dokumen', actual: c.produksi, targetHari: targetProduksiHari, diffHari: c.produksi - targetProduksiHari, ket: b.ket_produksi || '' });
+            overStages.push({ stage: 'Produksi', label: 'Actual Serah Terima → Kirim Dokumen', actual: c.produksi, targetHari: targetProduksiHari, diffHari: c.produksi - targetProduksiHari, ket: b.ket_produksi || '' });
         }
         if (c.qc !== null && b.targetAnalisa > 0 && c.qc > targetAnalisaHari) {
             overStages.push({ stage: 'QC', label: 'Terima Sample → Selesai Mikro', actual: c.qc, targetHari: targetAnalisaHari, diffHari: c.qc - targetAnalisaHari, ket: b.ket_qc || '' });
@@ -2246,8 +2504,8 @@ function renderDetailTableDash(t, batches) {
             <td>${displayShort(b.tanggalRilis)}</td>
             <td class="${isOverInc ? 'cell-over' : ''}">${c.pctInclude !== null ? c.pctInclude.toFixed(2) : '-'}</td>
             <td class="${isOverExc ? 'cell-over' : ''}"><strong>${c.pctExclude !== null ? c.pctExclude.toFixed(2) : '-'}</strong></td>
-            ${cellProcess(c.logistik, b.ket_rawMaterial, 'Logistik', 'Timbang → Serah Terima', b.targetTimbang)}
-            ${cellProcess(c.produksi, b.ket_produksi, 'Produksi', 'Serah Terima → Kirim Dokumen', b.targetProduksi)}
+            ${cellProcess(c.logistik, b.ket_rawMaterial, 'Logistik', 'Actual Timbang → Actual Serah Terima', b.targetTimbang)}
+            ${cellProcess(c.produksi, b.ket_produksi, 'Produksi', 'Actual Serah Terima → Kirim Dokumen', b.targetProduksi)}
             ${cellProcess(c.qc, b.ket_qc, 'QC', 'Terima Sample → Selesai Mikro', b.targetAnalisa)}
             ${cellProcess(c.qa, b.ket_qa, 'QA', 'MAX(Mikro, Kirim Dok) → Rilis', b.targetPerilisan)}
         </tr>`;
@@ -2375,13 +2633,17 @@ function resetFilter(t) {
     if (t === 'oral') {
         document.getElementById('filterFromOral').value = fmt(firstDay);
         document.getElementById('filterToOral').value = fmt(lastDay);
-        document.getElementById('filterSearchOral').value = 'all';
-        document.getElementById('filterKategoriOral').value = 'all';
+        multiSelectState.msBatchOral = new Set();
+        multiSelectState.msKatOral = new Set();
+        renderMultiSelectOptions('msBatchOral');
+        renderMultiSelectKategori('msKatOral');
     } else {
         document.getElementById('filterFromInjeksi').value = fmt(firstDay);
         document.getElementById('filterToInjeksi').value = fmt(lastDay);
-        document.getElementById('filterSearchInjeksi').value = 'all';
-        document.getElementById('filterKategoriInjeksi').value = 'all';
+        multiSelectState.msBatchInjeksi = new Set();
+        multiSelectState.msKatInjeksi = new Set();
+        renderMultiSelectOptions('msBatchInjeksi');
+        renderMultiSelectKategori('msKatInjeksi');
     }
     renderDashboard();
 }
