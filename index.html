@@ -346,19 +346,14 @@ td.cell-over::before {
     background: #f1f8f2;
     border-left: 4px solid #2e7d32 !important;
 }
-.score-card-done .header-info {
-    margin-bottom: 6px;
-}
+.score-card-done .header-info { margin-bottom: 6px; }
 .score-card-done .step-indicator {
     padding: 6px 12px;
     margin-bottom: 8px;
     font-size: 10px;
     background: #e8f5e9;
 }
-.score-card-done .step-indicator .step {
-    padding: 2px 8px;
-    font-size: 10px;
-}
+.score-card-done .step-indicator .step { padding: 2px 8px; font-size: 10px; }
 .score-card-done .edit-actions {
     margin-top: 8px;
     padding-top: 8px;
@@ -455,6 +450,73 @@ td.cell-over::before {
 .multi-select-actions button:hover { background: #d0d0d0; }
 .multi-select-actions button.primary { background: #0d47a1; color: white; }
 .multi-select-actions button.primary:hover { background: #1a237e; }
+
+/* ============ DETAIL MODAL RIWAYAT ============ */
+.detail-section-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1a237e;
+    padding: 5px 10px;
+    background: #e8eaf6;
+    border-radius: 6px;
+    margin: 14px 0 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.detail-section-title.current { background: #c8e6c9; color: #1b5e20; }
+.riwayat-row {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px dashed #e0e0e0;
+    align-items: flex-start;
+}
+.riwayat-row:last-child { border-bottom: none; }
+.riwayat-row.empty { opacity: 0.55; }
+.riwayat-icon {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #e8eaf6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+.riwayat-row.current .riwayat-icon { background: #c8e6c9; }
+.riwayat-body { flex: 1; }
+.riwayat-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: baseline;
+}
+.riwayat-label { font-weight: 700; color: #1a237e; font-size: 12px; }
+.riwayat-sub { font-size: 10px; color: #999; margin-top: 2px; }
+.riwayat-val { font-weight: 600; color: #333; font-size: 12px; text-align: right; }
+.riwayat-val.empty-val { color: #bbb; font-style: italic; font-weight: 400; }
+.riwayat-badge {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 700;
+    margin-top: 5px;
+}
+.riwayat-badge.ok { background: #e8f5e9; color: #1b5e20; }
+.riwayat-badge.over { background: #ffebee; color: #c62828; }
+.riwayat-ket {
+    margin-top: 5px;
+    background: #fff3e0;
+    border-left: 3px solid #f57c00;
+    padding: 5px 9px;
+    border-radius: 4px;
+    font-size: 11px;
+    color: #e65100;
+}
 </style>
 </head>
 <body>
@@ -832,11 +894,11 @@ td.cell-over::before {
 </div>
 </div>
 
-<!-- MODAL DETAIL BATCH DONE -->
+<!-- MODAL DETAIL RIWAYAT BATCH -->
 <div class="modal-overlay" id="detailBatchModal">
-<div class="modal-box" style="max-width:720px;">
+<div class="modal-box" style="max-width:760px;">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;padding-bottom:12px;border-bottom:2px solid #e8eaf6;">
-<h3 style="margin:0;color:#1a237e;" id="detailModalTitle">📋 Detail Batch</h3>
+<h3 style="margin:0;color:#1a237e;" id="detailModalTitle">📋 Riwayat Batch</h3>
 <button class="btn btn-secondary btn-sm" onclick="closeDetailBatchModal()" style="padding:4px 12px;">✕</button>
 </div>
 <div id="detailModalBody"></div>
@@ -872,10 +934,6 @@ function getTargetPCT(b) {
     return TARGET_PCT_PER_TIPE[b.type] || null;
 }
 
-// Field yang BOLEH future (bukan jadwal permintaan & bukan actual): Estimasi LWS
-// Field Jadwal Permintaan (RM/Wadah/Kemas): gak boleh backdate (>= now)
-// Field Actual: gak boleh future (<= now)
-// Estimasi LWS: boleh future
 const JADWAL_FIELDS = ['jadwalRawMaterial', 'jadwalWadah', 'jadwalKemas'];
 const FLEXIBLE_FIELDS = ['estimasiLWS'];
 
@@ -1053,7 +1111,6 @@ function rawDT(stored) {
     return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-// String datetime-local untuk NOW
 function nowLocalStr() {
     const now = new Date();
     const pad = n => String(n).padStart(2,'0');
@@ -1154,27 +1211,14 @@ function getStuckDuration(b) {
     const status = hitungStatus(b);
     let startDate = null;
     switch (status) {
-        case 'produksi':
-            startDate = parseDate(b.createdAt);
-            break;
-        case 'raw_material':
-            startDate = parseDate(b.jadwalRawMaterial);
-            break;
-        case 'multitask':
-            startDate = parseDate(b.tanggalSerahTerima);
-            break;
-        case 'produksi_input':
-            startDate = parseDate(b.tanggalSerahTerima) || parseDate(b.createdAt);
-            break;
-        case 'qc':
-            startDate = parseDate(b.tanggalKirimDokumen) || parseDate(b.createdAt);
-            break;
+        case 'produksi': startDate = parseDate(b.createdAt); break;
+        case 'raw_material': startDate = parseDate(b.jadwalRawMaterial); break;
+        case 'multitask': startDate = parseDate(b.tanggalSerahTerima); break;
+        case 'produksi_input': startDate = parseDate(b.tanggalSerahTerima) || parseDate(b.createdAt); break;
+        case 'qc': startDate = parseDate(b.tanggalKirimDokumen) || parseDate(b.createdAt); break;
         case 'qa':
-        case 'qa_locked':
-            startDate = parseDate(b.tanggalSelesaiMikro) || parseDate(b.createdAt);
-            break;
-        default:
-            return { jam: 0, tanggal_mulai: null };
+        case 'qa_locked': startDate = parseDate(b.tanggalSelesaiMikro) || parseDate(b.createdAt); break;
+        default: return { jam: 0, tanggal_mulai: null };
     }
     if (!startDate) return { jam: 0, tanggal_mulai: null };
     const jam = Math.round(((now - startDate) / (1000*60*60)) * 10) / 10;
@@ -1733,21 +1777,17 @@ function doSaveField(bid, field, ketField, startRaw, targetHours, inputId) {
     const inputVal = new Date(input.value);
     const now = new Date();
 
-    // Validasi tanggal
     if (JADWAL_FIELDS.includes(field)) {
-        // Jadwal Permintaan → gak boleh backdate (< NOW)
         if (inputVal < now) {
             showNotification('⚠️ Jadwal tidak boleh backdate (tanggal sudah lewat)!', 'error');
             return false;
         }
     } else if (!FLEXIBLE_FIELDS.includes(field)) {
-        // Actual → gak boleh future (> NOW)
         if (inputVal > now) {
             showNotification('⚠️ Tanggal tidak boleh lebih dari sekarang!', 'error');
             return false;
         }
     }
-    // Estimasi LWS → bebas (boleh future)
 
     let ket = '';
     if (startRaw && targetHours) {
@@ -1821,8 +1861,12 @@ function calculatePCT(b) {
 }
 
 // ============ RENDER SCORE CARD ============
-function renderScoreCard(b, actionHtml = '', showEditDelete = false) {
+function renderScoreCard(b, actionHtml = '', opts = {}) {
     if (!b) return '';
+    const showEditDelete = opts.showEditDelete || false;
+    const showDetailBtn = opts.showDetailBtn !== false;
+    const forceFullCard = opts.forceFullCard || false;
+
     const status = hitungStatus(b);
     const c = calculatePCT(b);
     const targetPCT = getTargetPCT(b);
@@ -1878,16 +1922,18 @@ function renderScoreCard(b, actionHtml = '', showEditDelete = false) {
         jadwalWarning = `<span class="status jadwal_warning">⚠️ Jadwal ${belumJadwal.join(', ')} belum lengkap</span>`;
     }
 
+    // Tombol detail
+    const detailBtn = showDetailBtn ? `<button class="btn btn-secondary btn-sm" onclick="openDetailBatchModal('${b.id}')">📋 Riwayat Detail</button>` : '';
+
+    // Tombol edit/hapus (khusus PPIC)
     let editDel = '';
     if (showEditDelete && (currentUser.role === 'admin' || currentUser.department === 'PPIC')) {
-        editDel = `<div class="edit-actions">
-            <button class="btn btn-warning btn-sm" onclick="openEditBatch('${b.id}')">✏️ Edit</button>
-            <button class="btn btn-danger btn-sm" onclick="deleteBatch('${b.id}')">🗑️ Hapus</button>
-        </div>`;
+        editDel = `<button class="btn btn-warning btn-sm" onclick="openEditBatch('${b.id}')">✏️ Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteBatch('${b.id}')">🗑️ Hapus</button>`;
     }
 
     // ============ COMPACT MODE UNTUK BATCH DONE ============
-    if (status === 'done') {
+    if (status === 'done' && !forceFullCard) {
         return `<div class="score-card score-card-done" id="sc_${b.id}" style="border-left-color:#2e7d32;">
             <div class="header-info">
                 <div class="batch-info">
@@ -1899,37 +1945,56 @@ function renderScoreCard(b, actionHtml = '', showEditDelete = false) {
             </div>
             ${stepHtml}
             <div class="edit-actions">
-                <button class="btn btn-secondary btn-sm" onclick="openDetailBatchModal('${b.id}')">📋 Detail</button>
-                ${(showEditDelete && (currentUser.role === 'admin' || currentUser.department === 'PPIC')) ? `
-                    <button class="btn btn-warning btn-sm" onclick="openEditBatch('${b.id}')">✏️ Edit</button>
-                    <button class="btn btn-danger btn-sm" onclick="deleteBatch('${b.id}')">🗑️ Hapus</button>
-                ` : ''}
+                ${detailBtn}
+                ${editDel}
             </div>
         </div>`;
     }
 
-    // ============ FULL DETAIL UNTUK BATCH ON-GOING ============
-    let detailsHtml = '';
-    const df = [
-        { l: 'Jadwal RM', v: displayDT(b.jadwalRawMaterial) },
-        { l: 'Jadwal Wadah', v: displayDT(b.jadwalWadah) },
-        { l: 'Jadwal Kemas', v: displayDT(b.jadwalKemas) },
-        { l: 'Actual Timbang', v: displayDT(b.tanggalTimbang) },
-        { l: 'Actual Serah Terima RM', v: displayDT(b.tanggalSerahTerima) },
-        { l: 'Wadah Siap', v: b.wadahReady ? '✅ Siap' : '' },
-        { l: 'Actual Serah Terima Wadah', v: displayDT(b.tanggalSerahTerimaWadah) },
-        { l: 'Kemas Siap', v: b.kemasReady ? '✅ Siap' : '' },
-        { l: 'Actual Serah Terima Kemas', v: displayDT(b.tanggalSerahTerimaKemas) },
-        { l: 'Tgl BPP', v: displayDT(b.tanggalBPP) },
-        { l: 'Kirim Dokumen', v: displayDT(b.tanggalKirimDokumen) },
-        { l: 'Terima Sample', v: displayDT(b.tanggalTerimaSample) },
-        { l: 'Estimasi LWS', v: displayDT(b.estimasiLWS) },
-        { l: 'Selesai Kimia', v: displayDT(b.tanggalSelesaiKimia) },
-        { l: 'Selesai Mikro', v: displayDT(b.tanggalSelesaiMikro) },
-        { l: 'Rilis', v: displayDT(b.tanggalRilis) }
-    ];
-    df.forEach(f => { if (f.v && f.v !== '-') detailsHtml += `<div><span style="color:#757575;">${f.l}:</span> <strong>${f.v}</strong></div>`; });
+    // ============ FULL CARD (PPIC / FORCE) ============
+    if (forceFullCard) {
+        let detailsHtml = '';
+        const df = [
+            { l: 'Jadwal RM', v: displayDT(b.jadwalRawMaterial) },
+            { l: 'Jadwal Wadah', v: displayDT(b.jadwalWadah) },
+            { l: 'Jadwal Kemas', v: displayDT(b.jadwalKemas) },
+            { l: 'Actual Timbang', v: displayDT(b.tanggalTimbang) },
+            { l: 'Actual Serah Terima RM', v: displayDT(b.tanggalSerahTerima) },
+            { l: 'Wadah Siap', v: b.wadahReady ? '✅ Siap' : '' },
+            { l: 'Actual Serah Terima Wadah', v: displayDT(b.tanggalSerahTerimaWadah) },
+            { l: 'Kemas Siap', v: b.kemasReady ? '✅ Siap' : '' },
+            { l: 'Actual Serah Terima Kemas', v: displayDT(b.tanggalSerahTerimaKemas) },
+            { l: 'Tgl BPP', v: displayDT(b.tanggalBPP) },
+            { l: 'Kirim Dokumen', v: displayDT(b.tanggalKirimDokumen) },
+            { l: 'Terima Sample', v: displayDT(b.tanggalTerimaSample) },
+            { l: 'Estimasi LWS', v: displayDT(b.estimasiLWS) },
+            { l: 'Selesai Kimia', v: displayDT(b.tanggalSelesaiKimia) },
+            { l: 'Selesai Mikro', v: displayDT(b.tanggalSelesaiMikro) },
+            { l: 'Rilis', v: displayDT(b.tanggalRilis) }
+        ];
+        df.forEach(f => { if (f.v && f.v !== '-') detailsHtml += `<div><span style="color:#757575;">${f.l}:</span> <strong>${f.v}</strong></div>`; });
 
+        return `<div class="score-card" style="border-left-color: ${b.type === 'injeksi' ? '#0d47a1' : '#6a1b9a'}">
+            <div class="header-info">
+                <div class="batch-info">
+                    <span class="batch-number">${b.batchNumber}</span>
+                    <span class="status ${status}">${getStatusLabel(status)}</span>
+                    ${kb}
+                    ${jadwalWarning}
+                </div>
+                <div><span class="total-ct ${ctClass}">⏱️ ${ctLabel}: ${ctDisplay}</span></div>
+            </div>
+            ${stepHtml}
+            ${detailsHtml ? `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px;font-size:12px;margin-top:10px;">${detailsHtml}</div>` : ''}
+            ${actionHtml ? `<div class="score-card-action">${actionHtml}</div>` : ''}
+            <div class="edit-actions">
+                ${detailBtn}
+                ${editDel}
+            </div>
+        </div>`;
+    }
+
+    // ============ MODE PROSES: cuma field tahap aktif ============
     return `<div class="score-card" style="border-left-color: ${b.type === 'injeksi' ? '#0d47a1' : '#6a1b9a'}">
         <div class="header-info">
             <div class="batch-info">
@@ -1941,80 +2006,144 @@ function renderScoreCard(b, actionHtml = '', showEditDelete = false) {
             <div><span class="total-ct ${ctClass}">⏱️ ${ctLabel}: ${ctDisplay}</span></div>
         </div>
         ${stepHtml}
-        ${detailsHtml ? `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px;font-size:12px;margin-top:10px;">${detailsHtml}</div>` : ''}
         ${actionHtml ? `<div class="score-card-action">${actionHtml}</div>` : ''}
-        ${editDel}
+        <div class="edit-actions">
+            ${detailBtn}
+            ${editDel}
+        </div>
     </div>`;
 }
 
-// ============ MODAL DETAIL BATCH DONE ============
+// ============ MODAL RIWAYAT DETAIL BATCH ============
 function openDetailBatchModal(id) {
     const b = data.batches.find(x => x.id === id);
     if (!b) return;
     const c = calculatePCT(b);
     const targetPCT = getTargetPCT(b);
     const targetLabel = b.type === 'injeksi' ? '16 hari' : '6.8 hari';
+    const status = hitungStatus(b);
 
-    const riwayat = [
-        { icon: '📅', label: 'Jadwal Permintaan RM',   val: b.jadwalRawMaterial,     sub: 'Kanban Produksi' },
-        { icon: '📅', label: 'Jadwal Permintaan Wadah', val: b.jadwalWadah,           sub: 'Kanban Produksi' },
-        { icon: '📅', label: 'Jadwal Permintaan Kemas', val: b.jadwalKemas,           sub: 'Kanban Produksi' },
-        { icon: '⚖️', label: 'Actual Timbang',          val: b.tanggalTimbang,        sub: 'Logistic → Raw Material' },
-        { icon: '📤', label: 'Actual Serah Terima RM',  val: b.tanggalSerahTerima,    sub: 'Logistic → Raw Material', durasi: c.logistik, targetJam: b.targetTimbang, ket: b.ket_rawMaterial },
-        { icon: '✅', label: 'Wadah Siap',              val: b.wadahReady ? 'Siap' : '', sub: 'Logistic → Wadah', isCheck: true },
-        { icon: '📅', label: 'Actual Serah Terima Wadah', val: b.tanggalSerahTerimaWadah, sub: 'Logistic → Wadah' },
-        { icon: '✅', label: 'Kemas Siap',              val: b.kemasReady ? 'Siap' : '', sub: 'Logistic → Kemas', isCheck: true },
-        { icon: '📅', label: 'Actual Serah Terima Kemas', val: b.tanggalSerahTerimaKemas, sub: 'Logistic → Kemas' },
-        { icon: '📅', label: 'Tanggal BPP',             val: b.tanggalBPP,            sub: 'Input Produksi' },
-        { icon: '📤', label: 'Kirim Dokumen',           val: b.tanggalKirimDokumen,   sub: 'Input Produksi', durasi: c.produksi, targetJam: b.targetProduksi, ket: b.ket_produksi },
-        { icon: '📥', label: 'Terima Sample',           val: b.tanggalTerimaSample,   sub: 'QC' },
-        { icon: '⏳', label: 'Estimasi LWS',            val: b.estimasiLWS,           sub: 'QC' },
-        { icon: '🧪', label: 'Selesai Analisa Kimia',   val: b.tanggalSelesaiKimia,   sub: 'QC' },
-        { icon: '🔬', label: 'Selesai Analisa Mikro',   val: b.tanggalSelesaiMikro,   sub: 'QC', durasi: c.qc, targetJam: b.targetAnalisa, ket: b.ket_qc },
-        { icon: '🎉', label: 'Tanggal Rilis',           val: b.tanggalRilis,          sub: 'QA', durasi: c.qa, targetJam: b.targetPerilisan, ket: b.ket_qa }
+    // Definisi field per section
+    const sections = [
+        {
+            title: '📅 Kanban Produksi',
+            icon: '📋',
+            fields: [
+                { key: 'jadwalRawMaterial', label: 'Jadwal Permintaan RM', icon: '🧪', sub: 'Produksi → PPIC' },
+                { key: 'jadwalWadah', label: 'Jadwal Permintaan Wadah', icon: '📦', sub: 'Produksi → PPIC' },
+                { key: 'jadwalKemas', label: 'Jadwal Permintaan Kemas', icon: '📦', sub: 'Produksi → PPIC' }
+            ]
+        },
+        {
+            title: '🧪 Logistic — Raw Material',
+            icon: '🧪',
+            fields: [
+                { key: 'tanggalTimbang', label: 'Actual Timbang', icon: '⚖️', sub: 'Logistic' },
+                { key: 'tanggalSerahTerima', label: 'Actual Serah Terima RM', icon: '📤', sub: 'Logistic', durasi: c.logistik, targetJam: b.targetTimbang, ket: b.ket_rawMaterial }
+            ]
+        },
+        {
+            title: '📦 Logistic — Wadah',
+            icon: '📦',
+            fields: [
+                { key: 'wadahReady', label: 'Wadah Siap', icon: '✅', sub: 'Logistic', isCheck: true },
+                { key: 'tanggalSerahTerimaWadah', label: 'Actual Serah Terima Wadah', icon: '📅', sub: 'Logistic', ket: b.ket_wadah }
+            ]
+        },
+        {
+            title: '📦 Logistic — Kemas',
+            icon: '📦',
+            fields: [
+                { key: 'kemasReady', label: 'Kemas Siap', icon: '✅', sub: 'Logistic', isCheck: true },
+                { key: 'tanggalSerahTerimaKemas', label: 'Actual Serah Terima Kemas', icon: '📅', sub: 'Logistic', ket: b.ket_kemas }
+            ]
+        },
+        {
+            title: '🏭 Input Produksi',
+            icon: '🏭',
+            fields: [
+                { key: 'tanggalBPP', label: 'Tanggal BPP', icon: '📅', sub: 'Produksi' },
+                { key: 'tanggalKirimDokumen', label: 'Kirim Dokumen', icon: '📤', sub: 'Produksi', durasi: c.produksi, targetJam: b.targetProduksi, ket: b.ket_produksi }
+            ]
+        },
+        {
+            title: '🔬 Quality Control',
+            icon: '🔬',
+            fields: [
+                { key: 'tanggalTerimaSample', label: 'Terima Sample', icon: '📥', sub: 'QC' },
+                { key: 'estimasiLWS', label: 'Estimasi LWS', icon: '⏳', sub: 'QC' },
+                { key: 'tanggalSelesaiKimia', label: 'Selesai Analisa Kimia', icon: '🧪', sub: 'QC' },
+                { key: 'tanggalSelesaiMikro', label: 'Selesai Analisa Mikro', icon: '🔬', sub: 'QC', durasi: c.qc, targetJam: b.targetAnalisa, ket: b.ket_qc }
+            ]
+        },
+        {
+            title: '✅ Quality Assurance',
+            icon: '✅',
+            fields: [
+                { key: 'tanggalRilis', label: 'Tanggal Rilis', icon: '🎉', sub: 'QA', durasi: c.qa, targetJam: b.targetPerilisan, ket: b.ket_qa }
+            ]
+        }
     ];
 
-    let rowsHtml = '';
-    let no = 0;
-    riwayat.forEach(r => {
-        if (!r.val) return;
-        no++;
-        let valDisplay = r.isCheck ? `<span style="color:#1b5e20;font-weight:700;">✅ ${r.val}</span>` : displayDT(r.val);
+    // Tentukan section mana yang aktif (sesuai status batch)
+    const activeSectionTitle = {
+        'produksi': '📅 Kanban Produksi',
+        'raw_material': '🧪 Logistic — Raw Material',
+        'multitask': '🧪 Logistic — Raw Material',
+        'qc': '🔬 Quality Control',
+        'qa': '✅ Quality Assurance',
+        'qa_locked': '✅ Quality Assurance',
+        'done': null
+    }[status] || null;
 
-        let durasiHtml = '';
-        if (r.durasi !== null && r.durasi !== undefined && r.targetJam > 0) {
-            const isOver = r.durasi > (r.targetJam / 24);
-            const badgeColor = isOver ? '#c62828' : '#1b5e20';
-            const badgeBg = isOver ? '#ffebee' : '#e8f5e9';
-            durasiHtml = `<div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
-                <span style="background:${badgeBg};color:${badgeColor};padding:2px 10px;border-radius:12px;font-size:11px;font-weight:700;">
-                    ${isOver ? '⚠️' : '✅'} ${r.durasi.toFixed(2)} hari (target ${(r.targetJam/24).toFixed(2)} hari)
-                </span>
-            </div>`;
-            if (isOver && r.ket) {
-                durasiHtml += `<div style="margin-top:6px;background:#fff3e0;border-left:3px solid #f57c00;padding:6px 10px;border-radius:4px;font-size:11px;color:#e65100;">
-                    📝 <b>Keterangan over:</b> ${r.ket}
-                </div>`;
+    let sectionsHtml = '';
+    sections.forEach(sec => {
+        const isCurrent = sec.title === activeSectionTitle;
+        let rowsHtml = '';
+        sec.fields.forEach(f => {
+            let valDisplay;
+            if (f.isCheck) {
+                valDisplay = b[f.key] ? `<span style="color:#1b5e20;font-weight:700;">✅ Siap</span>` : `<span class="riwayat-val empty-val">Belum diisi</span>`;
+            } else {
+                valDisplay = b[f.key] ? `<span style="color:#1b5e20;font-weight:700;">${displayDT(b[f.key])}</span>` : `<span class="riwayat-val empty-val">Belum diisi</span>`;
             }
-        }
 
-        rowsHtml += `<div style="display:flex;gap:14px;padding:12px 0;border-bottom:1px dashed #e0e0e0;">
-            <div style="flex-shrink:0;width:36px;height:36px;border-radius:50%;background:#e8eaf6;display:flex;align-items:center;justify-content:center;font-size:16px;">${r.icon}</div>
-            <div style="flex:1;">
-                <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline;">
-                    <div>
-                        <div style="font-weight:700;color:#1a237e;font-size:13px;">${no}. ${r.label}</div>
-                        <div style="font-size:11px;color:#999;margin-top:2px;">${r.sub}</div>
+            let durasiHtml = '';
+            if (f.durasi !== null && f.durasi !== undefined && f.targetJam > 0) {
+                const isOver = f.durasi > (f.targetJam / 24);
+                durasiHtml = `<div><span class="riwayat-badge ${isOver ? 'over' : 'ok'}">
+                    ${isOver ? '⚠️ Over +' + ((f.durasi - f.targetJam/24)).toFixed(2) + ' hari' : '✅ ' + f.durasi.toFixed(2) + ' hari'}
+                    • Target ${(f.targetJam/24).toFixed(2)} hari
+                </span></div>`;
+            }
+
+            let ketHtml = '';
+            if (f.ket && f.ket.trim()) {
+                ketHtml = `<div class="riwayat-ket">📝 ${f.ket}</div>`;
+            }
+
+            rowsHtml += `<div class="riwayat-row ${!b[f.key] && !f.isCheck ? 'empty' : ''} ${isCurrent ? 'current' : ''}">
+                <div class="riwayat-icon">${f.icon}</div>
+                <div class="riwayat-body">
+                    <div class="riwayat-head">
+                        <div>
+                            <div class="riwayat-label">${f.label}</div>
+                            <div class="riwayat-sub">${f.sub}</div>
+                        </div>
+                        <div class="riwayat-val">${valDisplay}</div>
                     </div>
-                    <div style="font-weight:600;color:#333;font-size:12px;text-align:right;">${valDisplay}</div>
+                    ${durasiHtml}
+                    ${ketHtml}
                 </div>
-                ${durasiHtml}
-            </div>
-        </div>`;
+            </div>`;
+        });
+
+        sectionsHtml += `<div class="detail-section-title ${isCurrent ? 'current' : ''}">${sec.icon} ${sec.title}${isCurrent ? ' — <i>Tahap saat ini</i>' : ''}</div>`;
+        sectionsHtml += rowsHtml;
     });
 
     const summaryHtml = `
-        <div style="background:#f8f9fa;border-radius:8px;padding:14px 18px;margin-bottom:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">
+        <div style="background:#f8f9fa;border-radius:8px;padding:14px 18px;margin-bottom:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;">
             <div>
                 <div style="font-size:11px;color:#757575;">📊 PCT Inc Mikro</div>
                 <div style="font-size:18px;font-weight:700;color:#1a237e;">${c.pctInclude !== null ? c.pctInclude.toFixed(2) + ' hari' : '-'}</div>
@@ -2031,11 +2160,15 @@ function openDetailBatchModal(id) {
                 <div style="font-size:11px;color:#757575;">🏷️ Kategori</div>
                 <div style="font-size:18px;font-weight:700;color:#1a237e;">${b.kategori || 'Rutin'}</div>
             </div>
+            <div>
+                <div style="font-size:11px;color:#757575;">📍 Status</div>
+                <div style="font-size:14px;font-weight:700;color:#1a237e;margin-top:3px;">${getStatusLabel(status)}</div>
+            </div>
         </div>
     `;
 
-    document.getElementById('detailModalTitle').innerHTML = `📋 Detail Batch — <span style="color:#0d47a1;">${b.batchNumber}</span>`;
-    document.getElementById('detailModalBody').innerHTML = summaryHtml + `<div style="max-height:55vh;overflow-y:auto;padding-right:6px;">${rowsHtml || '<div style="text-align:center;color:#999;padding:30px;">Belum ada data waktu</div>'}</div>`;
+    document.getElementById('detailModalTitle').innerHTML = `📋 Riwayat Batch — <span style="color:#0d47a1;">${b.batchNumber}</span>`;
+    document.getElementById('detailModalBody').innerHTML = summaryHtml + `<div style="max-height:60vh;overflow-y:auto;padding-right:6px;">${sectionsHtml}</div>`;
     document.getElementById('detailBatchModal').classList.add('active');
 }
 
@@ -2064,7 +2197,6 @@ function renderEditableField(cfg) {
         ketDisplay = `<div style="margin-top:5px;font-size:11px;color:#e65100;background:#fff3e0;padding:4px 8px;border-radius:4px;">📝 ${b[ketField]}</div>`;
     }
 
-    // Min/max untuk atribut input
     const isJadwal = JADWAL_FIELDS.includes(field);
     const isFlexible = FLEXIBLE_FIELDS.includes(field);
     const nowStr = nowLocalStr();
@@ -2143,15 +2275,11 @@ function renderKanbanProduksi() {
 
         const actionHtml = `
             ${statusInfo}
-            <div class="section-title">📅 Jadwal Permintaan Raw Material <span class="badge-wajib">WAJIB</span></div>
-            <div class="jadwal-container" style="grid-template-columns:1fr;">
-                ${renderEditableField({ b, field: 'jadwalRawMaterial', label: 'Jadwal Permintaan Raw Material', icon: '🧪', ketField: 'ket_jadwalRawMaterial', startField: null, targetHours: 0 })}
-            </div>
-            <div class="section-title optional" style="margin-top:15px;">📅 Jadwal Permintaan Wadah & Kemas <span class="badge-wajib">WAJIB</span></div>
-            <div class="info-banner">💡 Harus diisi sebelum QA bisa rilis</div>
-            <div class="jadwal-container two-col">
-                ${renderEditableField({ b, field: 'jadwalWadah', label: 'Jadwal Permintaan Wadah', icon: '📦', ketField: 'ket_jadwalWadah', startField: null, targetHours: 0 })}
-                ${renderEditableField({ b, field: 'jadwalKemas', label: 'Jadwal Permintaan Kemas', icon: '📦', ketField: 'ket_jadwalKemas', startField: null, targetHours: 0 })}
+            <div class="section-title">📅 Jadwal Permintaan</div>
+            <div class="jadwal-container">
+                ${renderEditableField({ b, field: 'jadwalRawMaterial', label: 'Raw Material', icon: '🧪', ketField: 'ket_jadwalRawMaterial', startField: null, targetHours: 0 })}
+                ${renderEditableField({ b, field: 'jadwalWadah', label: 'Wadah', icon: '📦', ketField: 'ket_jadwalWadah', startField: null, targetHours: 0 })}
+                ${renderEditableField({ b, field: 'jadwalKemas', label: 'Kemas', icon: '📦', ketField: 'ket_jadwalKemas', startField: null, targetHours: 0 })}
             </div>
         `;
         return renderScoreCard(b, actionHtml);
@@ -2167,7 +2295,7 @@ function renderLogisticRawMaterial() {
 
     c.innerHTML = batches.map(b => {
         const actionHtml = `
-            <div class="info-banner">📅 Jadwal Permintaan: ${displayDT(b.jadwalRawMaterial)}</div>
+            <div class="info-banner">📅 Jadwal Permintaan RM: ${displayDT(b.jadwalRawMaterial)}</div>
             <div class="section-title">🧪 Raw Material</div>
             <div class="jadwal-container two-col">
                 ${renderEditableField({ b, field: 'tanggalTimbang', label: 'Actual Timbang', icon: '⚖️', ketField: 'ket_rawMaterial', startField: null, targetHours: 0 })}
@@ -2195,7 +2323,7 @@ function renderLogisticWadah() {
             </div>
         </div>`;
         const actionHtml = `
-            <div class="info-banner">📅 Jadwal Permintaan: ${displayDT(b.jadwalWadah)}</div>
+            <div class="info-banner">📅 Jadwal Permintaan Wadah: ${displayDT(b.jadwalWadah)}</div>
             <div class="section-title">📦 Wadah</div>
             ${cbHtml}
             ${renderEditableField({ b, field: 'tanggalSerahTerimaWadah', label: 'Actual Serah Terima Wadah', icon: '📅', ketField: 'ket_wadah', startField: null, targetHours: 0 })}
@@ -2221,7 +2349,7 @@ function renderLogisticKemas() {
             </div>
         </div>`;
         const actionHtml = `
-            <div class="info-banner">📅 Jadwal Permintaan: ${displayDT(b.jadwalKemas)}</div>
+            <div class="info-banner">📅 Jadwal Permintaan Kemas: ${displayDT(b.jadwalKemas)}</div>
             <div class="section-title">📦 Kemas</div>
             ${cbHtml}
             ${renderEditableField({ b, field: 'tanggalSerahTerimaKemas', label: 'Actual Serah Terima Kemas', icon: '📅', ketField: 'ket_kemas', startField: null, targetHours: 0 })}
@@ -2248,11 +2376,8 @@ function renderInputProduksi() {
         const actionHtml = `
             ${infoLogistic}
             <div class="section-title">🏭 Input Produksi</div>
-            <div class="info-banner" style="background:#e8eaf6;color:#1a237e;border-left-color:#1a237e;">
-                📐 Rumus: <b>Kirim Dokumen − Actual Serah Terima</b> | Target: <b>${b.targetProduksi} jam</b>
-            </div>
             <div class="jadwal-container two-col">
-                ${renderEditableField({ b, field: 'tanggalBPP', label: 'Tanggal BPP (dokumentasi)', icon: '📅', ketField: 'ket_produksi', startField: null, targetHours: 0 })}
+                ${renderEditableField({ b, field: 'tanggalBPP', label: 'Tanggal BPP', icon: '📅', ketField: 'ket_produksi', startField: null, targetHours: 0 })}
                 ${renderEditableField({ b, field: 'tanggalKirimDokumen', label: 'Kirim Dokumen', icon: '📤', ketField: 'ket_produksi', startField: 'tanggalSerahTerima', targetHours: b.targetProduksi })}
             </div>
         `;
@@ -2268,7 +2393,16 @@ function renderQC() {
     if (!batches.length) { c.innerHTML = '<div class="empty-state"><p>Tidak ada batch di QC.</p></div>'; return; }
 
     c.innerHTML = batches.map(b => {
+        let warnJadwal = '';
+        if (!jadwalLengkap(b)) {
+            const belum = [];
+            if (!b.jadwalRawMaterial) belum.push('RM');
+            if (!b.jadwalWadah) belum.push('Wadah');
+            if (!b.jadwalKemas) belum.push('Kemas');
+            warnJadwal = `<div class="info-banner warning">⚠️ Jadwal ${belum.join(', ')} belum lengkap di Kanban Produksi. Harap segera diisi!</div>`;
+        }
         const actionHtml = `
+            ${warnJadwal}
             <div class="section-title">🔬 Quality Control</div>
             <div class="jadwal-container two-col">
                 ${renderEditableField({ b, field: 'tanggalTerimaSample', label: 'Terima Sample', icon: '📥', ketField: 'ket_qc', startField: null, targetHours: 0 })}
@@ -2336,7 +2470,7 @@ function renderPPIC() {
     const c = document.getElementById('ppicScoreCards');
     if (!c) return;
     if (!data.batches.length) { c.innerHTML = '<div class="empty-state"><p>Belum ada batch</p></div>'; return; }
-    c.innerHTML = data.batches.map(b => renderScoreCard(b, '', true)).join('');
+    c.innerHTML = data.batches.map(b => renderScoreCard(b, '', { showEditDelete: true, forceFullCard: true })).join('');
 }
 
 // ============ DASHBOARD ============
