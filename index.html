@@ -836,6 +836,13 @@ function getTargetPCT(b) {
     return TARGET_PCT_PER_TIPE[b.type] || null;
 }
 
+// Field yang BOLEH future (bukan jadwal permintaan & bukan actual): Estimasi LWS
+// Field Jadwal Permintaan (RM/Wadah/Kemas): gak boleh backdate (>= now)
+// Field Actual: gak boleh future (<= now)
+// Estimasi LWS: boleh future
+const JADWAL_FIELDS = ['jadwalRawMaterial', 'jadwalWadah', 'jadwalKemas'];
+const FLEXIBLE_FIELDS = ['estimasiLWS'];
+
 // ============ LIVE DATE ============
 function updateLiveDateTime() {
     const el = document.getElementById('liveDateTime');
@@ -853,7 +860,6 @@ updateLiveDateTime();
 function toggleMultiSelect(id) {
     const el = document.getElementById(id);
     if (!el) return;
-    // Close others
     document.querySelectorAll('.multi-select').forEach(ms => {
         if (ms.id !== id) ms.classList.remove('open');
     });
@@ -897,7 +903,6 @@ function renderMultiSelectOptions(id) {
     const labelEl = el.querySelector('.multi-select-trigger .label');
     if (!optionsEl || !labelEl) return;
 
-    // Determine type from id
     const tipe = id.includes('Oral') ? 'oral' : 'injeksi';
     const batches = data.batches.filter(b => b.type === tipe).sort((a, b) => a.batchNumber.localeCompare(b.batchNumber));
 
@@ -915,7 +920,6 @@ function renderMultiSelectOptions(id) {
         }).join('');
     }
 
-    // Update label
     const count = selected.size;
     if (count === 0) {
         labelEl.textContent = 'Semua Batch';
@@ -956,12 +960,10 @@ function renderMultiSelectKategori(id) {
     }
 }
 
-// Event listener global
 document.addEventListener('click', function(e) {
     document.querySelectorAll('.multi-select').forEach(ms => {
         if (!ms.contains(e.target)) ms.classList.remove('open');
     });
-    // Bell dropdown
     const dd = document.getElementById('notifDropdown');
     const wrapper = document.querySelector('.bell-wrapper');
     if (dd && wrapper && !wrapper.contains(e.target)) {
@@ -969,7 +971,6 @@ document.addEventListener('click', function(e) {
     }
 });
 
-// Setup trigger click (tanpa close otomatis)
 document.querySelectorAll('.multi-select-trigger').forEach(btn => {
     btn.addEventListener('click', function(e) {
         e.stopPropagation();
@@ -1014,6 +1015,13 @@ function rawDT(stored) {
     if (isNaN(d.getTime())) return '';
     const pad = n => String(n).padStart(2,'0');
     return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+// String datetime-local untuk NOW
+function nowLocalStr() {
+    const now = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    return `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
 }
 
 function diffHours(d1, d2) { if (!d1 || !d2) return null; const diff = (d2 - d1) / (1000*60*60); return Math.round(diff*100)/100; }
@@ -1685,6 +1693,25 @@ function doSaveField(bid, field, ketField, startRaw, targetHours, inputId) {
     const b = data.batches.find(x => x.id === bid);
     if (!b) return false;
 
+    const inputVal = new Date(input.value);
+    const now = new Date();
+
+    // Validasi tanggal
+    if (JADWAL_FIELDS.includes(field)) {
+        // Jadwal Permintaan → gak boleh backdate (< NOW)
+        if (inputVal < now) {
+            showNotification('⚠️ Jadwal tidak boleh backdate (tanggal sudah lewat)!', 'error');
+            return false;
+        }
+    } else if (!FLEXIBLE_FIELDS.includes(field)) {
+        // Actual → gak boleh future (> NOW)
+        if (inputVal > now) {
+            showNotification('⚠️ Tanggal tidak boleh lebih dari sekarang!', 'error');
+            return false;
+        }
+    }
+    // Estimasi LWS → bebas (boleh future)
+
     let ket = '';
     if (startRaw && targetHours) {
         const dur = diffHours(parseDate(startRaw), parseDate(input.value));
@@ -1881,12 +1908,23 @@ function renderEditableField(cfg) {
         ketDisplay = `<div style="margin-top:5px;font-size:11px;color:#e65100;background:#fff3e0;padding:4px 8px;border-radius:4px;">📝 ${b[ketField]}</div>`;
     }
 
+    // Min/max untuk atribut input
+    const isJadwal = JADWAL_FIELDS.includes(field);
+    const isFlexible = FLEXIBLE_FIELDS.includes(field);
+    const nowStr = nowLocalStr();
+    let minAttr = '', maxAttr = '';
+    if (isJadwal) {
+        minAttr = `min="${nowStr}"`;
+    } else if (!isFlexible) {
+        maxAttr = `max="${nowStr}"`;
+    }
+
     let inner = '';
     if (saved && !unlocked) {
         inner = `<div class="jadwal-value">✅ ${displayDT(b[field])}</div>
             <button class="btn btn-warning btn-sm" style="margin-top:5px;padding:3px 8px;font-size:11px;" onclick="unlockField('${b.id}','${field}')">🔓 Edit</button>`;
     } else {
-        inner = `<input type="datetime-local" id="${inputId}" value="${rawDT(b[field])}"
+        inner = `<input type="datetime-local" id="${inputId}" value="${rawDT(b[field])}" ${minAttr} ${maxAttr}
             oninput="checkOverPreview('${b.id}','${field}','${inputId}','${ketField}','${startRaw||''}',${targetHours||0})">
             <div id="${ketBoxId}"></div>
             <button class="btn btn-success btn-sm" style="margin-top:5px;padding:3px 8px;font-size:11px;"
@@ -2055,7 +2093,7 @@ function renderInputProduksi() {
             ${infoLogistic}
             <div class="section-title">🏭 Input Produksi</div>
             <div class="info-banner" style="background:#e8eaf6;color:#1a237e;border-left-color:#1a237e;">
-                📐 Rumus: <b>Kirim Dokumen − Serah Terima</b> | Target: <b>${b.targetProduksi} jam</b>
+                📐 Rumus: <b>Kirim Dokumen − Actual Serah Terima</b> | Target: <b>${b.targetProduksi} jam</b>
             </div>
             <div class="jadwal-container two-col">
                 ${renderEditableField({ b, field: 'tanggalBPP', label: 'Tanggal BPP (dokumentasi)', icon: '📅', ketField: 'ket_produksi', startField: null, targetHours: 0 })}
@@ -2151,7 +2189,6 @@ function renderDashboard() {
     const pEl = document.getElementById(t === 'oral' ? 'filterFromOral' : 'filterFromInjeksi');
     const toEl = document.getElementById(t === 'oral' ? 'filterToOral' : 'filterToInjeksi');
 
-    // Refresh multi-select options
     renderMultiSelectOptions(t === 'oral' ? 'msBatchOral' : 'msBatchInjeksi');
     renderMultiSelectKategori(t === 'oral' ? 'msKatOral' : 'msKatInjeksi');
 
@@ -2162,11 +2199,9 @@ function renderDashboard() {
     const selectedKat = multiSelectState[t === 'oral' ? 'msKatOral' : 'msKatInjeksi'];
 
     let batches = data.batches.filter(b => b.type === t);
-    // Filter batch number (multi-select)
     if (selectedBatch.size > 0) {
         batches = batches.filter(b => selectedBatch.has(b.batchNumber));
     }
-    // Filter kategori (multi-select)
     if (selectedKat.size > 0) {
         batches = batches.filter(b => selectedKat.has(b.kategori || 'Rutin'));
     }
