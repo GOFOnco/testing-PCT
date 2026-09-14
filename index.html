@@ -1087,28 +1087,36 @@ function saveCheckbox(bid, field, checked) {
 }
 
 // ============ CALCULATE PCT ============
+// REVISI: Produksi = tanggalKirimDokumen − tanggalSerahTerima
 function calculatePCT(b) {
     const tT = parseDate(b.tanggalTimbang);
     const tS = parseDate(b.tanggalSerahTerima);
-    const tBPP = parseDate(b.tanggalBPP);
     const tKirim = parseDate(b.tanggalKirimDokumen);
     const tSmp = parseDate(b.tanggalTerimaSample);
     const tKm = parseDate(b.tanggalSelesaiKimia);
     const tMk = parseDate(b.tanggalSelesaiMikro);
     const tR = parseDate(b.tanggalRilis);
 
+    // 1. Logistik = Serah Terima − Timbang
     const log = jamKeHari(diffHours(tT, tS));
-    const prod = jamKeHari(diffHours(tBPP, tKirim));
+
+    // 2. Produksi = Kirim Dokumen − Serah Terima (REVISI)
+    const prod = jamKeHari(diffHours(tS, tKirim));
+
+    // 3. QC = Selesai Mikro − Terima Sample
     const qc = jamKeHari(diffHours(tSmp, tMk));
 
+    // 4. QA = Rilis − MAX(Selesai Mikro, Kirim Dokumen)
     let latestQA = null;
     if (tMk && tKirim) latestQA = tMk > tKirim ? tMk : tKirim;
     else if (tMk) latestQA = tMk;
     else if (tKirim) latestQA = tKirim;
     const qa = jamKeHari(diffHours(latestQA, tR));
 
+    // 5. PCT Inc = Rilis − Timbang
     const pctInc = jamKeHari(diffHours(tT, tR));
 
+    // 6. PCT Exc = PCT Inc − (Selesai Mikro − Selesai Kimia)
     const mikroDurasi = jamKeHari(diffHours(tKm, tMk));
     let pctExc = null;
     if (pctInc !== null && mikroDurasi !== null) {
@@ -1277,7 +1285,6 @@ function renderKanbanProduksi() {
 
     const batches = data.batches.filter(b => !jadwalLengkap(b));
 
-    // Update dropdown options
     if (sel) {
         const currentVal = sel.value;
         sel.innerHTML = '<option value="">-- Pilih Batch --</option>' + 
@@ -1407,6 +1414,7 @@ function renderLogisticKemas() {
 }
 
 // ============ INPUT PRODUKSI ============
+// REVISI: Over-check Kirim Dokumen pakai tanggalSerahTerima sebagai start
 function renderInputProduksi() {
     const c = document.getElementById('inputProduksi');
     if (!c) return;
@@ -1424,9 +1432,12 @@ function renderInputProduksi() {
         const actionHtml = `
             ${infoLogistic}
             <div class="section-title">🏭 Input Produksi</div>
+            <div class="info-banner" style="background:#e8eaf6;color:#1a237e;border-left-color:#1a237e;">
+                📐 Rumus: <b>Kirim Dokumen − Serah Terima</b> | Target: <b>${b.targetProduksi} jam</b>
+            </div>
             <div class="jadwal-container two-col">
-                ${renderEditableField({ b, field: 'tanggalBPP', label: 'Tanggal BPP', icon: '📅', ketField: 'ket_produksi', startField: null, targetHours: 0 })}
-                ${renderEditableField({ b, field: 'tanggalKirimDokumen', label: 'Kirim Dokumen', icon: '📤', ketField: 'ket_produksi', startField: 'tanggalBPP', targetHours: b.targetProduksi })}
+                ${renderEditableField({ b, field: 'tanggalBPP', label: 'Tanggal BPP (dokumentasi)', icon: '📅', ketField: 'ket_produksi', startField: null, targetHours: 0 })}
+                ${renderEditableField({ b, field: 'tanggalKirimDokumen', label: 'Kirim Dokumen', icon: '📤', ketField: 'ket_produksi', startField: 'tanggalSerahTerima', targetHours: b.targetProduksi })}
             </div>
         `;
         return renderScoreCard(b, actionHtml);
@@ -1770,6 +1781,7 @@ function renderBarChartDash(t, batches) {
     container.innerHTML = svg;
 }
 
+// REVISI: Label tooltip Produksi pakai "Serah Terima → Kirim Dokumen"
 function renderDetailTableDash(t, batches) {
     const tb = document.getElementById(t === 'oral' ? 'detailTableBodyOral' : 'detailTableBodyInjeksi');
     if (!tb) return;
@@ -1803,7 +1815,7 @@ function renderDetailTableDash(t, batches) {
             <td>${c.pctInclude !== null ? c.pctInclude.toFixed(2) : '-'}</td>
             <td><strong>${c.pctExclude !== null ? c.pctExclude.toFixed(2) : '-'}</strong></td>
             ${cellWithTooltip(c.logistik, b.ket_rawMaterial, 'Logistik', 'Timbang → Serah Terima', b.targetTimbang + ' jam')}
-            ${cellWithTooltip(c.produksi, b.ket_produksi, 'Produksi', 'BPP → Kirim Dokumen', b.targetProduksi + ' jam')}
+            ${cellWithTooltip(c.produksi, b.ket_produksi, 'Produksi', 'Serah Terima → Kirim Dokumen', b.targetProduksi + ' jam')}
             ${cellWithTooltip(c.qc, b.ket_qc, 'QC', 'Terima Sample → Selesai Mikro', b.targetAnalisa + ' jam')}
             ${cellWithTooltip(c.qa, b.ket_qa, 'QA', 'MAX(Mikro, Kirim Dok) → Rilis', b.targetPerilisan + ' jam')}
         </tr>`;
