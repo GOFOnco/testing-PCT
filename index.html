@@ -1137,13 +1137,6 @@ function calculatePCT(b) {
     return { pctInclude: pctInc, pctExclude: pctExc, logistik: log, produksi: prod, qc, qa, onGoing: og, targetRilis: tRil, totalTargetJam: tTg };
 }
 
-// ============ HELPER: CEK OVER TARGET PER PROSES ============
-function isStageOver(actualHari, targetJam) {
-    if (actualHari === null || !targetJam || targetJam <= 0) return false;
-    const targetHari = targetJam / 24;
-    return actualHari > targetHari;
-}
-
 // ============ RENDER SCORE CARD ============
 function renderScoreCard(b, actionHtml = '', showEditDelete = false) {
     if (!b) return '';
@@ -1733,7 +1726,7 @@ function renderLineChartDash(t, batches) {
     container.innerHTML = legendHtml + svg;
 }
 
-// ============ BAR CHART (Tooltip Tanpa Jam) ============
+// ============ BAR CHART ============
 function renderBarChartDash(t, batches) {
     const container = document.getElementById(t === 'oral' ? 'barChartOral' : 'barChartInjeksi');
     if (!container) return;
@@ -1777,7 +1770,6 @@ function renderBarChartDash(t, batches) {
         const isOver = val > targetPCT;
         const fill = isOver ? '#c62828' : barColor;
 
-        // Deteksi proses over target
         const overStages = [];
         const targetTimbangHari = b.targetTimbang / 24;
         const targetProduksiHari = b.targetProduksi / 24;
@@ -1863,7 +1855,7 @@ function renderBarChartDash(t, batches) {
     container.innerHTML = svg;
 }
 
-// ============ DETAIL TABLE — Cell proses merah kalau over ============
+// ============ DETAIL TABLE — Semua cell yang over jadi merah ============
 function renderDetailTableDash(t, batches) {
     const tb = document.getElementById(t === 'oral' ? 'detailTableBodyOral' : 'detailTableBodyInjeksi');
     if (!tb) return;
@@ -1873,15 +1865,18 @@ function renderDetailTableDash(t, batches) {
 
     tb.innerHTML = doneB.map(b => {
         const c = calculatePCT(b);
+        const targetPCT = getTargetPCT(b);
 
-        // Helper cell dengan deteksi over + tooltip keterangan
+        // Cek PCT Inc & PCT Exc over target global
+        const isOverInc = c.pctInclude !== null && targetPCT !== null && c.pctInclude > targetPCT;
+        const isOverExc = c.pctExclude !== null && targetPCT !== null && c.pctExclude > targetPCT;
+
+        // Helper untuk cell proses (Logistik/Produksi/QC/QA) — merah kalau over target per-proses
         const cellProcess = (val, ket, stageName, startLabel, targetJam) => {
             const display = val !== null ? val.toFixed(2) : '-';
             const hasKet = ket && ket.trim() !== '';
             const isOver = val !== null && targetJam > 0 && val > (targetJam / 24);
 
-            // Kalau over, kasih class cell-over (merah) + tooltip keterangan
-            // Kalau cuma ada keterangan tapi gak over, kasih class has-ket (kuning)
             let cls = '';
             if (isOver) cls = 'cell-over';
             else if (hasKet) cls = 'cell-tooltip has-ket';
@@ -1896,7 +1891,6 @@ function renderDetailTableDash(t, batches) {
                 tooltipAttr = `data-tooltip="${tooltipData}" onmouseenter="showCellTooltip(event, this)" onmouseleave="hideCellTooltip()"`;
             }
 
-            // Kalau cell-over dan ada keterangan, tetap bisa dihover
             if (isOver && hasKet) {
                 return `<td class="cell-over cell-tooltip" style="cursor:pointer;" ${tooltipAttr}>${display}</td>`;
             }
@@ -1912,8 +1906,8 @@ function renderDetailTableDash(t, batches) {
         return `<tr>
             <td><strong>${b.batchNumber}</strong></td>
             <td>${displayShort(b.tanggalRilis)}</td>
-            <td>${c.pctInclude !== null ? c.pctInclude.toFixed(2) : '-'}</td>
-            <td><strong>${c.pctExclude !== null ? c.pctExclude.toFixed(2) : '-'}</strong></td>
+            <td class="${isOverInc ? 'cell-over' : ''}">${c.pctInclude !== null ? c.pctInclude.toFixed(2) : '-'}</td>
+            <td class="${isOverExc ? 'cell-over' : ''}"><strong>${c.pctExclude !== null ? c.pctExclude.toFixed(2) : '-'}</strong></td>
             ${cellProcess(c.logistik, b.ket_rawMaterial, 'Logistik', 'Timbang → Serah Terima', b.targetTimbang)}
             ${cellProcess(c.produksi, b.ket_produksi, 'Produksi', 'Serah Terima → Kirim Dokumen', b.targetProduksi)}
             ${cellProcess(c.qc, b.ket_qc, 'QC', 'Terima Sample → Selesai Mikro', b.targetAnalisa)}
