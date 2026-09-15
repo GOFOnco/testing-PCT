@@ -527,7 +527,7 @@ td.cell-over::before {
 <div id="loginError" class="login-error"></div>
 <div class="form-group">
 <label>Hai, Welcome!</label>
-<input type="text" id="loginInput" placeholder="Masukkan Inisial" onkeydown="if(event.key==='Enter') login()">
+<input type="text" id="loginInput" placeholder="Masukkan NIK Workday" onkeydown="if(event.key==='Enter') login()">
 </div>
 <button class="btn btn-primary" onclick="login()">🔐 Login</button>
 <div class="login-divider">atau</div>
@@ -1454,7 +1454,7 @@ function clearAudit() {
 function login() {
     const input = document.getElementById('loginInput').value.trim();
     const err = document.getElementById('loginError');
-    if (!input) { err.textContent = '⚠️ Masukkan Inisial!'; err.classList.add('show'); return; }
+    if (!input) { err.textContent = '⚠️ Masukkan NIK Workday!'; err.classList.add('show'); return; }
     if (input === 'admin123') { currentUser = { role: 'admin', name: 'Admin', department: null }; addAudit('LOGIN', 'System', 'Admin login'); showMainApp(); return; }
     const p = data.personil.find(x => x.name.toLowerCase() === input.toLowerCase());
     if (p) { currentUser = { role: 'user', name: p.name, department: p.department }; addAudit('LOGIN', 'System', `Login sebagai ${p.department}`); showMainApp(); return; }
